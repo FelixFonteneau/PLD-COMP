@@ -15,8 +15,13 @@ using namespace std;
  */
 class  Visitor : public ifccBaseVisitor {
 private:
+  int adressIterator;
   unordered_map<string, int> integerVariablesTable; // <nom de la variable, adresse mémoire>
 public:
+
+  Visitor(){
+    adressIterator = 1;
+  }
 
   virtual antlrcpp::Any visitAxiom(ifccParser::AxiomContext *ctx) override {
     return visitChildren(ctx);
@@ -43,9 +48,74 @@ public:
      return 0;
   }
 
+  virtual antlrcpp::Any visitDec(ifccParser::DecContext *ctx) override {
+    string varialbeName = ctx->VAR()->getText();
+    if( integerVariablesTable.find(varialbeName) != integerVariablesTable.end()){
+      // if the variable name already exist, we throw an error.
+    }
+    int memoryAdress = adressIterator++;
+    integerVariablesTable[varialbeName] = memoryAdress;
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitAffDecConst(ifccParser::AffDecConstContext *ctx) override {
+    int retval = stoi(ctx->CONST()->getText());
+    string variableName = ctx->VAR()->getText();
+    if( integerVariablesTable.find(variableName) != integerVariablesTable.end()){
+      // if the variable name already exist, we throw an error.
+    }
+    int memoryAdress = adressIterator++;
+    cout<<" movl $"<<retval<<", -" << memoryAdress << "(%rbp)" << endl;
+    integerVariablesTable[variableName] = memoryAdress;
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitAffDecVar(ifccParser::AffDecVarContext *ctx) override {
+    string newVariableName = ctx->VAR()[0]->getText();
+    if( integerVariablesTable.find(newVariableName) != integerVariablesTable.end()){
+      // if the variable name already exist, we throw an error.
+    }
+    string existingVariableName = ctx->VAR()[1]->getText();
+    auto itr = integerVariablesTable.find(newVariableName);
+    if(itr == integerVariablesTable.end()){
+
+    }
+    // todo verifier si la deuxième variable a été aloué
+    int memoryAdress = adressIterator++;
+    cout<<" movl -"<<itr->second<<"(%rbp), -" << memoryAdress << "(%rbp)" << endl;
+    integerVariablesTable[newVariableName] = memoryAdress;
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitAffVar(ifccParser::AffVarContext *ctx) override {
+
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitAffConst(ifccParser::AffConstContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitRetVar(ifccParser::RetVarContext *ctx) override {
+    string variable = ctx->VAR()->getText();
+    auto itr = integerVariablesTable.find(variable);
+    cout<<"  movl -" << itr->second <<"(%rbp), %eax" << endl;
+    return 0;  }
+
+  virtual antlrcpp::Any visitRetConst(ifccParser::RetConstContext *ctx) override {
+    int retval = stoi(ctx->CONST()->getText());
+    cout<<"  movl $" << retval <<", %eax" << endl;
+    return 0;
+  }
+
+/*
   virtual antlrcpp::Any visitAff(ifccParser::AffContext *ctx) override {
     int retval = stoi(ctx->CONST()->getText());
     string varialbeName = ctx->VAR()->getText();
+    if( integerVariablesTable.find(varialbeName) != integerVariablesTable.end()){
+      // if the variable name already exist, we throw an error.
+    }
+
     int memoryAdress = 4;
     cout<<" movl $"<<retval<<", -" << memoryAdress << "(%rbp)" << endl;
     integerVariablesTable[varialbeName] = memoryAdress;
@@ -54,9 +124,9 @@ public:
 
   virtual antlrcpp::Any visitRet(ifccParser::RetContext *ctx) override {
     string variable = ctx->VAR()->getText();
-    unordered_map<string, int>:: iterator itr = integerVariablesTable.find(variable);
+    auto itr = integerVariablesTable.find(variable);
 	  cout<<"  movl -" << itr->second <<"(%rbp), %eax" << endl;
     return 0;
   }
-
+*/
 };

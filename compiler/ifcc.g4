@@ -1,13 +1,30 @@
 grammar ifcc;
 
-axiom : prog       
+axiom : prog
       ;
 
-prog : 'int' 'main' '(' ')' '{' aff ';' ret ';' '}' ;
+prog  : 'int' 'main' '(' ')' '{' statements '}' ;
 
-aff :    'int' VAR '=' CONST ;
+statements : statement ';'
+           | statement ';' statements
+           ;
 
-ret : RET VAR;
+statement : dec  # statementDeclaration
+          | aff  # statementAffectation
+          | ret  # statementReturn
+          ;
+
+dec   : 'int' VAR;
+
+aff   : 'int' VAR '=' CONST # affDecConst
+      | 'int' VAR '=' VAR   # affDecVar
+      | VAR '=' VAR         # affVar
+      | VAR '=' CONST       # affConst
+      ;
+
+ret   : RET VAR   # retVar
+      | RET CONST # retConst
+      ;
 
 RET : 'return' ;
 VAR : [a-z]+ ;
