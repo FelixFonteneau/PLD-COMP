@@ -1,0 +1,23 @@
+BLOC : '{' B '}';
+
+DECL_INIT : DECL INIT ';';
+DECL : TYPE NOM;
+INIT : '=' VAL | epsilon;
+TYPE : 'char' | 'int';
+NOM : [a-z]+;
+VAL : [0-9]+;
+
+FUNC : TYPE_PLUS NOM '(' DECL ')' BLOC;
+TYPE_PLUS : TYPE | 'void';
+
+B : DECLS INSTS;
+
+DECLS : DECL_INIT DECLS | epsilon;
+INSTS : INST INSTS | epsilon;
+
+INST : IF | EXPR | AFFECT;
+IF : 'if' '(' EXPR ')' BLOC ELSE;
+ELSE : 'else' BLOC | epsilon;
+
+EXPR : ...';';
+AFFECT : NOM '=' EXPR ';';
