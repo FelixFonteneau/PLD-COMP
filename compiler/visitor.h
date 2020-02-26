@@ -76,7 +76,7 @@ public:
       // if the variable name already exist, we throw an error.
     }
     string existingVariableName = ctx->VAR()[1]->getText();
-    auto itr = integerVariablesTable.find(newVariableName);
+    auto itr = integerVariablesTable.find(existingVariableName);
     if(itr == integerVariablesTable.end()){
 
     }
