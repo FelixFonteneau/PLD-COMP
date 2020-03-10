@@ -6,8 +6,7 @@ main:
   movq %rsp, %rbp
 
   # body 
- movl $42, -1(%rbp)
-  movl -1(%rbp), %eax
+  movl $42, %eax
 
   # epilogue
   popq %rbp
