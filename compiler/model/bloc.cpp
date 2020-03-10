@@ -22,8 +22,17 @@ using namespace std;
 //----------------------------------------------------------------- PUBLIC
 
 //----------------------------------------------------- Méthodes publiques
+bool Bloc::variableExiste(string nom){
+  return variables.find(nom)!=variables.end();
+}
 
+Variable* Bloc::getVariable(string nom){
+  return &variables.find(nom)->second;
+}
 
+void Bloc::AjouterVariable(Variable &var){
+  variables.insert({var.getName(),var});
+}
 
 //------------------------------------------------- Surcharge d'opérateurs
 
@@ -37,31 +46,7 @@ Bloc::Bloc()
   #endif
 }
 
-/*
-Bloc::Bloc ( const Bloc & uneBloc ) : value(uneBloc.value), date(uneBloc.date),
-       description(uneBloc.description),
-       unite(uneBloc.unite), capteurid(uneBloc.capteurid)
 
-// Algorithme :
-//
-{
-#ifdef MAP
-   cout << "Appel au constructeur de copie de <Bloc>" << endl;
-#endif
-
-} //----- Fin de Bloc (constructeur de copie)
-
-
-Bloc::Bloc (double uneValue, Moment& uneDate, string uneDescription,
-  string uneUnite, string unCapteurid) :
-      value(uneValue), date(uneDate), description(uneDescription), unite(uneUnite), capteurid(unCapteurid)
-{
- #ifdef MAP
-     cout << "Appel au constructeur de <Bloc>" << endl;
- #endif
-}
-
-*/
 
 Bloc::~Bloc ( )
 // Algorithme :

@@ -10,7 +10,7 @@ ANTLR4_LIBDIR=/shares/public/tp/ANTLR4-CPP/lib
 
 CC=clang++
 CCARGS=-g -c -I $(ANTLR4_INCDIR) -I $(GENERATED) -std=c++11 -Wno-defaulted-function-deleted -Wno-unknown-warning-option
-LDARGS=-g
+LDARGS=-g -fno-exceptions
 
 all: ifcc
 

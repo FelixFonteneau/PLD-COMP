@@ -11,6 +11,8 @@
 #define BLOC_H
 
 //--------------------------------------------------- Interfaces utilisées
+#include <unordered_map>
+#include "variable.h"
 
 //------------------------------------------------------------- Constantes
 
@@ -28,6 +30,10 @@ class Bloc
 
 public:
 //----------------------------------------------------- Méthodes publiques
+
+    bool variableExiste(string nom);
+    Variable* getVariable(string nom);
+    void AjouterVariable(Variable &var);
 
     //void AjouterMesure(Mesure *mesure);
     // Mode d'emploi :
@@ -58,6 +64,8 @@ protected:
 //----------------------------------------------------- Méthodes protégées
 
 //----------------------------------------------------- Attributs protégés
+
+unordered_map<string, Variable> variables; // <liste des variables dans le bloc principal>
 
 };
 
