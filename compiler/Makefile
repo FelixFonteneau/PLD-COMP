@@ -10,7 +10,7 @@ ANTLR4_LIBDIR=/shares/public/tp/ANTLR4-CPP/lib
 
 CC=clang++
 CCARGS=-g -c -I $(ANTLR4_INCDIR) -I $(GENERATED) -std=c++11 -Wno-defaulted-function-deleted -Wno-unknown-warning-option
-LDARGS=-g
+LDARGS=-g -fno-exceptions
 
 all: ifcc
 
@@ -23,7 +23,7 @@ ifcc: dirs antlr  main.cpp visitor.cpp visitor.h
 	$(CC) $(CCARGS) $(MODEL)/variable.cpp -o $(OUTPUT)/variable.o
 	$(CC) $(CCARGS) $(MODEL)/bloc.cpp -o $(OUTPUT)/bloc.o 
 	$(CC) $(CCARGS) visitor.cpp -o $(OUTPUT)/visitor.o
-	$(CC) $(LDARGS) $(OUTPUT)/main.o $(OUTPUT)/ifccBaseVisitor.o $(OUTPUT)/ifccLexer.o $(OUTPUT)/ifccVisitor.o $(OUTPUT)/ifccParser.o $(OUTPUT)/visitor.o $(ANTLR4_LIBDIR)/libantlr4-runtime.a -o ifcc
+	$(CC) $(LDARGS) $(OUTPUT)/main.o $(OUTPUT)/ifccBaseVisitor.o $(OUTPUT)/ifccLexer.o $(OUTPUT)/ifccVisitor.o $(OUTPUT)/ifccParser.o $(OUTPUT)/variable.o $(OUTPUT)/bloc.o $(OUTPUT)/visitor.o $(ANTLR4_LIBDIR)/libantlr4-runtime.a -o ifcc
 
 antlr: $(GRAMMAR)
 	$(ANTLR4_BINDIR)/antlr4 -visitor -no-listener -Dlanguage=Cpp -o $(GENERATED) $(GRAMMAR)

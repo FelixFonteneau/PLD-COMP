@@ -31,7 +31,20 @@ class Variable
 
 public:
 //----------------------------------------------------- Méthodes publiques
+  string getName()
+  {
+    return this->name;
+  }
 
+  string getType()
+  {
+    return this->type;
+  }
+
+  int getAddress()
+  {
+    return this->address;
+  }
     //void AjouterMesure(Mesure *mesure);
     // Mode d'emploi :
     //
@@ -53,7 +66,7 @@ public:
     // Contrat :
     //
 
-    Variable (string name, string type, int adress) : name(name), type(type), adress(adress){}
+    Variable (string name, string type, int address) : name(name), type(type), address(address){}
     // Mode d'emploi :
     //
     // Contrat :
@@ -69,7 +82,8 @@ protected:
 //----------------------------------------------------- Attributs protégés
   string name;
   string type;
-  int adress;
+  int address;
+
 
 
 };
