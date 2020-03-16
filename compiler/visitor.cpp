@@ -38,9 +38,10 @@ antlrcpp::Any Visitor::visitDec(ifccParser::DecContext *ctx)
     string variableName = ctx->VAR()->getText();
     if (blocPrincipal.variableExiste(variableName))
     {
-        // if the variable name already exist, we throw an error.
+        // if the variable name already exists, we throw an error.
     }
-    int memoryAddress = addressIterator++;
+    int memoryAddress = addressIterator;
+    addressIterator += 4;
     Variable* variable = new Variable(variableName, "int", memoryAddress);
     blocPrincipal.AjouterVariable(*variable);
     return visitChildren(ctx);
@@ -52,9 +53,10 @@ antlrcpp::Any Visitor::visitAffDecConst(ifccParser::AffDecConstContext *ctx)
     string variableName = ctx->VAR()->getText();
     if (blocPrincipal.variableExiste(variableName))
     {
-        // if the variable name already exist, we throw an error.
+        // if the variable name already exists, we throw an error.
     }
-    int memoryAddress = addressIterator++;
+    int memoryAddress = addressIterator;
+    addressIterator += 4;
     cout << " movl $" << retval << ", -" << memoryAddress << "(%rbp)" << endl;
     Variable* variable = new Variable(variableName, "int", memoryAddress);
     blocPrincipal.AjouterVariable(*variable);
@@ -65,22 +67,41 @@ antlrcpp::Any Visitor::visitAffDecVar(ifccParser::AffDecVarContext *ctx)
 {
     string newVariableName = ctx->VAR()[0]->getText();
     if (blocPrincipal.variableExiste(newVariableName))    {
-        // if the variable name already exist, we throw an error.
+        // if the variable name already exists, we throw an error.
     }
     string existingVariableName = ctx->VAR()[1]->getText();
     if (!blocPrincipal.variableExiste(existingVariableName))    {
         // if the variable name does not exist, we throw an error.
     }
-    int memoryAddress = addressIterator++;
+    int memoryAddress = addressIterator;
+    addressIterator += 4;
     cout << " movl -" << blocPrincipal.getVariable(existingVariableName)->getAddress() << "(%rbp), -" << memoryAddress << "(%rbp)" << endl;
     Variable* variable = new Variable(newVariableName, "int", memoryAddress);
     blocPrincipal.AjouterVariable(*variable);
     return visitChildren(ctx);
 }
 
+antlrcpp::Any Visitor::visitAffDecExpr(ifccParser::AffDecExprContext *ctx)
+{
+    string variableName = ctx->VAR()->getText();
+    int val = visitChildren(ctx);
+    if(blocPrincipal.variableExiste(variableName)){
+      // if the variable name already exists, we throw an error.
+    }
+    int memoryAddress = addressIterator;
+    addressIterator += 4;
+    if(val==0) {
+      cout << " movl %eax, -" << memoryAddress << "(%rbp)" << endl;
+    } else {
+      cout << "movl $" << val << ", -" << memoryAddress << "(%rbp)" << endl;
+    }
+    Variable* variable = new Variable(variableName, "int", memoryAddress);
+    blocPrincipal.AjouterVariable(*variable);
+    return 0;
+}
+
 antlrcpp::Any Visitor::visitAffVar(ifccParser::AffVarContext *ctx)
 {
-
     return visitChildren(ctx);
 }
 
@@ -88,6 +109,70 @@ antlrcpp::Any Visitor::visitAffConst(ifccParser::AffConstContext *ctx)
 {
     return visitChildren(ctx);
 }
+
+antlrcpp::Any Visitor::visitConstExpr(ifccParser::ConstExprContext *ctx)
+{
+    int val = stoi(ctx->CONST()->getText());
+    return val;
+}
+
+antlrcpp::Any Visitor::visitVarExpr(ifccParser::VarExprContext *ctx)
+{
+    int val = 666;
+    return val;
+}
+
+antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
+{
+    string exprLeft = ctx->expr()[0]->getText();
+    string exprRight = ctx->expr()[1]->getText();
+    int memoryAddressLeft = 0;
+    int memoryAddressRight = 0;
+    if(blocPrincipal.variableExiste(exprLeft)) {
+      memoryAddressLeft = blocPrincipal.getVariable(exprLeft)->getAddress();
+    }
+    if(blocPrincipal.variableExiste(exprRight)) {
+      memoryAddressRight = blocPrincipal.getVariable(exprRight)->getAddress();
+    }
+
+    if(ctx->op->getText() == "+") {
+        if(memoryAddressLeft == 0 && memoryAddressRight == 0) {
+          int leftVal = visit(ctx->expr()[0]);
+          int rightVal = visit(ctx->expr()[1]);
+          return leftVal+rightVal;
+        } else if(memoryAddressLeft == 0 && memoryAddressRight != 0) {
+          int leftVal = visit(ctx->expr()[0]);
+          cout << " movl -" << memoryAddressRight << "(%rbp), %eax" << endl;
+          cout << " addl $" << leftVal << "(%rbp), %eax" << endl;
+        } else if(memoryAddressLeft != 0 && memoryAddressRight == 0) {
+          int rightVal = visit(ctx->expr()[1]);
+          cout << " movl -" << memoryAddressLeft << "(%rbp), %eax" << endl;
+          cout << " addl $" << rightVal << "(%rbp), %eax" << endl;
+        } else {
+          cout << " movl -" << memoryAddressLeft << "(%rbp), %eax" << endl;
+          cout << " addl -" << memoryAddressRight << "(%rbp), %eax" << endl;
+        }
+      } else {
+        if(memoryAddressLeft == 0 && memoryAddressRight == 0) {
+          int leftVal = visit(ctx->expr()[0]);
+          int rightVal = visit(ctx->expr()[1]);
+          rightVal = -rightVal;
+          return leftVal+rightVal;
+        } else if(memoryAddressLeft == 0 && memoryAddressRight != 0) {
+          int leftVal = visit(ctx->expr()[0]);
+          cout << " movl -" << memoryAddressRight << "(%rbp), %eax" << endl;
+          cout << " subl $" << leftVal << "(%rbp), %eax" << endl;
+        } else if(memoryAddressLeft != 0 && memoryAddressRight == 0) {
+          int rightVal = visit(ctx->expr()[1]);
+          cout << " movl -" << memoryAddressLeft << "(%rbp), %eax" << endl;
+          cout << " subl $" << rightVal << "(%rbp), %eax" << endl;
+        } else {
+          cout << " movl -" << memoryAddressLeft << "(%rbp), %eax" << endl;
+          cout << " subl -" << memoryAddressRight << "(%rbp), %eax" << endl;
+        }
+    }
+    return 0;
+  }
 
 antlrcpp::Any Visitor::visitRetVar(ifccParser::RetVarContext *ctx)
 {

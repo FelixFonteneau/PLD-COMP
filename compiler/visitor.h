@@ -31,9 +31,17 @@ public:
 
   virtual antlrcpp::Any visitAffDecVar(ifccParser::AffDecVarContext *ctx) override ;
 
+  virtual antlrcpp::Any visitAffDecExpr(ifccParser::AffDecExprContext *ctx) override ;
+
   virtual antlrcpp::Any visitAffVar(ifccParser::AffVarContext *ctx) override ;
 
   virtual antlrcpp::Any visitAffConst(ifccParser::AffConstContext *ctx) override ;
+
+  virtual antlrcpp::Any visitConstExpr(ifccParser::ConstExprContext *ctx) override ;
+
+  virtual antlrcpp::Any visitVarExpr(ifccParser::VarExprContext *ctx) override ;
+
+  virtual antlrcpp::Any visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx) override ;
 
   virtual antlrcpp::Any visitRetVar(ifccParser::RetVarContext *ctx) override ;
 
