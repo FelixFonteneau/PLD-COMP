@@ -103,13 +103,11 @@ antlrcpp::Any Visitor::visitAffDecExpr(ifccParser::AffDecExprContext *ctx)
 antlrcpp::Any Visitor::visitAffVar(ifccParser::AffVarContext *ctx)
 {
   string leftValName = ctx->VAR()[0]->getText();
-
   if (!blocPrincipal.variableExiste(leftValName)) {
     // if the variable name doesn't exist, we throw an error.
   }
 
   string rightValName = ctx->VAR()[1]->getText();
-
   if (!blocPrincipal.variableExiste(rightValName)) {
     // if the variable name doesn't exist, we throw an error.
   }
@@ -120,12 +118,31 @@ antlrcpp::Any Visitor::visitAffVar(ifccParser::AffVarContext *ctx)
   cout << " movl -" << rightValAddr << "(%rbp), %eax" << endl;
   cout << " movl %eax, -" << leftValAddr << "(%rbp)" << endl;
 
-  return visitChildren(ctx);
+  return 0;
 }
 
 antlrcpp::Any Visitor::visitAffConst(ifccParser::AffConstContext *ctx)
 {
     return visitChildren(ctx);
+}
+
+antlrcpp::Any Visitor::visitAffExpr(ifccParser::AffExprContext *ctx)
+{
+    string leftValName = ctx->VAR()->getText();
+    if (!blocPrincipal.variableExiste(leftValName)) {
+      // if the variable name doesn't exist, we throw an error.
+    }
+    int leftValAddr = blocPrincipal.getVariable(leftValName)->getAddress();
+
+    int val = visitChildren(ctx);
+
+    /*if(val==0) {
+      cout << " movl %eax, -" << memoryAddress << "(%rbp)" << endl;
+    } else {*/
+      cout << "movl $" << val << ", -" << leftValAddr << "(%rbp)" << endl;
+    //}
+
+    return 0;
 }
 
 antlrcpp::Any Visitor::visitConstExpr(ifccParser::ConstExprContext *ctx)
