@@ -71,7 +71,7 @@ else:
     if not os.path.isdir('pld-test-output'):
         os.mkdir('pld-test-output')
     DEST='pld-test-output'
-    
+
 ## Then we process the inputs arguments i.e. filenames or subtrees
 inputfilenames=[]
 for path in args.input:
@@ -124,7 +124,7 @@ if not os.path.isfile(wrapper):
 
 if args.debug:
     print("debug: wrapper path: "+wrapper)
-        
+
 ######################################################################################
 ## PREPARE step: copy all test-cases under DEST
 
@@ -169,7 +169,7 @@ for jobname in jobs:
 
     print('TEST-CASE: '+jobname)
     os.chdir(jobname)
-    
+
     ## JEDI compiler, aka GCC
     gccstatus=command("gcc -S -o asm-gcc.s input.c", "gcc-compile.txt")
     if gccstatus == 0:
@@ -181,10 +181,10 @@ for jobname in jobs:
         exegccstatus=command("./exe-gcc", "gcc-execute.txt")
         if args.verbose >=2:
             dumpfile("gcc-execute.txt")
-            
+
     ## PADAWAN compiler
     pldstatus=command(wrapper+" asm-pld.s input.c", "pld-compile.txt")
-    
+
     if gccstatus != 0 and pldstatus != 0:
         ## padawan correctly rejects invalid program -> test-case ok
         print("TEST OK")
@@ -210,7 +210,7 @@ for jobname in jobs:
 
     ## both compilers  did produce an  executable, so now we  run both
     ## these executables and compare the results.
-        
+
     exepldstatus=command("./exe-pld","pld-execute.txt")
     if open("gcc-execute.txt").read() != open("pld-execute.txt").read() :
         print("TEST FAIL (different results at execution)")
