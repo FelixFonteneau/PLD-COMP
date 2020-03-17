@@ -10,6 +10,11 @@ main:
  movl $100, -5(%rbp)
  movl -5(%rbp), %eax
  movl %eax, -1(%rbp)
+ movl -1(%rbp), %eax
+ addl -5(%rbp), %eax
+ movl %eax, -9(%rbp)
+ movl -9(%rbp), %eax
+ movl %eax, -1(%rbp)
   movl -1(%rbp), %eax
 
   # epilogue
