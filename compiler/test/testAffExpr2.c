@@ -1,6 +1,9 @@
 #include <inttypes.h>
 int main() {
 	int a = 1;
-	a = 32+69+29;
+	int b = 2;
+	a = 10 + 16;
+	b = 8+8;
+	a = a+b;
 	return a;
 }
