@@ -1,6 +1,8 @@
 #include <inttypes.h>
 int main() {
-	int a = 1;
-	a = 32+69+29;
+	int a,b;
+	a = 3;
+	b = 2;
+	a = a|b;
 	return a;
 }
