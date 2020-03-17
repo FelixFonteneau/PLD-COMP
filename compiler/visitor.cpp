@@ -102,7 +102,25 @@ antlrcpp::Any Visitor::visitAffDecExpr(ifccParser::AffDecExprContext *ctx)
 
 antlrcpp::Any Visitor::visitAffVar(ifccParser::AffVarContext *ctx)
 {
-    return visitChildren(ctx);
+  string leftValName = ctx->VAR()[0]->getText();
+
+  if (!blocPrincipal.variableExiste(leftValName)) {
+    // if the variable name doesn't exist, we throw an error.
+  }
+
+  string rightValName = ctx->VAR()[1]->getText();
+
+  if (!blocPrincipal.variableExiste(rightValName)) {
+    // if the variable name doesn't exist, we throw an error.
+  }
+
+  int rightValAddr = blocPrincipal.getVariable(rightValName)->getAddress();
+  int leftValAddr = blocPrincipal.getVariable(leftValName)->getAddress();
+
+  cout << " movl -" << rightValAddr << "(%rbp), %eax" << endl;
+  cout << " movl %eax, -" << leftValAddr << "(%rbp)" << endl;
+
+  return visitChildren(ctx);
 }
 
 antlrcpp::Any Visitor::visitAffConst(ifccParser::AffConstContext *ctx)
