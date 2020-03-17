@@ -1,3 +1,0 @@
-/Users/quentinferro/Documents/IF/4IF/Comp/SqueletteProjet/tests/pld-wrapper.sh: line 21: /Users/quentinferro/Documents/IF/4IF/Comp/SqueletteProjet/tests/../compiler/ifcc: No such file or directory
-
-return code: 127
