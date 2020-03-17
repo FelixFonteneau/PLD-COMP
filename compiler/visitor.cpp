@@ -4,7 +4,7 @@
 
 Visitor::Visitor()
 {
-    addressIterator = 1;
+    addressIterator = 4;
 }
 
 antlrcpp::Any Visitor::visitAxiom(ifccParser::AxiomContext *ctx)
