@@ -1,5 +1,4 @@
 // Generated from ifcc.g4 by ANTLR 4.7.2
-
 #include "visitor.h"
 
 Visitor::Visitor()
@@ -84,17 +83,14 @@ antlrcpp::Any Visitor::visitAffDecVar(ifccParser::AffDecVarContext *ctx)
 antlrcpp::Any Visitor::visitAffDecExpr(ifccParser::AffDecExprContext *ctx)
 {
     string variableName = ctx->VAR()->getText();
-    int val = visitChildren(ctx);
+    visitChildren(ctx);
     if(blocPrincipal.variableExiste(variableName)){
       // if the variable name already exists, we throw an error.
     }
     int memoryAddress = addressIterator;
     addressIterator += 4;
-    if(val==0) {
-      cout << " movl %eax, -" << memoryAddress << "(%rbp)" << endl;
-    } else {
-      cout << "movl $" << val << ", -" << memoryAddress << "(%rbp)" << endl;
-    }
+
+    cout << " movl %eax, -" << memoryAddress << "(%rbp)" << endl;
     Variable* variable = new Variable(variableName, "int", memoryAddress);
     blocPrincipal.AjouterVariable(*variable);
     return 0;
@@ -148,62 +144,59 @@ antlrcpp::Any Visitor::visitAffExpr(ifccParser::AffExprContext *ctx)
 antlrcpp::Any Visitor::visitConstExpr(ifccParser::ConstExprContext *ctx)
 {
     int val = stoi(ctx->CONST()->getText());
-    return val;
+    cout << "  movl $" << val << "(%rbp), %eax" << endl;
+    return 222;
 }
 
 antlrcpp::Any Visitor::visitVarExpr(ifccParser::VarExprContext *ctx)
 {
-    int val = 666;
-    return val;
+    string var = ctx->VAR()->getText();
+    cout << "  movl -" << blocPrincipal.getVariable(var)->getAddress() << "(%rbp), %eax" << endl;
+    return 222;
 }
 
 antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
 {
     string exprLeft = ctx->expr()[0]->getText();
     string exprRight = ctx->expr()[1]->getText();
+    /*
+    cout << "exprLeft : " << endl;
+    cout << exprLeft << endl;
+    cout << endl;
+
+
+    cout << "exprRight : " << endl;
+    cout << exprRight << endl;
+    cout << endl;
+    */
     int memoryAddressLeft = 0;
     int memoryAddressRight = 0;
+
     if(blocPrincipal.variableExiste(exprLeft)) {
       memoryAddressLeft = blocPrincipal.getVariable(exprLeft)->getAddress();
     }
+
     if(blocPrincipal.variableExiste(exprRight)) {
       memoryAddressRight = blocPrincipal.getVariable(exprRight)->getAddress();
     }
+    visit(ctx->expr()[0]);
+    if(exprRight.length() > 3) {     //condition à modifier * 10000 pas du tout bon mais solution tampon
+      visit(ctx->expr()[1]);
+    }
 
     if(ctx->op->getText() == "+") {
-        if(memoryAddressLeft == 0 && memoryAddressRight == 0) {
-          int leftVal = visit(ctx->expr()[0]);
-          int rightVal = visit(ctx->expr()[1]);
-          return leftVal+rightVal;
-        } else if(memoryAddressLeft == 0 && memoryAddressRight != 0) {
-          int leftVal = visit(ctx->expr()[0]);
-          cout << " movl -" << memoryAddressRight << "(%rbp), %eax" << endl;
-          cout << " addl $" << leftVal << "(%rbp), %eax" << endl;
-        } else if(memoryAddressLeft != 0 && memoryAddressRight == 0) {
-          int rightVal = visit(ctx->expr()[1]);
-          cout << " movl -" << memoryAddressLeft << "(%rbp), %eax" << endl;
-          cout << " addl $" << rightVal << "(%rbp), %eax" << endl;
-        } else {
-          cout << " movl -" << memoryAddressLeft << "(%rbp), %eax" << endl;
-          cout << " addl -" << memoryAddressRight << "(%rbp), %eax" << endl;
+        if(exprRight.length() <= 3 && memoryAddressRight == 0) {
+          int rightVal = stoi(exprRight);
+          cout << "  addl $" << rightVal << "(%rbp), %eax" << endl;
+        } else if(memoryAddressRight != 0) {
+          cout << "  addl -" << memoryAddressRight << "(%rbp), %eax" << endl;
         }
       } else {
-        if(memoryAddressLeft == 0 && memoryAddressRight == 0) {
-          int leftVal = visit(ctx->expr()[0]);
-          int rightVal = visit(ctx->expr()[1]);
-          rightVal = -rightVal;
-          return leftVal+rightVal;
-        } else if(memoryAddressLeft == 0 && memoryAddressRight != 0) {
-          int leftVal = visit(ctx->expr()[0]);
-          cout << " movl -" << memoryAddressRight << "(%rbp), %eax" << endl;
-          cout << " subl $" << leftVal << "(%rbp), %eax" << endl;
-        } else if(memoryAddressLeft != 0 && memoryAddressRight == 0) {
-          int rightVal = visit(ctx->expr()[1]);
-          cout << " movl -" << memoryAddressLeft << "(%rbp), %eax" << endl;
-          cout << " subl $" << rightVal << "(%rbp), %eax" << endl;
-        } else {
-          cout << " movl -" << memoryAddressLeft << "(%rbp), %eax" << endl;
-          cout << " subl -" << memoryAddressRight << "(%rbp), %eax" << endl;
+        if(exprRight.length() <= 3 && memoryAddressRight == 0) {
+          int rightVal = stoi(exprRight);
+          cout << "  subl $" << rightVal << "(%rbp), %eax" << endl;
+        } else if(memoryAddressRight != 0) {
+          cout << "  subl -" << memoryAddressRight << "(%rbp), %eax" << endl;
         }
     }
     return 0;

@@ -25,6 +25,7 @@ expr    : expr '^' expr                             #powExpr
         | expr op=('=' | '!=') expr                 #equalityExpr
         | expr '&&' expr                            #andExpr
         | expr '||' expr                            #orExpr
+        | '(' expr ')'                              #parExpr
         | CONST                                     #constExpr
         | VAR                                       #varExpr
         ;
