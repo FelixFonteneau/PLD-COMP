@@ -159,16 +159,7 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
 {
     string exprLeft = ctx->expr()[0]->getText();
     string exprRight = ctx->expr()[1]->getText();
-    /*
-    cout << "exprLeft : " << endl;
-    cout << exprLeft << endl;
-    cout << endl;
 
-
-    cout << "exprRight : " << endl;
-    cout << exprRight << endl;
-    cout << endl;
-    */
     int memoryAddressLeft = 0;
     int memoryAddressRight = 0;
 
