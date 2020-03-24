@@ -1,6 +1,0 @@
-asm-pld.s: Assembler messages:
-asm-pld.s:10: Error: junk `(%rbp)' after expression
-asm-pld.s:11: Error: junk `(%rbp)' after expression
-asm-pld.s:12: Error: junk `(%rbp)' after expression
-
-return code: 1

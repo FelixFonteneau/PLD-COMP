@@ -1,4 +1,0 @@
-line 4:6 token recognition error at: ','
-line 4:8 token recognition error at: ','
-
-return code: 1
