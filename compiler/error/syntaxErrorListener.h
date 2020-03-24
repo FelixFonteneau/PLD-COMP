@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <sstream>
 
 #include "antlr4-runtime.h"
 #include "syntaxError.h"
@@ -49,7 +50,8 @@ public:
 
 //-------------------------------------------- Constructeurs - destructeur
     // SyntaxErrorListener (const SyntaxErrorListener & unSyntaxErrorListener);
-    SyntaxErrorListener (){
+    SyntaxErrorListener (string inputFile){
+      file = inputFile;
       etatErreur = false;
     };
 
@@ -64,6 +66,7 @@ protected:
 //----------------------------------------------------- Attributs protégés
   bool etatErreur;
   vector<SyntaxError> errors;
+  string file;
 
 };
 

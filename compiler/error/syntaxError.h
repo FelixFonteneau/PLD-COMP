@@ -52,7 +52,7 @@ public:
     //
 
     SyntaxError (Recognizer *recognizerA, Token * offendingSymbolA, size_t lineNumberA, size_t charPositionInLineA,
-       const std::string &msgA, std::exception_ptr eA);
+       const std::string &msgA, std::exception_ptr eA, string &lineA);
     // Mode d'emploi :
     //
     // Contrat :
@@ -76,6 +76,7 @@ protected:
   size_t charPositionInLine;
   string message;
   exception_ptr e;
+  string line;
 };
 
 //-------------------------------- Autres définitions dépendantes de <SyntaxError>

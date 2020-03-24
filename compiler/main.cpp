@@ -29,15 +29,15 @@ int main(int argn, const char **argv) {
   //  std::cout << token->toString() << std::endl;
   //}
 
-
   ifccParser parser(&tokens);
 
-  SyntaxErrorListener errorlistener;
+  SyntaxErrorListener errorlistener(in.str());
   parser.removeErrorListeners();
   parser.addErrorListener(&errorlistener);
 
   tree::ParseTree* tree = parser.axiom();
   if (errorlistener.Error()){
+    cerr << "Error in " << argv[1] << "." << endl;
     cerr << errorlistener;
     return 1;
   }
