@@ -7,13 +7,13 @@ bloc : '{' statements '}';
 
 prog  : 'int' 'main' '(' ')' bloc;
 
-statements : statement ';'
-           | statement ';' statements
+statements : statement
+           | statement statements
            ;
 
-statement : dec     # statementDeclaration
-          | aff     # statementAffectation
-          | ret     # statementReturn
+statement : dec ';' # statementDeclaration
+          | aff ';' # statementAffectation
+          | ret ';' # statementReturn
           | ifLoop  # boucleIf
           ;
 
@@ -44,9 +44,9 @@ aff   : 'int' VAR '=' CONST # affDecConst
       | VAR '=' expr        # affExpr
       ;
 
-ifLoop  : 'if' testExpr bloc                # ifNoElse
-        | 'if' testExpr bloc 'else' bloc    # ifWithElse
-        | 'if' testExpr bloc 'else' ifLoop  # ifElseIf
+ifLoop  : 'if' '(' testExpr ')' bloc                # ifNoElse
+        | 'if' '(' testExpr ')' bloc 'else' bloc    # ifWithElse
+        | 'if' '(' testExpr ')' bloc 'else' ifLoop  # ifElseIf
         ;
 
 ret   : RET VAR   # retVar
