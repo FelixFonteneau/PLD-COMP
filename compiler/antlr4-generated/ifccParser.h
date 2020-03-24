@@ -15,13 +15,14 @@ public:
     T__0 = 1, T__1 = 2, T__2 = 3, T__3 = 4, T__4 = 5, T__5 = 6, T__6 = 7, 
     T__7 = 8, T__8 = 9, T__9 = 10, T__10 = 11, T__11 = 12, T__12 = 13, T__13 = 14, 
     T__14 = 15, T__15 = 16, T__16 = 17, T__17 = 18, T__18 = 19, T__19 = 20, 
-    T__20 = 21, T__21 = 22, T__22 = 23, RET = 24, VAR = 25, CONST = 26, 
-    COMMENT = 27, DIRECTIVE = 28, WS = 29
+    T__20 = 21, T__21 = 22, T__22 = 23, T__23 = 24, T__24 = 25, RET = 26, 
+    VAR = 27, CONST = 28, COMMENT = 29, DIRECTIVE = 30, WS = 31
   };
 
   enum {
     RuleAxiom = 0, RuleBloc = 1, RuleProg = 2, RuleStatements = 3, RuleStatement = 4, 
-    RuleExpr = 5, RuleTestExpr = 6, RuleDec = 7, RuleAff = 8, RuleRet = 9
+    RuleExpr = 5, RuleTestExpr = 6, RuleDec = 7, RuleAff = 8, RuleIfLoop = 9, 
+    RuleRet = 10
   };
 
   ifccParser(antlr4::TokenStream *input);
@@ -43,6 +44,7 @@ public:
   class TestExprContext;
   class DecContext;
   class AffContext;
+  class IfLoopContext;
   class RetContext; 
 
   class  AxiomContext : public antlr4::ParserRuleContext {
@@ -112,6 +114,14 @@ public:
     StatementAffectationContext(StatementContext *ctx);
 
     AffContext *aff();
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  BoucleIfContext : public StatementContext {
+  public:
+    BoucleIfContext(StatementContext *ctx);
+
+    IfLoopContext *ifLoop();
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
@@ -358,6 +368,50 @@ public:
   };
 
   AffContext* aff();
+
+  class  IfLoopContext : public antlr4::ParserRuleContext {
+  public:
+    IfLoopContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+   
+    IfLoopContext() = default;
+    void copyFrom(IfLoopContext *context);
+    using antlr4::ParserRuleContext::copyFrom;
+
+    virtual size_t getRuleIndex() const override;
+
+   
+  };
+
+  class  IfWithElseContext : public IfLoopContext {
+  public:
+    IfWithElseContext(IfLoopContext *ctx);
+
+    TestExprContext *testExpr();
+    std::vector<BlocContext *> bloc();
+    BlocContext* bloc(size_t i);
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  IfNoElseContext : public IfLoopContext {
+  public:
+    IfNoElseContext(IfLoopContext *ctx);
+
+    TestExprContext *testExpr();
+    BlocContext *bloc();
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  IfElseIfContext : public IfLoopContext {
+  public:
+    IfElseIfContext(IfLoopContext *ctx);
+
+    TestExprContext *testExpr();
+    BlocContext *bloc();
+    IfLoopContext *ifLoop();
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  IfLoopContext* ifLoop();
 
   class  RetContext : public antlr4::ParserRuleContext {
   public:

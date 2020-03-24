@@ -43,6 +43,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitBoucleIf(ifccParser::BoucleIfContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitParExpr(ifccParser::ParExprContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -120,6 +124,18 @@ public:
   }
 
   virtual antlrcpp::Any visitAffExpr(ifccParser::AffExprContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitIfNoElse(ifccParser::IfNoElseContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitIfWithElse(ifccParser::IfWithElseContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitIfElseIf(ifccParser::IfElseIfContext *ctx) override {
     return visitChildren(ctx);
   }
 
