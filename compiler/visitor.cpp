@@ -4,7 +4,6 @@
 Visitor::Visitor()
 {
     addressIterator = 4;
-    labelcounter = 0;
 }
 
 antlrcpp::Any Visitor::visitAxiom(ifccParser::AxiomContext *ctx)
@@ -151,73 +150,9 @@ antlrcpp::Any Visitor::visitAffExpr(ifccParser::AffExprContext *ctx)
     return 0;
 }
 
-antlrcpp::Any Visitor::visitIfNoElse(ifccParser::IfNoElseContext *ctx)
-{
-  visit(ctx->testExpr());
-  cout << ".fi" << labelcounter << endl;
-  visit(ctx->bloc());
-  cout << ".fi" << labelcounter << ":" << endl;
-
-  ++labelcounter;
-  return 0;
-}
-
-antlrcpp::Any Visitor::visitIfWithElse(ifccParser::IfWithElseContext *ctx)
-{
-  visit(ctx->testExpr());
-  cout << ".else" << labelcounter << endl;
-  visit(ctx->bloc()[0]);
-  cout << "  jmp .fi" << labelcounter << endl;
-  cout << ".else" << labelcounter << ":" << endl;
-  visit(ctx->bloc()[1]);
-  cout << ".fi" << labelcounter << ":" << endl;
-
-  ++labelcounter;
-  return 0;
-}
-
-antlrcpp::Any Visitor::visitRelationalTestExpr(ifccParser::RelationalTestExprContext *ctx)
-{
-  visit(ctx->expr()[0]);
-  cout << "  movl %eax, %ebx" << endl;
-  visit(ctx->expr()[1]);
-  cout << "  cmpl %eax, %ebx" << endl;
-
-  if(ctx->op->getText() == ">") {
-    cout << "  jle ";
-  }
-  else if(ctx->op->getText() == "<") {
-    cout << "  jge ";
-  }
-  else if(ctx->op->getText() == ">=") {
-    cout << "  jl ";
-  }
-  else if(ctx->op->getText() == "<=") {
-    cout << "  jg ";
-  }
-
-  return 0;
-}
-
 antlrcpp::Any Visitor::visitEqualityTestExpr(ifccParser::EqualityTestExprContext *ctx)
 {
-  visit(ctx->expr()[0]);
-  cout << "  movl %eax, %ebx" << endl;
-  visit(ctx->expr()[1]);
-  cout << "  cmpl %eax, %ebx" << endl;
-
-  if(ctx->op->getText() == "==") {
-    cout << "  jne ";
-  }
-  else if(ctx->op->getText() == "!=") {
-    cout << "  je ";
-  }
-  return 0;
-}
-
-antlrcpp::Any Visitor::visitParTestExpr(ifccParser::ParTestExprContext *ctx)
-{
-  return visit(ctx->testExpr());
+  return 333;
 }
 
 antlrcpp::Any Visitor::visitConstExpr(ifccParser::ConstExprContext *ctx)

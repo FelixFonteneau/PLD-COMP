@@ -17,7 +17,6 @@ class  Visitor : public ifccBaseVisitor {
 private:
   int addressIterator;
   Bloc blocPrincipal;
-  int labelcounter;
 public:
 
   Visitor();
@@ -40,15 +39,7 @@ public:
 
   virtual antlrcpp::Any visitAffExpr(ifccParser::AffExprContext *ctx) override ;
 
-  virtual antlrcpp::Any visitIfNoElse(ifccParser::IfNoElseContext *ctx) override;
-
-  virtual antlrcpp::Any visitIfWithElse(ifccParser::IfWithElseContext *ctx) override;
-
-  virtual antlrcpp::Any visitRelationalTestExpr(ifccParser::RelationalTestExprContext *ctx) override;
-
-  virtual antlrcpp::Any visitEqualityTestExpr(ifccParser::EqualityTestExprContext *ctx) override;
-
-  virtual antlrcpp::Any visitParTestExpr(ifccParser::ParTestExprContext *ctx) override;
+  virtual antlrcpp::Any visitEqualityTestExpr(ifccParser::EqualityTestExprContext *context) override;
 
   virtual antlrcpp::Any visitConstExpr(ifccParser::ConstExprContext *ctx) override ;
 
