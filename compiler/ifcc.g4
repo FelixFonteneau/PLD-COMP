@@ -11,9 +11,10 @@ statements : statement ';'
            | statement ';' statements
            ;
 
-statement : dec  # statementDeclaration
-          | aff  # statementAffectation
-          | ret  # statementReturn
+statement : dec     # statementDeclaration
+          | aff     # statementAffectation
+          | ret     # statementReturn
+          | ifLoop  # boucleIf
           ;
 
 expr    : expr '^' expr                             #powExpr
@@ -42,6 +43,11 @@ aff   : 'int' VAR '=' CONST # affDecConst
       | VAR '=' CONST       # affConst
       | VAR '=' expr        # affExpr
       ;
+
+ifLoop  : 'if' testExpr bloc                # ifNoElse
+        | 'if' testExpr bloc 'else' bloc    # ifWithElse
+        | 'if' testExpr bloc 'else' ifLoop  # ifElseIf
+        ;
 
 ret   : RET VAR   # retVar
       | RET CONST # retConst
