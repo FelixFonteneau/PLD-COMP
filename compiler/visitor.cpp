@@ -173,13 +173,13 @@ antlrcpp::Any Visitor::visitRelationalTestExpr(ifccParser::RelationalTestExprCon
     cout << "  jle ";
   }
   else if(ctx->op->getText() == "<") {
-    cout << "  jge";
+    cout << "  jge ";
   }
   else if(ctx->op->getText() == ">=") {
-    cout << "  jl";
+    cout << "  jl ";
   }
   else if(ctx->op->getText() == "<=") {
-    cout << "  jg";
+    cout << "  jg ";
   }
 
   return 0;
@@ -196,7 +196,7 @@ antlrcpp::Any Visitor::visitEqualityTestExpr(ifccParser::EqualityTestExprContext
     cout << "  jne ";
   }
   else if(ctx->op->getText() == "!=") {
-    cout << "  je";
+    cout << "  je ";
   }
   return 0;
 }
