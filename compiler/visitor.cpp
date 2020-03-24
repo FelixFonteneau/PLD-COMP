@@ -148,6 +148,8 @@ antlrcpp::Any Visitor::visitIfNoElse(ifccParser::IfNoElseContext *ctx)
   cout << ".fi" << labelcounter << endl;
   visit(ctx->bloc());
   cout << ".fi" << labelcounter << ":" << endl;
+
+  return 0;
 }
 
 antlrcpp::Any Visitor::visitRelationalTestExpr(ifccParser::RelationalTestExprContext *ctx)
@@ -170,7 +172,7 @@ antlrcpp::Any Visitor::visitRelationalTestExpr(ifccParser::RelationalTestExprCon
     cout << "  jg";
   }
 
-  return 333;
+  return 0;
 }
 
 antlrcpp::Any Visitor::visitEqualityTestExpr(ifccParser::EqualityTestExprContext *ctx)
@@ -186,7 +188,7 @@ antlrcpp::Any Visitor::visitEqualityTestExpr(ifccParser::EqualityTestExprContext
   else if(ctx->op->getText() == "!=") {
     cout << "  je";
   }
-  return 333;
+  return 0;
 }
 
 antlrcpp::Any Visitor::visitParTestExpr(ifccParser::ParTestExprContext *ctx)
