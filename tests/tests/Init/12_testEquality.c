@@ -9,7 +9,7 @@ int main()
 		a = 69;
 	}
 	if (a != b) {
-		a = 0;
+		a = 12;
 	}
 	return a;
 }
