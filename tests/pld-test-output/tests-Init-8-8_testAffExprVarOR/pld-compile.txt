@@ -1,4 +1,0 @@
-line 3:6 token recognition error at: ','
-line 6:6 token recognition error at: '|b'
-
-return code: 1
