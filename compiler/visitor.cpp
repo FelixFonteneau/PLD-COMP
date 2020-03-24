@@ -4,6 +4,7 @@
 Visitor::Visitor()
 {
     addressIterator = 4;
+    labelcounter = 0;
 }
 
 antlrcpp::Any Visitor::visitAxiom(ifccParser::AxiomContext *ctx)
@@ -139,6 +140,14 @@ antlrcpp::Any Visitor::visitAffExpr(ifccParser::AffExprContext *ctx)
     //}
 
     return 0;
+}
+
+antlrcpp::Any Visitor::visitIfNoElse(ifccParser::IfNoElseContext *ctx)
+{
+  visit(ctx->testExpr());
+  cout << ".fi" << labelcounter << endl;
+  visit(ctx->bloc());
+  cout << ".fi" << labelcounter << ":" << endl;
 }
 
 antlrcpp::Any Visitor::visitRelationalTestExpr(ifccParser::RelationalTestExprContext *ctx)

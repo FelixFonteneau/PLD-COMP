@@ -33,6 +33,8 @@ public:
 
     virtual antlrcpp::Any visitStatementReturn(ifccParser::StatementReturnContext *context) = 0;
 
+    virtual antlrcpp::Any visitBoucleIf(ifccParser::BoucleIfContext *context) = 0;
+
     virtual antlrcpp::Any visitParExpr(ifccParser::ParExprContext *context) = 0;
 
     virtual antlrcpp::Any visitVarExpr(ifccParser::VarExprContext *context) = 0;
@@ -72,6 +74,12 @@ public:
     virtual antlrcpp::Any visitAffConst(ifccParser::AffConstContext *context) = 0;
 
     virtual antlrcpp::Any visitAffExpr(ifccParser::AffExprContext *context) = 0;
+
+    virtual antlrcpp::Any visitIfNoElse(ifccParser::IfNoElseContext *context) = 0;
+
+    virtual antlrcpp::Any visitIfWithElse(ifccParser::IfWithElseContext *context) = 0;
+
+    virtual antlrcpp::Any visitIfElseIf(ifccParser::IfElseIfContext *context) = 0;
 
     virtual antlrcpp::Any visitRetVar(ifccParser::RetVarContext *context) = 0;
 
