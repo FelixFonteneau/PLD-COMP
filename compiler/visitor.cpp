@@ -153,6 +153,20 @@ antlrcpp::Any Visitor::visitIfNoElse(ifccParser::IfNoElseContext *ctx)
   return 0;
 }
 
+antlrcpp::Any Visitor::visitIfWithElse(ifccParser::IfWithElseContext *ctx)
+{
+  visit(ctx->testExpr());
+  cout << ".else" << labelcounter << endl;
+  visit(ctx->bloc()[0]);
+  cout << "  jmp .fi" << labelcounter << endl;
+  cout << ".else" << labelcounter << ":" << endl;
+  visit(ctx->bloc()[1]);
+  cout << ".fi" << labelcounter << ":" << endl;
+
+  ++labelcounter;
+  return 0;
+}
+
 antlrcpp::Any Visitor::visitRelationalTestExpr(ifccParser::RelationalTestExprContext *ctx)
 {
   visit(ctx->expr()[0]);
