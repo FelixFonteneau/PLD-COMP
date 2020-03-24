@@ -59,10 +59,6 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitOrExpr(ifccParser::OrExprContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual antlrcpp::Any visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -71,15 +67,7 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitRelationalExpr(ifccParser::RelationalExprContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual antlrcpp::Any visitMinusExpr(ifccParser::MinusExprContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitEqualityExpr(ifccParser::EqualityExprContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -87,7 +75,23 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitAndExpr(ifccParser::AndExprContext *ctx) override {
+  virtual antlrcpp::Any visitRelationalTestExpr(ifccParser::RelationalTestExprContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitEqualityTestExpr(ifccParser::EqualityTestExprContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitAndTestExpr(ifccParser::AndTestExprContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitOrTestExpr(ifccParser::OrTestExprContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitParTestExpr(ifccParser::ParTestExprContext *ctx) override {
     return visitChildren(ctx);
   }
 

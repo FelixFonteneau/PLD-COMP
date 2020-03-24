@@ -21,14 +21,17 @@ expr    : expr '^' expr                             #powExpr
         | '!' expr                                  #notExpr
         | expr op=('*' | '/' | '%') expr            #multiplicationExpr
         | expr op=('+' | '-') expr                  #additiveExpr
-        | expr op=('<=' | '>=' | '<' | '>') expr    #relationalExpr
-        | expr op=('=' | '!=') expr                 #equalityExpr
-        | expr '&&' expr                            #andExpr
-        | expr '||' expr                            #orExpr
         | '(' expr ')'                              #parExpr
         | CONST                                     #constExpr
         | VAR                                       #varExpr
         ;
+
+testExpr  : expr op=('<=' | '>=' | '<' | '>') expr    #relationalTestExpr
+          | expr op=('==' | '!=') expr                #equalityTestExpr
+          | expr '&&' expr                            #andTestExpr
+          | expr '||' expr                            #orTestExpr
+          | '(' testExpr ')'                          #parTestExpr
+          ;
 
 dec   : 'int' VAR;
 

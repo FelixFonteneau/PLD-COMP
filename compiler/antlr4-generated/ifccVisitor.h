@@ -41,21 +41,23 @@ public:
 
     virtual antlrcpp::Any visitMultiplicationExpr(ifccParser::MultiplicationExprContext *context) = 0;
 
-    virtual antlrcpp::Any visitOrExpr(ifccParser::OrExprContext *context) = 0;
-
     virtual antlrcpp::Any visitAdditiveExpr(ifccParser::AdditiveExprContext *context) = 0;
 
     virtual antlrcpp::Any visitPowExpr(ifccParser::PowExprContext *context) = 0;
 
-    virtual antlrcpp::Any visitRelationalExpr(ifccParser::RelationalExprContext *context) = 0;
-
     virtual antlrcpp::Any visitMinusExpr(ifccParser::MinusExprContext *context) = 0;
-
-    virtual antlrcpp::Any visitEqualityExpr(ifccParser::EqualityExprContext *context) = 0;
 
     virtual antlrcpp::Any visitConstExpr(ifccParser::ConstExprContext *context) = 0;
 
-    virtual antlrcpp::Any visitAndExpr(ifccParser::AndExprContext *context) = 0;
+    virtual antlrcpp::Any visitRelationalTestExpr(ifccParser::RelationalTestExprContext *context) = 0;
+
+    virtual antlrcpp::Any visitEqualityTestExpr(ifccParser::EqualityTestExprContext *context) = 0;
+
+    virtual antlrcpp::Any visitAndTestExpr(ifccParser::AndTestExprContext *context) = 0;
+
+    virtual antlrcpp::Any visitOrTestExpr(ifccParser::OrTestExprContext *context) = 0;
+
+    virtual antlrcpp::Any visitParTestExpr(ifccParser::ParTestExprContext *context) = 0;
 
     virtual antlrcpp::Any visitDec(ifccParser::DecContext *context) = 0;
 

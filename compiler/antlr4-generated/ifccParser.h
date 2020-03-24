@@ -15,13 +15,13 @@ public:
     T__0 = 1, T__1 = 2, T__2 = 3, T__3 = 4, T__4 = 5, T__5 = 6, T__6 = 7, 
     T__7 = 8, T__8 = 9, T__9 = 10, T__10 = 11, T__11 = 12, T__12 = 13, T__13 = 14, 
     T__14 = 15, T__15 = 16, T__16 = 17, T__17 = 18, T__18 = 19, T__19 = 20, 
-    T__20 = 21, T__21 = 22, RET = 23, VAR = 24, CONST = 25, COMMENT = 26, 
-    DIRECTIVE = 27, WS = 28
+    T__20 = 21, T__21 = 22, T__22 = 23, RET = 24, VAR = 25, CONST = 26, 
+    COMMENT = 27, DIRECTIVE = 28, WS = 29
   };
 
   enum {
     RuleAxiom = 0, RuleBloc = 1, RuleProg = 2, RuleStatements = 3, RuleStatement = 4, 
-    RuleExpr = 5, RuleDec = 6, RuleAff = 7, RuleRet = 8
+    RuleExpr = 5, RuleTestExpr = 6, RuleDec = 7, RuleAff = 8, RuleRet = 9
   };
 
   ifccParser(antlr4::TokenStream *input);
@@ -40,6 +40,7 @@ public:
   class StatementsContext;
   class StatementContext;
   class ExprContext;
+  class TestExprContext;
   class DecContext;
   class AffContext;
   class RetContext; 
@@ -179,15 +180,6 @@ public:
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
-  class  OrExprContext : public ExprContext {
-  public:
-    OrExprContext(ExprContext *ctx);
-
-    std::vector<ExprContext *> expr();
-    ExprContext* expr(size_t i);
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
   class  AdditiveExprContext : public ExprContext {
   public:
     AdditiveExprContext(ExprContext *ctx);
@@ -207,31 +199,11 @@ public:
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
-  class  RelationalExprContext : public ExprContext {
-  public:
-    RelationalExprContext(ExprContext *ctx);
-
-    antlr4::Token *op = nullptr;
-    std::vector<ExprContext *> expr();
-    ExprContext* expr(size_t i);
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
   class  MinusExprContext : public ExprContext {
   public:
     MinusExprContext(ExprContext *ctx);
 
     ExprContext *expr();
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
-  class  EqualityExprContext : public ExprContext {
-  public:
-    EqualityExprContext(ExprContext *ctx);
-
-    antlr4::Token *op = nullptr;
-    std::vector<ExprContext *> expr();
-    ExprContext* expr(size_t i);
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
@@ -243,17 +215,69 @@ public:
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
-  class  AndExprContext : public ExprContext {
+  ExprContext* expr();
+  ExprContext* expr(int precedence);
+  class  TestExprContext : public antlr4::ParserRuleContext {
   public:
-    AndExprContext(ExprContext *ctx);
+    TestExprContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+   
+    TestExprContext() = default;
+    void copyFrom(TestExprContext *context);
+    using antlr4::ParserRuleContext::copyFrom;
+
+    virtual size_t getRuleIndex() const override;
+
+   
+  };
+
+  class  EqualityTestExprContext : public TestExprContext {
+  public:
+    EqualityTestExprContext(TestExprContext *ctx);
+
+    antlr4::Token *op = nullptr;
+    std::vector<ExprContext *> expr();
+    ExprContext* expr(size_t i);
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  OrTestExprContext : public TestExprContext {
+  public:
+    OrTestExprContext(TestExprContext *ctx);
 
     std::vector<ExprContext *> expr();
     ExprContext* expr(size_t i);
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
-  ExprContext* expr();
-  ExprContext* expr(int precedence);
+  class  RelationalTestExprContext : public TestExprContext {
+  public:
+    RelationalTestExprContext(TestExprContext *ctx);
+
+    antlr4::Token *op = nullptr;
+    std::vector<ExprContext *> expr();
+    ExprContext* expr(size_t i);
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  AndTestExprContext : public TestExprContext {
+  public:
+    AndTestExprContext(TestExprContext *ctx);
+
+    std::vector<ExprContext *> expr();
+    ExprContext* expr(size_t i);
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  ParTestExprContext : public TestExprContext {
+  public:
+    ParTestExprContext(TestExprContext *ctx);
+
+    TestExprContext *testExpr();
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  TestExprContext* testExpr();
+
   class  DecContext : public antlr4::ParserRuleContext {
   public:
     DecContext(antlr4::ParserRuleContext *parent, size_t invokingState);

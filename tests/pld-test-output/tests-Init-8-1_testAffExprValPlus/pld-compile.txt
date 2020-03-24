@@ -1,0 +1,4 @@
+line 3:6 token recognition error at: ','
+line 3:8 token recognition error at: ','
+
+return code: 1
