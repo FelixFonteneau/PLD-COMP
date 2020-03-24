@@ -180,6 +180,11 @@ antlrcpp::Any Visitor::visitEqualityTestExpr(ifccParser::EqualityTestExprContext
   return 333;
 }
 
+antlrcpp::Any Visitor::visitParTestExpr(ifccParser::ParTestExprContext *ctx)
+{
+  return visit(ctx->testExpr());
+}
+
 antlrcpp::Any Visitor::visitConstExpr(ifccParser::ConstExprContext *ctx)
 {
     int val = stoi(ctx->CONST()->getText());

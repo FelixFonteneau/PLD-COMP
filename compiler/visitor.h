@@ -43,6 +43,8 @@ public:
 
   virtual antlrcpp::Any visitEqualityTestExpr(ifccParser::EqualityTestExprContext *ctx) override;
 
+  virtual antlrcpp::Any visitParTestExpr(ifccParser::ParTestExprContext *ctx) override;
+
   virtual antlrcpp::Any visitConstExpr(ifccParser::ConstExprContext *ctx) override ;
 
   virtual antlrcpp::Any visitVarExpr(ifccParser::VarExprContext *ctx) override ;
