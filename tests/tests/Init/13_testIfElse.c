@@ -6,9 +6,9 @@ int main()
 	a=17;
 	b=42;
 	if (a < b) {
-		a = 69;
+		a = b;
 	} else {
-		a = 0;
+		b = a;
 	}
 	return a;
 }
