@@ -61,6 +61,7 @@ public :
 
   virtual antlrcpp::Any visitRetConst(ifccParser::RetConstContext *ctx) override ;
 
+  virtual antlrcpp::Any visitMultiplicationExpr(ifccParser::MultiplicationExprContext *ctx) override ;
 /*
   virtual antlrcpp::Any visitAff(ifccParser::AffContext *ctx) override {
     int retval = stoi(ctx->CONST()->getText());
