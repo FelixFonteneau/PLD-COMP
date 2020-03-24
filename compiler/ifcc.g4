@@ -7,13 +7,14 @@ bloc : '{' statements '}';
 
 prog  : 'int' 'main' '(' ')' bloc;
 
-statements : statement ';'
-           | statement ';' statements
+statements : statement
+           | statement statements
            ;
 
-statement : dec  # statementDeclaration
-          | aff  # statementAffectation
-          | ret  # statementReturn
+statement : dec ';' # statementDeclaration
+          | aff ';' # statementAffectation
+          | ret ';' # statementReturn
+          | ifLoop  # boucleIf
           ;
 
 expr    : expr '^' expr                             #powExpr
@@ -21,14 +22,17 @@ expr    : expr '^' expr                             #powExpr
         | '!' expr                                  #notExpr
         | expr op=('*' | '/' | '%') expr            #multiplicationExpr
         | expr op=('+' | '-') expr                  #additiveExpr
-        | expr op=('<=' | '>=' | '<' | '>') expr    #relationalExpr
-        | expr op=('=' | '!=') expr                 #equalityExpr
-        | expr '&&' expr                            #andExpr
-        | expr '||' expr                            #orExpr
         | '(' expr ')'                              #parExpr
         | CONST                                     #constExpr
         | VAR                                       #varExpr
         ;
+
+testExpr  : expr op=('<=' | '>=' | '<' | '>') expr    #relationalTestExpr
+          | expr op=('==' | '!=') expr                #equalityTestExpr
+          | expr '&&' expr                            #andTestExpr
+          | expr '||' expr                            #orTestExpr
+          | '(' testExpr ')'                          #parTestExpr
+          ;
 
 dec   : 'int' VAR;
 
@@ -39,6 +43,11 @@ aff   : 'int' VAR '=' CONST # affDecConst
       | VAR '=' CONST       # affConst
       | VAR '=' expr        # affExpr
       ;
+
+ifLoop  : 'if' '(' testExpr ')' bloc                # ifNoElse
+        | 'if' '(' testExpr ')' bloc 'else' bloc    # ifWithElse
+        | 'if' '(' testExpr ')' bloc 'else' ifLoop  # ifElseIf
+        ;
 
 ret   : RET VAR   # retVar
       | RET CONST # retConst

@@ -4,6 +4,7 @@
 Visitor::Visitor()
 {
     addressIterator = 4;
+    labelcounter = 0;
 }
 
 antlrcpp::Any Visitor::visitAxiom(ifccParser::AxiomContext *ctx)
@@ -144,24 +145,111 @@ antlrcpp::Any Visitor::visitAffExpr(ifccParser::AffExprContext *ctx)
     /*if(val==0) {
       cout << " movl %eax, -" << memoryAddress << "(%rbp)" << endl;
     } else {*/
-      cout << "movl $" << val << ", -" << leftValAddr << "(%rbp)" << endl;
+      cout << " movl $" << val << ", -" << leftValAddr << "(%rbp)" << endl;
     //}
 
     return 0;
 }
 
+antlrcpp::Any Visitor::visitIfNoElse(ifccParser::IfNoElseContext *ctx)
+{
+  int ifnumber = labelcounter++;
+  cout << ".if" << ifnumber << ":" <<endl;
+  visit(ctx->testExpr());
+  cout << ".fi" << ifnumber << endl;
+  visit(ctx->bloc());
+  cout << ".fi" << ifnumber << ":" << endl;
+
+  return 0;
+}
+
+antlrcpp::Any Visitor::visitIfWithElse(ifccParser::IfWithElseContext *ctx)
+{
+  int ifnumber = labelcounter++;
+  cout << ".if" << ifnumber << ":" <<endl;
+  visit(ctx->testExpr());
+  cout << ".else" << ifnumber << endl;
+  visit(ctx->bloc()[0]);
+  cout << " jmp .fi" << ifnumber << endl;
+  cout << ".else" << ifnumber << ":" << endl;
+  visit(ctx->bloc()[1]);
+  cout << ".fi" << ifnumber << ":" << endl;
+
+  return 0;
+}
+
+antlrcpp::Any Visitor::visitIfElseIf(ifccParser::IfElseIfContext *ctx)
+{
+  int ifnumber = labelcounter++;
+  cout << ".if" << ifnumber << ":" <<endl;
+  visit(ctx->testExpr());
+  cout << ".else" << ifnumber << endl;
+  visit(ctx->bloc());
+  cout << " jmp .fi" << ifnumber << endl;
+  cout << ".else" << ifnumber << ":" << endl;
+  visit(ctx->ifLoop());
+  cout << ".fi" << ifnumber << ":" << endl;
+
+  return 0;
+}
+
+antlrcpp::Any Visitor::visitRelationalTestExpr(ifccParser::RelationalTestExprContext *ctx)
+{
+  visit(ctx->expr()[0]);
+  cout << " movl %eax, %ebx" << endl;
+  visit(ctx->expr()[1]);
+  cout << " cmpl %eax, %ebx" << endl;
+
+  if(ctx->op->getText() == ">") {
+    cout << " jle ";
+  }
+  else if(ctx->op->getText() == "<") {
+    cout << " jge ";
+  }
+  else if(ctx->op->getText() == ">=") {
+    cout << " jl ";
+  }
+  else if(ctx->op->getText() == "<=") {
+    cout << " jg ";
+  }
+
+  return 0;
+}
+
+antlrcpp::Any Visitor::visitEqualityTestExpr(ifccParser::EqualityTestExprContext *ctx)
+{
+  visit(ctx->expr()[0]);
+  cout << " movl %eax, %ebx" << endl;
+  visit(ctx->expr()[1]);
+  cout << " cmpl %eax, %ebx" << endl;
+
+  if(ctx->op->getText() == "==") {
+    cout << " jne ";
+  }
+  else if(ctx->op->getText() == "!=") {
+    cout << " je ";
+  }
+  return 0;
+}
+
+antlrcpp::Any Visitor::visitParTestExpr(ifccParser::ParTestExprContext *ctx)
+{
+  return visit(ctx->testExpr());
+}
+
 antlrcpp::Any Visitor::visitConstExpr(ifccParser::ConstExprContext *ctx)
 {
     int val = stoi(ctx->CONST()->getText());
-    cout << "  movl $" << val << "(%rbp), %eax" << endl;
-    return 222;
+    cout << "    movl $" << val << ", %eax" << endl;
+    return val;
 }
 
 antlrcpp::Any Visitor::visitVarExpr(ifccParser::VarExprContext *ctx)
 {
     string var = ctx->VAR()->getText();
-    cout << "  movl -" << blocPrincipal.getVariable(var)->getAddress() << "(%rbp), %eax" << endl;
-    return 222;
+    int addr = blocPrincipal.getVariable(var)->getAddress();
+    cout << "  movl -" << addr << "(%rbp), %eax" << endl;
+    return addr;
 }
 
 antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
