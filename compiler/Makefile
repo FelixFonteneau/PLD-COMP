@@ -23,9 +23,10 @@ ifcc: dirs antlr  main.cpp visitor.cpp visitor.h
 	$(CC) $(CCARGS) $(GENERATED)/ifccParser.cpp -o $(OUTPUT)/ifccParser.o
 	$(CC) $(CCARGS) $(MODEL)/variable.cpp -o $(OUTPUT)/variable.o
 	$(CC) $(CCARGS) $(MODEL)/bloc.cpp -o $(OUTPUT)/bloc.o
-	$(CC) $(CCARGS) $(ERROR)/pldErrorListener.cpp -o $(OUTPUT)/pldErrorListener.o
+	$(CC) $(CCARGS) $(ERROR)/syntaxErrorListener.cpp -o $(OUTPUT)/syntaxErrorListener.o
+	$(CC) $(CCARGS) $(ERROR)/syntaxError.cpp -o $(OUTPUT)/syntaxError.o
 	$(CC) $(CCARGS) visitor.cpp -o $(OUTPUT)/visitor.o
-	$(CC) $(LDARGS) $(OUTPUT)/main.o $(OUTPUT)/ifccBaseVisitor.o $(OUTPUT)/ifccLexer.o $(OUTPUT)/ifccVisitor.o $(OUTPUT)/ifccParser.o $(OUTPUT)/variable.o $(OUTPUT)/bloc.o $(OUTPUT)/visitor.o $(OUTPUT)/pldErrorListener.o $(ANTLR4_LIBDIR)/libantlr4-runtime.a -o ifcc
+	$(CC) $(LDARGS) $(OUTPUT)/main.o $(OUTPUT)/ifccBaseVisitor.o $(OUTPUT)/ifccLexer.o $(OUTPUT)/ifccVisitor.o $(OUTPUT)/ifccParser.o $(OUTPUT)/variable.o $(OUTPUT)/bloc.o $(OUTPUT)/visitor.o $(OUTPUT)/syntaxErrorListener.o $(OUTPUT)/syntaxError.o $(ANTLR4_LIBDIR)/libantlr4-runtime.a -o ifcc
 
 antlr: $(GRAMMAR)
 	$(ANTLR4_BINDIR)/antlr4 -visitor -no-listener -Dlanguage=Cpp -o $(GENERATED) $(GRAMMAR)

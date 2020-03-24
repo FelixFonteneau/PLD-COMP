@@ -8,7 +8,7 @@
 #include "antlr4-generated/ifccParser.h"
 #include "antlr4-generated/ifccBaseVisitor.h"
 #include "visitor.h"
-#include "error/pldErrorListener.h"
+#include "error/syntaxErrorListener.h"
 
 using namespace antlr4;
 using namespace std;
@@ -32,7 +32,7 @@ int main(int argn, const char **argv) {
 
   ifccParser parser(&tokens);
 
-  PldErrorListener errorlistener;
+  SyntaxErrorListener errorlistener;
   parser.removeErrorListeners();
   parser.addErrorListener(&errorlistener);
 

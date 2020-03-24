@@ -1,12 +1,12 @@
 /*************************************************************************
-                          PldErrorListener  -  description
+                          SyntaxErrorListener  -  description
                             -------------------
    début                : $DATE$
    copyright            : (C) $YEAR$ par $AUTHOR$
    e-mail               : $EMAIL$
 *************************************************************************/
 
-//---------- Réalisation de la classe <PldErrorListener> (fichier PldErrorListener.cpp) ------------
+//---------- Réalisation de la classe <SyntaxErrorListener> (fichier SyntaxErrorListener.cpp) ------------
 
 //---------------------------------------------------------------- INCLUDE
 
@@ -15,7 +15,7 @@
 using namespace std;
 
 //------------------------------------------------------ Include personnel
-#include "pldErrorListener.h"
+#include "syntaxErrorListener.h"
 
 //------------------------------------------------------------- Constantes
 
@@ -23,24 +23,20 @@ using namespace std;
 
 //----------------------------------------------------- Méthodes publiques
 
-void PldErrorListener::syntaxError(Recognizer *recognizer, Token * offendingSymbol, size_t line, size_t charPositionInLine,
+void SyntaxErrorListener::syntaxError(Recognizer *recognizer, Token * offendingSymbol, size_t line, size_t charPositionInLine,
    const std::string &msg, std::exception_ptr e){
-     stringstream stringStream;
-     stringStream << "Error on position " << line << ":" << charPositionInLine << endl;
-     stringStream << msg << endl;
-     errors.push_back(stringStream.str());
-     error = true;
+     SyntaxError error(recognizer, offendingSymbol, line, charPositionInLine, msg, e);
+     errors.push_back(error);
+     etatErreur = true;
 }
 
 //------------------------------------------------- Surcharge d'opérateurs
-
-ostream & operator << (ostream & os, const PldErrorListener & errorlistener)
-// Algorithme :
-{
-  for (auto errorIterator = errorlistener.errors.begin(); errorIterator != errorlistener.errors.end(); ++errorIterator)
-        os << *errorIterator << endl;
-	return os;
-} //----- Fin de la surchage de <<*/
+ostream & operator << (ostream & os, const SyntaxErrorListener & errorlistener){
+  for (auto err = errorlistener.errors.begin(); err != errorlistener.errors.end(); ++err)
+      os << *err << endl;
+  return os;
+}
+ //----- Fin de la surchage de <<*/
 //-------------------------------------------- Constructeurs - destructeur
 
 
