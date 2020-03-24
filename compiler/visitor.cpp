@@ -150,8 +150,42 @@ antlrcpp::Any Visitor::visitAffExpr(ifccParser::AffExprContext *ctx)
     return 0;
 }
 
+antlrcpp::Any Visitor::visitRelationalTestExpr(ifccParser::RelationalTestExprContext *ctx)
+{
+  visit(ctx->expr()[0]);
+  cout << "  movl %eax, %ebx" << endl;
+  visit(ctx->expr()[1]);
+  cout << "  cmpl %eax, %ebx" << endl;
+
+  if(ctx->op->getText() == ">") {
+    cout << "  jle ";
+  }
+  else if(ctx->op->getText() == "<") {
+    cout << "  jge";
+  }
+  else if(ctx->op->getText() == ">=") {
+    cout << "  jl";
+  }
+  else if(ctx->op->getText() == "<=") {
+    cout << "  jg";
+  }
+
+  return 333;
+}
+
 antlrcpp::Any Visitor::visitEqualityTestExpr(ifccParser::EqualityTestExprContext *ctx)
 {
+  visit(ctx->expr()[0]);
+  cout << "  movl %eax, %ebx" << endl;
+  visit(ctx->expr()[1]);
+  cout << "  cmpl %eax, %ebx" << endl;
+
+  if(ctx->op->getText() == "==") {
+    cout << "  jne ";
+  }
+  else if(ctx->op->getText() == "!=") {
+    cout << "  je";
+  }
   return 333;
 }
 
