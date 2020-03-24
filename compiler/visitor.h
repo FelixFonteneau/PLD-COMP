@@ -44,6 +44,8 @@ public:
 
   virtual antlrcpp::Any visitIfWithElse(ifccParser::IfWithElseContext *ctx) override;
 
+  virtual antlrcpp::Any visitIfElseIf(ifccParser::IfElseIfContext *ctx) override;
+
   virtual antlrcpp::Any visitRelationalTestExpr(ifccParser::RelationalTestExprContext *ctx) override;
 
   virtual antlrcpp::Any visitEqualityTestExpr(ifccParser::EqualityTestExprContext *ctx) override;
