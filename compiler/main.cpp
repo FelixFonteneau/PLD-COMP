@@ -8,23 +8,11 @@
 #include "antlr4-generated/ifccParser.h"
 #include "antlr4-generated/ifccBaseVisitor.h"
 #include "visitor.h"
+#include "error/pldErrorListener.h"
 
 using namespace antlr4;
 using namespace std;
 
-class MyErrorListener : public BaseErrorListener {
-   public:
-      MyErrorListener() { error = false; }
-      bool Error() { return error; }
-      virtual void syntaxError(Recognizer *recognizer, Token * offendingSymbol, size_t line, size_t charPositionInLine,
-         const std::string &msg, std::exception_ptr e)  {
-         cout<<"Error on position "<<line<<":"<<charPositionInLine<<endl;
-         error = true;
-      }
-
-   protected:
-      bool error;
-};
 
 int main(int argn, const char **argv) {
   stringstream in;
@@ -44,13 +32,15 @@ int main(int argn, const char **argv) {
 
   ifccParser parser(&tokens);
 
-  MyErrorListener errorlistener;
+  PldErrorListener errorlistener;
   parser.removeErrorListeners();
   parser.addErrorListener(&errorlistener);
 
   tree::ParseTree* tree = parser.axiom();
-  if (errorlistener.Error())
-     return 1;
+  if (errorlistener.Error()){
+    cerr << errorlistener;
+    return 1;
+  }
 
   Visitor visitor;
   visitor.visit(tree);

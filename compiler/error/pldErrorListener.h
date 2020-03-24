@@ -1,72 +1,59 @@
 /*************************************************************************
-                           Variable  -  description
+                           PldErrorListener  -  description
                              -------------------
     début                : $DATE$
     copyright            : (C) $YEAR$ par $AUTHOR$
     e-mail               : $EMAIL$
 *************************************************************************/
 
-//---------- Interface de la classe <Variable> (fichier Variable.h) ----------------
-#if ! defined ( VARIABLE_H )
-#define VARIABLE_H
+//---------- Interface de la classe <PldErrorListener> (fichier PldErrorListener.h) ----------------
+#if ! defined ( PLDERRORLISTENER_H )
+#define PLDERRORLISTENER_H
 
 //--------------------------------------------------- Interfaces utilisées
 #include <string>
+#include <vector>
+#include <iostream>
 
+#include "antlr4-runtime.h"
 //------------------------------------------------------------- Constantes
 
 //------------------------------------------------------------------ Types
 using namespace std;
+using namespace antlr4;
 
 //------------------------------------------------------------------------
-// Rôle de la classe <Variable>
+// Rôle de la classe <PldErrorListener>
 //
-// Cette classe correspond a l'objet represetant toues les informations d'une
-// variable. Elle contient toutes les donnees nécessaires concernant les
-// variables pendant la compilation.
+//
+//
 //
 //------------------------------------------------------------------------
-class Variable
+class PldErrorListener : public BaseErrorListener
 {
 //----------------------------------------------------------------- PUBLIC
 
 public:
 //----------------------------------------------------- Méthodes publiques
-  string getName()
-  {
-    return this->name;
-  }
+  bool Error() { return error; }
 
-  string getType()
-  {
-    return this->type;
-  }
-
-  int getAddress()
-  {
-    return this->address;
-  }
-
+   virtual void syntaxError(Recognizer *recognizer, Token * offendingSymbol, size_t line, size_t charPositionInLine,
+      const std::string &msg, std::exception_ptr e);
 
 
 
 //------------------------------------------------- Surcharge d'opérateurs
+  friend ostream & operator << (ostream & os, const PldErrorListener & errorlistener);
+    // Mode d'emploi :
 
 //-------------------------------------------- Constructeurs - destructeur
-    // Variable (const Variable & unVariable);
-    Variable ();
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
+    // PldErrorListener (const PldErrorListener & unPldErrorListener);
+    PldErrorListener (){
+      error = false;
+    };
 
-    Variable (string name, string type, int address) : name(name), type(type), address(address){}
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
 
-    virtual ~Variable ( );
+
 
 //------------------------------------------------------------------ PRIVE
 
@@ -74,14 +61,12 @@ protected:
 //----------------------------------------------------- Méthodes protégées
 
 //----------------------------------------------------- Attributs protégés
-  string name;
-  string type;
-  int address;
-
+  bool error;
+  vector<string> errors;
 
 
 };
 
-//-------------------------------- Autres définitions dépendantes de <Variable>
+//-------------------------------- Autres définitions dépendantes de <PldErrorListener>
 
-#endif // VARIABLE_H
+#endif // PLDERRORLISTENER_H
