@@ -158,6 +158,7 @@ antlrcpp::Any Visitor::visitIfNoElse(ifccParser::IfNoElseContext *ctx)
   visit(ctx->bloc());
   cout << ".fi" << labelcounter << ":" << endl;
 
+  ++labelcounter;
   return 0;
 }
 
