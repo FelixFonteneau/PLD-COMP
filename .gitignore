@@ -37,5 +37,6 @@
 
 # project
 compileur/ifcc
+tests/tests/pld-test-output
 
 .vscode/

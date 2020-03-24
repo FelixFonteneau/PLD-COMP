@@ -4,6 +4,34 @@
 Visitor::Visitor()
 {
     addressIterator = 4;
+    eax.name = "eax";
+    eax.used = false;
+    registers[0] = eax;
+    ebx.name = "ebx";
+    ebx.used = false;
+    registers[1] = ebx;
+    ecx.name = "ecx";
+    ecx.used = false;
+    registers[2] = ecx;
+    edx.name = "edx";
+    edx.used = false;
+    registers[3] = edx;
+    edi.name = "edi";
+    edi.used = false;
+    registers[4] = edi;
+    esi.name = "esi";
+    esi.used = false;
+    registers[5] = esi;
+    ebp.name = "ebp";
+    ebp.used = false;
+    registers[6] = ebp;
+    esp.name = "esp";
+    esp.used = false;
+    registers[7] = esp;
+    eip.name = "eip";
+    eip.used = false;
+    registers[8] = eip;
+    currentRegister = registers;
 }
 
 antlrcpp::Any Visitor::visitAxiom(ifccParser::AxiomContext *ctx)
@@ -56,7 +84,7 @@ antlrcpp::Any Visitor::visitAffDecConst(ifccParser::AffDecConstContext *ctx)
     }
     int memoryAddress = addressIterator;
     addressIterator += 4;
-    cout << " movl $" << retval << ", -" << memoryAddress << "(%rbp)" << endl;
+    cout << "  movl $" << retval << ", -" << memoryAddress << "(%rbp)" << endl;
     Variable* variable = new Variable(variableName, "int", memoryAddress);
     blocPrincipal.AjouterVariable(*variable);
     return visitChildren(ctx);
@@ -74,7 +102,7 @@ antlrcpp::Any Visitor::visitAffDecVar(ifccParser::AffDecVarContext *ctx)
     }
     int memoryAddress = addressIterator;
     addressIterator += 4;
-    cout << " movl -" << blocPrincipal.getVariable(existingVariableName)->getAddress() << "(%rbp), -" << memoryAddress << "(%rbp)" << endl;
+    cout << "  movl -" << blocPrincipal.getVariable(existingVariableName)->getAddress() << "(%rbp), -" << memoryAddress << "(%rbp)" << endl;
     Variable* variable = new Variable(newVariableName, "int", memoryAddress);
     blocPrincipal.AjouterVariable(*variable);
     return visitChildren(ctx);
@@ -90,7 +118,7 @@ antlrcpp::Any Visitor::visitAffDecExpr(ifccParser::AffDecExprContext *ctx)
     int memoryAddress = addressIterator;
     addressIterator += 4;
 
-    cout << " movl %eax, -" << memoryAddress << "(%rbp)" << endl;
+    cout << "  movl % " << (*currentRegister).name << ", -" << memoryAddress << "(%rbp)" << endl;
     Variable* variable = new Variable(variableName, "int", memoryAddress);
     blocPrincipal.AjouterVariable(*variable);
     return 0;
@@ -111,8 +139,8 @@ antlrcpp::Any Visitor::visitAffVar(ifccParser::AffVarContext *ctx)
   int rightValAddr = blocPrincipal.getVariable(rightValName)->getAddress();
   int leftValAddr = blocPrincipal.getVariable(leftValName)->getAddress();
 
-  cout << " movl -" << rightValAddr << "(%rbp), %eax" << endl;
-  cout << " movl %eax, -" << leftValAddr << "(%rbp)" << endl;
+  cout << "  movl -" << rightValAddr << "(%rbp), %eax" << endl;
+  cout << "  movl %eax, -" << leftValAddr << "(%rbp)" << endl;
 
   return 0;
 }
@@ -144,19 +172,22 @@ antlrcpp::Any Visitor::visitAffExpr(ifccParser::AffExprContext *ctx)
 antlrcpp::Any Visitor::visitConstExpr(ifccParser::ConstExprContext *ctx)
 {
     int val = stoi(ctx->CONST()->getText());
-    cout << "  movl $" << val << "(%rbp), %eax" << endl;
-    return 222;
+    cout << "  movl $" << val << ", %" << (*currentRegister).name << endl;
+    return 0;
 }
 
 antlrcpp::Any Visitor::visitVarExpr(ifccParser::VarExprContext *ctx)
 {
     string var = ctx->VAR()->getText();
-    cout << "  movl -" << blocPrincipal.getVariable(var)->getAddress() << "(%rbp), %eax" << endl;
-    return 222;
+    cout << "  movl -" << blocPrincipal.getVariable(var)->getAddress() << "(%rbp), %" << (*currentRegister).name << endl;
+    return 0;
 }
 
 antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
 {
+    bool isVar = false;
+    bool isExpr = false;
+
     string exprLeft = ctx->expr()[0]->getText();
     string exprRight = ctx->expr()[1]->getText();
 
@@ -170,28 +201,57 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
     if(blocPrincipal.variableExiste(exprRight)) {
       memoryAddressRight = blocPrincipal.getVariable(exprRight)->getAddress();
     }
+
+    if(exprRight.find("(") != string::npos) {
+      isExpr = true;
+    }
+    if(memoryAddressRight != 0) {
+      isVar = true;
+    }
+
     visit(ctx->expr()[0]);
-    if(exprRight.length() > 3) {     //condition à modifier * 10000 pas du tout bon mais solution tampon
+    if(isExpr) {
       visit(ctx->expr()[1]);
     }
 
     if(ctx->op->getText() == "+") {
-        if(exprRight.length() <= 3 && memoryAddressRight == 0) {
-          int rightVal = stoi(exprRight);
-          cout << "  addl $" << rightVal << "(%rbp), %eax" << endl;
-        } else if(memoryAddressRight != 0) {
-          cout << "  addl -" << memoryAddressRight << "(%rbp), %eax" << endl;
+        if(!isVar) {
+          if(!isExpr) {
+            int rightVal = stoi(exprRight);
+            cout << "  addl $" << rightVal << ", %" << (*currentRegister).name << endl;
+          } else {
+            cout << "  addl %" << (*(currentRegister + 1)).name << ", %" << (*currentRegister).name << endl;
+          }
+        } else if(isVar) {
+          cout << "  addl -" << memoryAddressRight << "(%rbp), %" << (*currentRegister).name << endl;
         }
       } else {
-        if(exprRight.length() <= 3 && memoryAddressRight == 0) {
-          int rightVal = stoi(exprRight);
-          cout << "  subl $" << rightVal << "(%rbp), %eax" << endl;
-        } else if(memoryAddressRight != 0) {
-          cout << "  subl -" << memoryAddressRight << "(%rbp), %eax" << endl;
+        if(!isVar) {
+          if(!isExpr) {
+            int rightVal = stoi(exprRight);
+            cout << "  subl $" << rightVal << ", %" << (*currentRegister).name << endl;
+          } else {
+            cout << "  subl %" << (*(currentRegister + 1)).name << ", %" << (*currentRegister).name << endl;
+          }
+        } else if(isVar) {
+          cout << "  subl -" << memoryAddressRight << "(%rbp), %" << (*currentRegister).name << endl;
         }
     }
     return 0;
   }
+
+antlrcpp::Any Visitor::visitParExpr(ifccParser::ParExprContext *ctx)
+{
+  while((*currentRegister).used) {
+    currentRegister++;
+  }
+  visitChildren(ctx);
+  (*currentRegister).used = true;
+  if((*currentRegister).name != "eax") {
+    currentRegister--;
+  }
+  return 0;
+}
 
 antlrcpp::Any Visitor::visitRetVar(ifccParser::RetVarContext *ctx)
 {
