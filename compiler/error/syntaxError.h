@@ -1,72 +1,68 @@
 /*************************************************************************
-                           Variable  -  description
+                           SyntaxError  -  description
                              -------------------
     début                : $DATE$
     copyright            : (C) $YEAR$ par $AUTHOR$
     e-mail               : $EMAIL$
 *************************************************************************/
 
-//---------- Interface de la classe <Variable> (fichier Variable.h) ----------------
-#if ! defined ( VARIABLE_H )
-#define VARIABLE_H
+//---------- Interface de la classe <SyntaxError> (fichier SyntaxError.h) ----------------
+#if ! defined ( SYNTAXERROR_H )
+#define SYNTAXERROR_H
 
 //--------------------------------------------------- Interfaces utilisées
 #include <string>
+
+#include "antlr4-runtime.h"
 
 //------------------------------------------------------------- Constantes
 
 //------------------------------------------------------------------ Types
 using namespace std;
+using namespace antlr4;
+//------------------------------------------------------------------------
+// Rôle de la classe <SyntaxError>
+//
+//
+//------------------------------------------------------------------------
 
-//------------------------------------------------------------------------
-// Rôle de la classe <Variable>
-//
-// Cette classe correspond a l'objet represetant toues les informations d'une
-// variable. Elle contient toutes les donnees nécessaires concernant les
-// variables pendant la compilation.
-//
-//------------------------------------------------------------------------
-class Variable
+class SyntaxError
 {
 //----------------------------------------------------------------- PUBLIC
 
 public:
 //----------------------------------------------------- Méthodes publiques
-  string getName()
-  {
-    return this->name;
-  }
-
-  string getType()
-  {
-    return this->type;
-  }
-
-  int getAddress()
-  {
-    return this->address;
-  }
-
-
+    // type Méthode ( liste des paramètres );
+    // Mode d'emploi :
+    //
+    // Contrat :
+    //
 
 
 //------------------------------------------------- Surcharge d'opérateurs
+  friend ostream & operator << (ostream & os, const SyntaxError & error);
+
+
 
 //-------------------------------------------- Constructeurs - destructeur
-    // Variable (const Variable & unVariable);
-    Variable ();
+    SyntaxError ( const SyntaxError & unSyntaxError );
+    // Mode d'emploi (constructeur de copie) :
+    //
+    // Contrat :
+    //
+
+    SyntaxError (Recognizer *recognizerA, Token * offendingSymbolA, size_t lineNumberA, size_t charPositionInLineA,
+       const std::string &msgA, std::exception_ptr eA, string &lineA);
     // Mode d'emploi :
     //
     // Contrat :
     //
 
-    Variable (string name, string type, int address) : name(name), type(type), address(address){}
+    virtual ~SyntaxError ( );
     // Mode d'emploi :
     //
     // Contrat :
     //
-
-    virtual ~Variable ( );
 
 //------------------------------------------------------------------ PRIVE
 
@@ -74,14 +70,15 @@ protected:
 //----------------------------------------------------- Méthodes protégées
 
 //----------------------------------------------------- Attributs protégés
-  string name;
-  string type;
-  int address;
-
-
-
+  Recognizer *recognizer;
+  Token * offendingSymbol;
+  size_t lineNumber;
+  size_t charPositionInLine;
+  string message;
+  exception_ptr e;
+  string line;
 };
 
-//-------------------------------- Autres définitions dépendantes de <Variable>
+//-------------------------------- Autres définitions dépendantes de <SyntaxError>
 
-#endif // VARIABLE_H
+#endif // SYNTAXERROR_H

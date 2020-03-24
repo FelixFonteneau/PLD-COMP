@@ -21,7 +21,8 @@
 // Rôle de la classe <Bloc>
 //
 // Cette classe correspond a l'objet represetant toues les informations d'un
-// capteur. Elle contient toutes les donnees possibles d'un capteur.
+// Bloc. Elle contient toutes les donnees nécessaires pour la gestion des blocs
+// pendant la compilation.
 //
 //------------------------------------------------------------------------
 class Bloc
@@ -34,17 +35,6 @@ public:
     bool variableExiste(string nom);
     Variable* getVariable(string nom);
     void AjouterVariable(Variable &var);
-
-    //void AjouterMesure(Mesure *mesure);
-    // Mode d'emploi :
-    //
-    // Cette methode permet d'ajouter une mesure aux structures de donnees du
-    // capteur.
-    //
-    // Contrat :
-    // Le poiteur doit pointer sur une mesure valide.
-
-
 
 //------------------------------------------------- Surcharge d'opérateurs
 

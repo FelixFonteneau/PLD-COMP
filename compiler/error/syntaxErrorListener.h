@@ -1,72 +1,62 @@
 /*************************************************************************
-                           Variable  -  description
+                           SyntaxErrorListener  -  description
                              -------------------
     début                : $DATE$
     copyright            : (C) $YEAR$ par $AUTHOR$
     e-mail               : $EMAIL$
 *************************************************************************/
 
-//---------- Interface de la classe <Variable> (fichier Variable.h) ----------------
-#if ! defined ( VARIABLE_H )
-#define VARIABLE_H
+//---------- Interface de la classe <SyntaxErrorListener> (fichier SyntaxErrorListener.h) ----------------
+#if ! defined ( SYNTAXERRORLISTENER_H )
+#define SYNTAXERRORLISTENER_H
 
 //--------------------------------------------------- Interfaces utilisées
 #include <string>
+#include <vector>
+#include <iostream>
+#include <sstream>
 
+#include "antlr4-runtime.h"
+#include "syntaxError.h"
 //------------------------------------------------------------- Constantes
 
 //------------------------------------------------------------------ Types
 using namespace std;
+using namespace antlr4;
 
 //------------------------------------------------------------------------
-// Rôle de la classe <Variable>
+// Rôle de la classe <SyntaxErrorListener>
 //
-// Cette classe correspond a l'objet represetant toues les informations d'une
-// variable. Elle contient toutes les donnees nécessaires concernant les
-// variables pendant la compilation.
+//
+//
 //
 //------------------------------------------------------------------------
-class Variable
+class SyntaxErrorListener : public BaseErrorListener
 {
 //----------------------------------------------------------------- PUBLIC
 
 public:
 //----------------------------------------------------- Méthodes publiques
-  string getName()
-  {
-    return this->name;
-  }
+  bool Error() { return etatErreur; }
 
-  string getType()
-  {
-    return this->type;
-  }
-
-  int getAddress()
-  {
-    return this->address;
-  }
-
+   virtual void syntaxError(Recognizer *recognizer, Token * offendingSymbol, size_t line, size_t charPositionInLine,
+      const std::string &msg, std::exception_ptr e);
 
 
 
 //------------------------------------------------- Surcharge d'opérateurs
+  friend ostream & operator << (ostream & os, const SyntaxErrorListener & errorlistener);
+    // Mode d'emploi :
 
 //-------------------------------------------- Constructeurs - destructeur
-    // Variable (const Variable & unVariable);
-    Variable ();
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
+    // SyntaxErrorListener (const SyntaxErrorListener & unSyntaxErrorListener);
+    SyntaxErrorListener (string inputFile){
+      file = inputFile;
+      etatErreur = false;
+    };
 
-    Variable (string name, string type, int address) : name(name), type(type), address(address){}
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
 
-    virtual ~Variable ( );
+
 
 //------------------------------------------------------------------ PRIVE
 
@@ -74,14 +64,12 @@ protected:
 //----------------------------------------------------- Méthodes protégées
 
 //----------------------------------------------------- Attributs protégés
-  string name;
-  string type;
-  int address;
-
-
+  bool etatErreur;
+  vector<SyntaxError> errors;
+  string file;
 
 };
 
-//-------------------------------- Autres définitions dépendantes de <Variable>
+//-------------------------------- Autres définitions dépendantes de <SyntaxErrorListener>
 
-#endif // VARIABLE_H
+#endif // SYNTAXERRORLISTENER_H
