@@ -1,4 +1,3 @@
-
 // Generated from ifcc.g4 by ANTLR 4.7.2
 
 #pragma once
@@ -9,16 +8,12 @@
 #include "model/bloc.h"
 
 using namespace std;
+
 /**
  * This class provides an empty implementation of ifccVisitor, which can be
  * extended to create a visitor which only needs to handle a subset of the available methods.
  */
 class  Visitor : public ifccBaseVisitor {
-private:
-  int addressIterator;
-  Bloc blocPrincipal;
-  int labelcounter;
-public:
 
   Visitor();
 
@@ -58,6 +53,8 @@ public:
 
   virtual antlrcpp::Any visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx) override ;
 
+  virtual antlrcpp::Any visitParExpr(ifccParser::ParExprContext *ctx) override ;
+
   virtual antlrcpp::Any visitRetVar(ifccParser::RetVarContext *ctx) override ;
 
   virtual antlrcpp::Any visitRetConst(ifccParser::RetConstContext *ctx) override ;
@@ -83,4 +80,18 @@ public:
     return 0;
   }
 */
+
+private:
+  int addressIterator;
+  Bloc blocPrincipal;
+  int labelcounter;
+
+  struct reg {
+    string name;
+    bool used;
+  } eax, ebx, ecx, edx, edi, esi, ebp, esp, eip;
+
+  reg registers[9];
+  reg* currentRegister;
+
 };
