@@ -15,6 +15,8 @@ using namespace std;
  */
 class Visitor : public ifccBaseVisitor {
 
+public :
+
   Visitor();
 
   virtual antlrcpp::Any visitAxiom(ifccParser::AxiomContext *ctx) override;
