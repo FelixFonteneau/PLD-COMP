@@ -28,19 +28,23 @@ using namespace std;
 //{
 //} //----- Fin de Méthode
 
+void IRInstr::gen_asm(ostream &o){ /**< x86 assembly code generation for this IR instruction */
+
+}
+
 
 //------------------------------------------------- Surcharge d'opérateurs
 //-------------------------------------------- Constructeurs - destructeur
-IRInstr::IRInstr (BasicBlock* bb_, Operation op, Type t, vector<string> params)
+IRInstr::IRInstr (BasicBlock* bb_, Operation op_, Type t_, vector<string> params_)
 // Algorithme :
 //
 {
-#ifdef MAP
-    cout << "Appel au constructeur de <IRInstr>" << endl;
-#endif
-} //----- Fin de IRInstr
+  bb = bb_;
+  op = op_;
+  t  = t_;
+  params = params_;
 
-void IRInstr::gen_asm(ostream &o);/**< x86 assembly code generation for this IR instruction */
+} //----- Fin de IRInstr
 
 
 //------------------------------------------------------------------ PRIVE
