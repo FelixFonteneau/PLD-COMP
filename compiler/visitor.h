@@ -5,7 +5,7 @@
 
 #include "antlr4-runtime.h"
 #include "antlr4-generated/ifccBaseVisitor.h"
-#include "model/bloc.h"
+#include "symbol-table/bloc.h"
 
 using namespace std;
 
