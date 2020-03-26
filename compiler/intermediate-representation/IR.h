@@ -7,12 +7,17 @@
 #include <initializer_list>
 
 // Declarations from the parser -- replace with your own
-#include "type.h"
-#include "symbole.h"
+#include "../symbol-table/symbolTable.h"
+#include "../symbol-table/variable.h"
+//#include "type.h"
+
 class BasicBlock;
 class CFG;
-class DefFonction;
 
+typedef enum {
+  intime,
+  charete
+} Type;
 
 //! The class for one 3-address instruction
 class IRInstr {
@@ -73,14 +78,17 @@ class BasicBlock {
 
 	void add_IRInstr(IRInstr::Operation op, Type t, vector<string> params);
 
-	// No encapsulation whatsoever here. Feel free to do better.
-	BasicBlock* exit_true;  /**< pointer to the next basic block, true branch. If nullptr, return from procedure */
-	BasicBlock* exit_false; /**< pointer to the next basic block, false branch. If null_ptr, the basic block ends with an unconditional jump */
-	string label; /**< label of the BB, also will be the label in the generated code */
-	CFG* cfg; /** < the CFG where this block belongs */
-	vector<IRInstr*> instrs; /** < the instructions themselves. */
- protected:
+  void setExitTrueBlock(BasicBlock* exit_true);
+  void setExitFalseBlock(BasicBlock* exit_false);
 
+  virtual ~BasicBlock ( );
+
+ protected:
+  BasicBlock* exit_true;  /**< pointer to the next basic block, true branch. If nullptr, return from procedure */
+ 	BasicBlock* exit_false; /**< pointer to the next basic block, false branch. If null_ptr, the basic block ends with an unconditional jump */
+ 	string label; /**< label of the BB, also will be the label in the generated code */
+ 	CFG* cfg; /** < the CFG where this block belongs */
+ 	vector<IRInstr*> instrs; /** < the instructions themselves. */
 
 };
 
@@ -98,9 +106,9 @@ class BasicBlock {
  */
 class CFG {
  public:
-	CFG(DefFonction* ast);
+	CFG();
+  virtual ~CFG ( );
 
-	DefFonction* ast; /**< The AST this CFG comes from */
 
 	void add_bb(BasicBlock* bb);
 
@@ -120,9 +128,12 @@ class CFG {
 	string new_BB_name();
 	BasicBlock* current_bb;
 
+  SymbolTable symbolTable;
  protected:
-	map <string, Type> SymbolType; /**< part of the symbol table  */
-	map <string, int> SymbolIndex; /**< part of the symbol table  */
+
+
+	//map <string, Type> SymbolType; /**< part of the symbol table  */
+	//map <string, int> SymbolIndex; /**< part of the symbol table  */
 	int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
 	int nextBBnumber; /**< just for naming */
 

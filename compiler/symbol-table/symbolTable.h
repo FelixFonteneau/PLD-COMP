@@ -1,14 +1,14 @@
 /*************************************************************************
-                           Bloc  -  description
+                           SymbolTable  -  description
                              -------------------
     début                : $DATE$
     copyright            : (C) $YEAR$ par $AUTHOR$
     e-mail               : $EMAIL$
 *************************************************************************/
 
-//---------- Interface de la classe <Bloc> (fichier Bloc.h) ----------------
-#if ! defined ( BLOC_H )
-#define BLOC_H
+//---------- Interface de la classe <SymbolTable> (fichier SymbolTable.h) ----------------
+#if ! defined ( SYMBOLTABLE_H )
+#define SYMBOLTABLE_H
 
 //--------------------------------------------------- Interfaces utilisées
 #include <unordered_map>
@@ -18,14 +18,14 @@
 
 //------------------------------------------------------------------ Types
 //------------------------------------------------------------------------
-// Rôle de la classe <Bloc>
+// Rôle de la classe <SymbolTable>
 //
 // Cette classe correspond a l'objet represetant toues les informations d'un
-// Bloc. Elle contient toutes les donnees nécessaires pour la gestion des blocs
+// SymbolTable. Elle contient toutes les donnees nécessaires pour la gestion des blocs
 // pendant la compilation.
 //
 //------------------------------------------------------------------------
-class Bloc
+class SymbolTable
 {
 //----------------------------------------------------------------- PUBLIC
 
@@ -39,14 +39,14 @@ public:
 //------------------------------------------------- Surcharge d'opérateurs
 
 //-------------------------------------------- Constructeurs - destructeur
-    // Bloc (const Bloc & unBloc);
-    Bloc ();
+    // SymbolTable (const SymbolTable & unSymbolTable);
+    SymbolTable ();
     // Mode d'emploi :
     //
     // Contrat :
     //
 
-    virtual ~Bloc ( );
+    virtual ~SymbolTable ( );
 
 //------------------------------------------------------------------ PRIVE
 
@@ -59,6 +59,6 @@ unordered_map<string, Variable> variables; // <liste des variables dans le bloc 
 
 };
 
-//-------------------------------- Autres définitions dépendantes de <Bloc>
+//-------------------------------- Autres définitions dépendantes de <SymbolTable>
 
-#endif // BLOC_H
+#endif // SYMBOLTABLE_H
