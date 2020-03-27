@@ -166,15 +166,15 @@ antlrcpp::Any Visitor::visitAffExpr(ifccParser::AffExprContext *ctx)
     if (!blocPrincipal.variableExiste(leftValName)) {
       // if the variable name doesn't exist, we throw an error.
     }
-    int leftValAddr = blocPrincipal.getVariable(leftValName)->getAddress();
+    int memoryAddress = blocPrincipal.getVariable(leftValName)->getAddress();
 
     int val = visitChildren(ctx);
 
-    /*if(val==0) {
+    if(val==0) {
       cout << " movl %eax, -" << memoryAddress << "(%rbp)" << endl;
-    } else {*/
-      cout << " movl $" << val << ", -" << leftValAddr << "(%rbp)" << endl;
-    //}
+    } else {
+      //cout << "movl $" << val << ", -" << leftValAddr << "(%rbp)" << endl;
+    }
 
     return 0;
 }
@@ -378,7 +378,7 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
   if(blocPrincipal.variableExiste(exprRight)) {
     memoryAddressRight = blocPrincipal.getVariable(exprRight)->getAddress();
   }
-  //visit(ctx->expr()[0]);
+  visit(ctx->expr()[0]);
   if(exprRight.length() > 3) {     //condition à modifier * 10000 pas du tout bon mais solution tampon
     visit(ctx->expr()[1]);
   }
@@ -393,10 +393,10 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
   if(ctx->op->getText() == "*") {
     if(memoryAddressRight == 0 && memoryAddressRight == 0) {
       int rightVal = stoi(exprRight);
-      int leftVal = stoi(exprLeft);
-      cout << "  movl $" << rightVal*leftVal << "(%rbp), %eax" << endl;
+      //int leftVal = stoi(exprLeft);
+      cout << "  imull $" << rightVal << ", %eax" << endl;
     } else if(memoryAddressRight != 0) {
-      cout << "  imull -" << memoryAddressRight << ", %eax" << endl;
+      cout << "  imull -" << memoryAddressRight << "(%rbp), %eax" << endl;
     }
   }
 
