@@ -2,10 +2,12 @@
 
 #pragma once
 
+#include <vector>
 
 #include "antlr4-runtime.h"
 #include "antlr4-generated/ifccBaseVisitor.h"
 #include "symbol-table/symbolTable.h"
+#include "intermediate-representation/IR.h"
 
 using namespace std;
 
@@ -13,11 +15,12 @@ using namespace std;
  * This class provides an empty implementation of ifccVisitor, which can be
  * extended to create a visitor which only needs to handle a subset of the available methods.
  */
-class Visitor : public ifccBaseVisitor {
+class  Visitor : public ifccBaseVisitor {
+private:
+  vector<*CFG> cfgs;
+public:
 
-public :
-
-  Visitor();
+  Visitor(vector<*CFG> cfgs);
 
   virtual antlrcpp::Any visitAxiom(ifccParser::AxiomContext *ctx) override;
 
@@ -60,41 +63,4 @@ public :
   virtual antlrcpp::Any visitRetVar(ifccParser::RetVarContext *ctx) override ;
 
   virtual antlrcpp::Any visitRetConst(ifccParser::RetConstContext *ctx) override ;
-
-  virtual antlrcpp::Any visitMultiplicationExpr(ifccParser::MultiplicationExprContext *ctx) override ;
-/*
-  virtual antlrcpp::Any visitAff(ifccParser::AffContext *ctx) override {
-    int retval = stoi(ctx->CONST()->getText());
-    string varialbeName = ctx->VAR()->getText();
-    if( integerVariablesTable.find(varialbeName) != integerVariablesTable.end()){
-      // if the variable name already exist, we throw an error.
-    }
-
-    int memoryAdress = 4;
-    cout<<" movl $"<<retval<<", -" << memoryAdress << "(%rbp)" << endl;
-    integerVariablesTable[varialbeName] = memoryAdress;
-	  return 0;
-}
-
-  virtual antlrcpp::Any visitRet(ifccParser::RetContext *ctx) override {
-    string variable = ctx->VAR()->getText();
-    auto itr = integerVariablesTable.find(variable);
-	  cout<<"  movl -" << itr->second <<"(%rbp), %eax" << endl;
-    return 0;
-  }
-*/
-
-private:
-  int addressIterator;
-  Bloc blocPrincipal;
-  int labelcounter;
-
-  struct reg {
-    string name;
-    bool used;
-  } eax, ebx, ecx, edx, edi, esi, ebp, esp, eip;
-
-  reg registers[9];
-  reg* currentRegister;
-
 };

@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <cstdlib>
+#include <vector>
 
 #include "antlr4-runtime.h"
 #include "antlr4-generated/ifccLexer.h"
@@ -9,6 +10,8 @@
 #include "antlr4-generated/ifccBaseVisitor.h"
 #include "visitor.h"
 #include "error/syntaxErrorListener.h"
+#include "intermediate-representation/IR.h"
+
 
 using namespace antlr4;
 using namespace std;
@@ -42,11 +45,13 @@ int main(int argn, const char **argv) {
     return 1;
   }
 
-  Visitor visitor;
+  vector<*CFG> cfgs;
+
+  Visitor visitor(cfgs);
   visitor.visit(tree);
 
   // pass CFG to x86 back-end
-  
+
 
   return 0;
 }

@@ -30,8 +30,17 @@ Variable* SymbolTable::getVariable(string nom){
   return &variables.find(nom)->second;
 }
 
-void SymbolTable::AjouterVariable(Variable &var){
+void SymbolTable::addVariable(Variable &var){
   variables.insert({var.getName(),var});
+}
+
+
+string SymbolTable::varToAsm(string reg){ /**< helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24 */
+  Variable* var = this->getVariable(reg);
+  if(var != nullptr){
+    return "-" + to_string(var->getAddress()) + "(%rbp)";
+  }
+  return "";
 }
 
 //------------------------------------------------- Surcharge d'opérateurs

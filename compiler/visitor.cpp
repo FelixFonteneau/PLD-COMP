@@ -1,38 +1,9 @@
 // Generated from ifcc.g4 by ANTLR 4.7.2
 #include "visitor.h"
 
-Visitor::Visitor()
+Visitor::Visitor(vector<*CFG> cfgs_)
 {
-    addressIterator = 4;
-    labelcounter = 0;
-    eax.name = "eax";
-    eax.used = false;
-    registers[0] = eax;
-    ebx.name = "ebx";
-    ebx.used = false;
-    registers[1] = ebx;
-    ecx.name = "ecx";
-    ecx.used = false;
-    registers[2] = ecx;
-    edx.name = "edx";
-    edx.used = false;
-    registers[3] = edx;
-    edi.name = "edi";
-    edi.used = false;
-    registers[4] = edi;
-    esi.name = "esi";
-    esi.used = false;
-    registers[5] = esi;
-    ebp.name = "ebp";
-    ebp.used = false;
-    registers[6] = ebp;
-    esp.name = "esp";
-    esp.used = false;
-    registers[7] = esp;
-    eip.name = "eip";
-    eip.used = false;
-    registers[8] = eip;
-    currentRegister = registers;
+  cfgs = cfgs_;
 }
 
 antlrcpp::Any Visitor::visitAxiom(ifccParser::AxiomContext *ctx)
@@ -42,23 +13,10 @@ antlrcpp::Any Visitor::visitAxiom(ifccParser::AxiomContext *ctx)
 
 antlrcpp::Any Visitor::visitProg(ifccParser::ProgContext *ctx)
 {
-
-    cout << ".text \n" //"# declaration of ’text’ section (which means ’program’)" // entry point to the ELF linker or loader.
-            ".global main \n"
-            "main: \n"
-            "  # prologue\n"
-            "  pushq %rbp\n"      //save %rbp on the stack
-            "  movq %rsp, %rbp\n" //define %rbp for the current function
-
-            "\n  # body \n";
-
-    visitChildren(ctx);
-
-    cout << "\n  # epilogue\n"
-            "  popq %rbp\n" //restore %rbp from the stack
-            "  ret\n";      //return to the caller (here the shell)
-
-    return 0;
+  // visit the main function of the program and create the first cfg
+  CFG main = new CFG("main");
+  visitChildren(ctx);
+  return 0;
 }
 
 antlrcpp::Any Visitor::visitDec(ifccParser::DecContext *ctx)
@@ -70,8 +28,8 @@ antlrcpp::Any Visitor::visitDec(ifccParser::DecContext *ctx)
     }
     int memoryAddress = addressIterator;
     addressIterator += 4;
-    Variable* variable = new Variable(variableName, "int", memoryAddress);
-    blocPrincipal.AjouterVariable(*variable);
+    Variable* variable = new Variable(variableName, intime, memoryAddress);
+    blocPrincipal.addVariable(*variable);
     return visitChildren(ctx);
 }
 
@@ -85,9 +43,9 @@ antlrcpp::Any Visitor::visitAffDecConst(ifccParser::AffDecConstContext *ctx)
     }
     int memoryAddress = addressIterator;
     addressIterator += 4;
-    cout << "  movl $" << retval << ", -" << memoryAddress << "(%rbp)" << endl;
-    Variable* variable = new Variable(variableName, "int", memoryAddress);
-    blocPrincipal.AjouterVariable(*variable);
+    cout << " movl $" << retval << ", -" << memoryAddress << "(%rbp)" << endl;
+    Variable* variable = new Variable(variableName, intime, memoryAddress);
+    blocPrincipal.addVariable(*variable);
     return visitChildren(ctx);
 }
 
@@ -103,9 +61,9 @@ antlrcpp::Any Visitor::visitAffDecVar(ifccParser::AffDecVarContext *ctx)
     }
     int memoryAddress = addressIterator;
     addressIterator += 4;
-    cout << "  movl -" << blocPrincipal.getVariable(existingVariableName)->getAddress() << "(%rbp), -" << memoryAddress << "(%rbp)" << endl;
-    Variable* variable = new Variable(newVariableName, "int", memoryAddress);
-    blocPrincipal.AjouterVariable(*variable);
+    cout << " movl -" << blocPrincipal.getVariable(existingVariableName)->getAddress() << "(%rbp), -" << memoryAddress << "(%rbp)" << endl;
+    Variable* variable = new Variable(newVariableName, intime, memoryAddress);
+    blocPrincipal.addVariable(*variable);
     return visitChildren(ctx);
 }
 
@@ -119,9 +77,9 @@ antlrcpp::Any Visitor::visitAffDecExpr(ifccParser::AffDecExprContext *ctx)
     int memoryAddress = addressIterator;
     addressIterator += 4;
 
-    cout << "  movl % " << (*currentRegister).name << ", -" << memoryAddress << "(%rbp)" << endl;
-    Variable* variable = new Variable(variableName, "int", memoryAddress);
-    blocPrincipal.AjouterVariable(*variable);
+    cout << " movl %eax, -" << memoryAddress << "(%rbp)" << endl;
+    Variable* variable = new Variable(variableName, intime, memoryAddress);
+    blocPrincipal.addVariable(*variable);
     return 0;
 }
 
