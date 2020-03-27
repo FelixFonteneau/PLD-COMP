@@ -365,6 +365,9 @@ antlrcpp::Any Visitor::visitRetConst(ifccParser::RetConstContext *ctx)
 
 antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprContext *ctx)
 {
+  bool isVar = false;
+  bool isExpr = false;
+
   string exprLeft = ctx->expr()[0]->getText();
   string exprRight = ctx->expr()[1]->getText();
 
@@ -378,24 +381,25 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
   if(blocPrincipal.variableExiste(exprRight)) {
     memoryAddressRight = blocPrincipal.getVariable(exprRight)->getAddress();
   }
+
+  if(exprRight.find("(") != string::npos) {
+    isExpr = true;
+  }
+  if(memoryAddressRight != 0) {
+    isVar = true;
+  }
+
   visit(ctx->expr()[0]);
-  if(exprRight.length() > 3) {     //condition à modifier * 10000 pas du tout bon mais solution tampon
+  if(isExpr) {
     visit(ctx->expr()[1]);
   }
-/*mov eax, 1
-	mov ecx, 10
-.L2
-	imul eax, ecx
-	dec ecx
-	jnz .L2
-  */
 
   if(ctx->op->getText() == "*") {
-    if(memoryAddressRight == 0 && memoryAddressRight == 0) {
+    if(!isVar) {
       int rightVal = stoi(exprRight);
       //int leftVal = stoi(exprLeft);
       cout << "  imull $" << rightVal << ", %eax" << endl;
-    } else if(memoryAddressRight != 0) {
+    } else {
       cout << "  imull -" << memoryAddressRight << "(%rbp), %eax" << endl;
     }
   }
