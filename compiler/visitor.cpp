@@ -298,7 +298,7 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
       memoryAddressRight = blocPrincipal.getVariable(exprRight)->getAddress();
     }
 
-    if(exprRight.find("(") != string::npos) {
+    if(exprRight.find("(") != string::npos || exprRight.find("*") != string::npos) {
       isExpr = true;
     }
     if(memoryAddressRight != 0) {
@@ -307,7 +307,14 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
 
     visit(ctx->expr()[0]);
     if(isExpr) {
+      (*currentRegister).used = true;
+      while((*currentRegister).used) {
+        currentRegister++;
+      }
       visit(ctx->expr()[1]);
+      if((*currentRegister).name != "eax") {
+        currentRegister--;
+      }
     }
 
     if(ctx->op->getText() == "+") {
@@ -338,14 +345,8 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
 
 antlrcpp::Any Visitor::visitParExpr(ifccParser::ParExprContext *ctx)
 {
-  while((*currentRegister).used) {
-    currentRegister++;
-  }
   visitChildren(ctx);
   (*currentRegister).used = true;
-  if((*currentRegister).name != "eax") {
-    currentRegister--;
-  }
   return 0;
 }
 
@@ -391,16 +392,26 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
 
   visit(ctx->expr()[0]);
   if(isExpr) {
+    (*currentRegister).used = true;
+    while((*currentRegister).used) {
+      currentRegister++;
+    }
     visit(ctx->expr()[1]);
+    if((*currentRegister).name != "eax") {
+      currentRegister--;
+    }
   }
 
   if(ctx->op->getText() == "*") {
     if(!isVar) {
-      int rightVal = stoi(exprRight);
-      //int leftVal = stoi(exprLeft);
-      cout << "  imull $" << rightVal << ", %eax" << endl;
-    } else {
-      cout << "  imull -" << memoryAddressRight << "(%rbp), %eax" << endl;
+      if(!isExpr) {
+        int rightVal = stoi(exprRight);
+        cout << "  imull $" << rightVal << ", %" << (*currentRegister).name << endl;
+      } else {
+        cout << "  imull %" << (*(currentRegister + 1)).name << ", %" << (*currentRegister).name << endl;
+      }
+    } else if(isVar) {
+      cout << "  imull -" << memoryAddressRight << "(%rbp), %" << (*currentRegister).name << endl;
     }
   }
 
