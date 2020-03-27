@@ -166,15 +166,15 @@ antlrcpp::Any Visitor::visitAffExpr(ifccParser::AffExprContext *ctx)
     if (!blocPrincipal.variableExiste(leftValName)) {
       // if the variable name doesn't exist, we throw an error.
     }
-    int leftValAddr = blocPrincipal.getVariable(leftValName)->getAddress();
+    int memoryAddress = blocPrincipal.getVariable(leftValName)->getAddress();
 
     int val = visitChildren(ctx);
 
-    /*if(val==0) {
+    if(val==0) {
       cout << " movl %eax, -" << memoryAddress << "(%rbp)" << endl;
-    } else {*/
-      cout << " movl $" << val << ", -" << leftValAddr << "(%rbp)" << endl;
-    //}
+    } else {
+      //cout << "movl $" << val << ", -" << leftValAddr << "(%rbp)" << endl;
+    }
 
     return 0;
 }
@@ -361,4 +361,44 @@ antlrcpp::Any Visitor::visitRetConst(ifccParser::RetConstContext *ctx)
     int retval = stoi(ctx->CONST()->getText());
     cout << "  movl $" << retval << ", %eax" << endl;
     return 0;
+}
+
+antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprContext *ctx)
+{
+  string exprLeft = ctx->expr()[0]->getText();
+  string exprRight = ctx->expr()[1]->getText();
+
+  int memoryAddressLeft = 0;
+  int memoryAddressRight = 0;
+
+  if(blocPrincipal.variableExiste(exprLeft)) {
+    memoryAddressLeft = blocPrincipal.getVariable(exprLeft)->getAddress();
+  }
+
+  if(blocPrincipal.variableExiste(exprRight)) {
+    memoryAddressRight = blocPrincipal.getVariable(exprRight)->getAddress();
+  }
+  visit(ctx->expr()[0]);
+  if(exprRight.length() > 3) {     //condition à modifier * 10000 pas du tout bon mais solution tampon
+    visit(ctx->expr()[1]);
+  }
+/*mov eax, 1
+	mov ecx, 10
+.L2
+	imul eax, ecx
+	dec ecx
+	jnz .L2
+  */
+
+  if(ctx->op->getText() == "*") {
+    if(memoryAddressRight == 0 && memoryAddressRight == 0) {
+      int rightVal = stoi(exprRight);
+      //int leftVal = stoi(exprLeft);
+      cout << "  imull $" << rightVal << ", %eax" << endl;
+    } else if(memoryAddressRight != 0) {
+      cout << "  imull -" << memoryAddressRight << "(%rbp), %eax" << endl;
+    }
+  }
+
+  return 0;
 }

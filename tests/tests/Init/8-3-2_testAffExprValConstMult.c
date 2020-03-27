@@ -1,8 +1,7 @@
 #include <inttypes.h>
 int main() {
-	int a = 1;
-	int b = 2;
-	int c = 3;
-	a = a*b*c;
+	int a = 2;
+	int c = 4;
+	a = a*(3*c);
 	return a;
 }
