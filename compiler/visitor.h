@@ -3,10 +3,12 @@
 
 #pragma once
 
+#include <vector>
 
 #include "antlr4-runtime.h"
 #include "antlr4-generated/ifccBaseVisitor.h"
 #include "symbol-table/symbolTable.h"
+#include "intermediate-representation/IR.h"
 
 using namespace std;
 /**
@@ -15,12 +17,10 @@ using namespace std;
  */
 class  Visitor : public ifccBaseVisitor {
 private:
-  int addressIterator;
-  SymbolTable blocPrincipal;
-  int labelcounter;
+  vector<*CFG> cfgs;
 public:
 
-  Visitor();
+  Visitor(vector<*CFG> cfgs);
 
   virtual antlrcpp::Any visitAxiom(ifccParser::AxiomContext *ctx) override;
 
@@ -61,26 +61,4 @@ public:
   virtual antlrcpp::Any visitRetVar(ifccParser::RetVarContext *ctx) override ;
 
   virtual antlrcpp::Any visitRetConst(ifccParser::RetConstContext *ctx) override ;
-
-/*
-  virtual antlrcpp::Any visitAff(ifccParser::AffContext *ctx) override {
-    int retval = stoi(ctx->CONST()->getText());
-    string varialbeName = ctx->VAR()->getText();
-    if( integerVariablesTable.find(varialbeName) != integerVariablesTable.end()){
-      // if the variable name already exist, we throw an error.
-    }
-
-    int memoryAdress = 4;
-    cout<<" movl $"<<retval<<", -" << memoryAdress << "(%rbp)" << endl;
-    integerVariablesTable[varialbeName] = memoryAdress;
-	  return 0;
-}
-
-  virtual antlrcpp::Any visitRet(ifccParser::RetContext *ctx) override {
-    string variable = ctx->VAR()->getText();
-    auto itr = integerVariablesTable.find(variable);
-	  cout<<"  movl -" << itr->second <<"(%rbp), %eax" << endl;
-    return 0;
-  }
-*/
 };

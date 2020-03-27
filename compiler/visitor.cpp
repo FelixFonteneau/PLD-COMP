@@ -1,10 +1,9 @@
 // Generated from ifcc.g4 by ANTLR 4.7.2
 #include "visitor.h"
 
-Visitor::Visitor()
+Visitor::Visitor(vector<*CFG> cfgs_)
 {
-    addressIterator = 4;
-    labelcounter = 0;
+  cfgs = cfgs_;
 }
 
 antlrcpp::Any Visitor::visitAxiom(ifccParser::AxiomContext *ctx)
@@ -14,23 +13,10 @@ antlrcpp::Any Visitor::visitAxiom(ifccParser::AxiomContext *ctx)
 
 antlrcpp::Any Visitor::visitProg(ifccParser::ProgContext *ctx)
 {
-
-    cout << ".text \n" //"# declaration of ’text’ section (which means ’program’)" // entry point to the ELF linker or loader.
-            ".global main \n"
-            "main: \n"
-            "  # prologue\n"
-            "  pushq %rbp\n"      //save %rbp on the stack
-            "  movq %rsp, %rbp\n" //define %rbp for the current function
-
-            "\n  # body \n";
-
-    visitChildren(ctx);
-
-    cout << "\n  # epilogue\n"
-            "  popq %rbp\n" //restore %rbp from the stack
-            "  ret\n";      //return to the caller (here the shell)
-
-    return 0;
+  // visit the main function of the program and create the first cfg
+  CFG main = new CFG("main");
+  visitChildren(ctx);
+  return 0;
 }
 
 antlrcpp::Any Visitor::visitDec(ifccParser::DecContext *ctx)
@@ -42,8 +28,8 @@ antlrcpp::Any Visitor::visitDec(ifccParser::DecContext *ctx)
     }
     int memoryAddress = addressIterator;
     addressIterator += 4;
-    Variable* variable = new Variable(variableName, "int", memoryAddress);
-    blocPrincipal.AjouterVariable(*variable);
+    Variable* variable = new Variable(variableName, intime, memoryAddress);
+    blocPrincipal.addVariable(*variable);
     return visitChildren(ctx);
 }
 
@@ -58,8 +44,8 @@ antlrcpp::Any Visitor::visitAffDecConst(ifccParser::AffDecConstContext *ctx)
     int memoryAddress = addressIterator;
     addressIterator += 4;
     cout << " movl $" << retval << ", -" << memoryAddress << "(%rbp)" << endl;
-    Variable* variable = new Variable(variableName, "int", memoryAddress);
-    blocPrincipal.AjouterVariable(*variable);
+    Variable* variable = new Variable(variableName, intime, memoryAddress);
+    blocPrincipal.addVariable(*variable);
     return visitChildren(ctx);
 }
 
@@ -76,8 +62,8 @@ antlrcpp::Any Visitor::visitAffDecVar(ifccParser::AffDecVarContext *ctx)
     int memoryAddress = addressIterator;
     addressIterator += 4;
     cout << " movl -" << blocPrincipal.getVariable(existingVariableName)->getAddress() << "(%rbp), -" << memoryAddress << "(%rbp)" << endl;
-    Variable* variable = new Variable(newVariableName, "int", memoryAddress);
-    blocPrincipal.AjouterVariable(*variable);
+    Variable* variable = new Variable(newVariableName, intime, memoryAddress);
+    blocPrincipal.addVariable(*variable);
     return visitChildren(ctx);
 }
 
@@ -92,8 +78,8 @@ antlrcpp::Any Visitor::visitAffDecExpr(ifccParser::AffDecExprContext *ctx)
     addressIterator += 4;
 
     cout << " movl %eax, -" << memoryAddress << "(%rbp)" << endl;
-    Variable* variable = new Variable(variableName, "int", memoryAddress);
-    blocPrincipal.AjouterVariable(*variable);
+    Variable* variable = new Variable(variableName, intime, memoryAddress);
+    blocPrincipal.addVariable(*variable);
     return 0;
 }
 

@@ -12,6 +12,7 @@
 
 //--------------------------------------------------- Interfaces utilisées
 #include <unordered_map>
+#include <string>
 #include "variable.h"
 
 //------------------------------------------------------------- Constantes
@@ -34,7 +35,9 @@ public:
 
     bool variableExiste(string nom);
     Variable* getVariable(string nom);
-    void AjouterVariable(Variable &var);
+    void addVariable(Variable &var);
+
+    string varToAsm(string reg);
 
 //------------------------------------------------- Surcharge d'opérateurs
 

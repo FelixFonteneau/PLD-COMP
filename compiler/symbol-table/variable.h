@@ -16,6 +16,11 @@
 //------------------------------------------------------------- Constantes
 
 //------------------------------------------------------------------ Types
+typedef enum {
+  intime, //todo
+  charete //todo
+} Type;
+
 using namespace std;
 
 //------------------------------------------------------------------------
@@ -37,7 +42,7 @@ public:
     return this->name;
   }
 
-  string getType()
+  Type getType()
   {
     return this->type;
   }
@@ -60,7 +65,7 @@ public:
     // Contrat :
     //
 
-    Variable (string name, string type, int address) : name(name), type(type), address(address){}
+    Variable (string name, Type type, int address) : name(name), type(type), address(address){}
     // Mode d'emploi :
     //
     // Contrat :
@@ -75,7 +80,7 @@ protected:
 
 //----------------------------------------------------- Attributs protégés
   string name;
-  string type;
+  Type type;
   int address;
 
 
