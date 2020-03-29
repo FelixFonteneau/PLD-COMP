@@ -80,6 +80,8 @@ BasicBlock::BasicBlock (SymbolTable * symbolTable_, string entry_label)
 // Algorithme :
 //
 {
+  exit_true = nullptr;
+  exit_false = nullptr;
   symbolTable = symbolTable_;
   label = entry_label;
 } //----- Fin de BasicBlock

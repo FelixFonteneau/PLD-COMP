@@ -43,18 +43,20 @@ class CFG {
 
 	// x86 code generation: could be encapsulated in a processor class in a retargetable compiler
 	void genAsm(ostream& o);
-	void genAsmPrologue(ostream& o);
 
 	// symbol table methods
 	void addToSymbolTable(string name, Type t);
 	string createNewTempvar(Type t);
 
 	// basic block management
-	string newBBName();
 	BasicBlock* current_bb;
 
   SymbolTable symbolTable;
  protected:
+  void genAsmPrologue(ostream& o);
+  string newBBName();
+
+
   string name;
 	int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
 	int nextBBnumber; /**< just for naming */

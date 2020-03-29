@@ -77,7 +77,7 @@ antlrcpp::Any Visitor::visitAffDecConst(ifccParser::AffDecConstContext *ctx)
         // if the variable name already exists, we throw an error.
     }
     currentCFG->addToSymbolTable(variableName, INT);
-    string constant = "$"+ to_string(retval) + ",";
+    string constant = "$"+ to_string(retval);
     vector<string> params {constant, currentCFG->symbolTable.varToAsm(variableName)};
     currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
 
