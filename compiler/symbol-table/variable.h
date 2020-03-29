@@ -1,52 +1,73 @@
 /*************************************************************************
-                           Bloc  -  description
+                           Variable  -  description
                              -------------------
     début                : $DATE$
     copyright            : (C) $YEAR$ par $AUTHOR$
     e-mail               : $EMAIL$
 *************************************************************************/
 
-//---------- Interface de la classe <Bloc> (fichier Bloc.h) ----------------
-#if ! defined ( BLOC_H )
-#define BLOC_H
+//---------- Interface de la classe <Variable> (fichier Variable.h) ----------------
+#if ! defined ( VARIABLE_H )
+#define VARIABLE_H
 
 //--------------------------------------------------- Interfaces utilisées
-#include <unordered_map>
-#include "variable.h"
-
+#include <string>
+#include "type.h"
 //------------------------------------------------------------- Constantes
 
 //------------------------------------------------------------------ Types
+
+using namespace std;
+
 //------------------------------------------------------------------------
-// Rôle de la classe <Bloc>
+// Rôle de la classe <Variable>
 //
-// Cette classe correspond a l'objet represetant toues les informations d'un
-// Bloc. Elle contient toutes les donnees nécessaires pour la gestion des blocs
-// pendant la compilation.
+// Cette classe correspond a l'objet represetant toues les informations d'une
+// variable. Elle contient toutes les donnees nécessaires concernant les
+// variables pendant la compilation.
 //
 //------------------------------------------------------------------------
-class Bloc
+class Variable
 {
 //----------------------------------------------------------------- PUBLIC
 
 public:
 //----------------------------------------------------- Méthodes publiques
+  string getName()
+  {
+    return this->name;
+  }
 
-    bool variableExiste(string nom);
-    Variable* getVariable(string nom);
-    void AjouterVariable(Variable &var);
+  Type getType()
+  {
+    return this->type;
+  }
+
+  int getAddress()
+  {
+    return this->address;
+  }
+
+
+
 
 //------------------------------------------------- Surcharge d'opérateurs
 
 //-------------------------------------------- Constructeurs - destructeur
-    // Bloc (const Bloc & unBloc);
-    Bloc ();
+    // Variable (const Variable & unVariable);
+    Variable ();
     // Mode d'emploi :
     //
     // Contrat :
     //
 
-    virtual ~Bloc ( );
+    Variable (string name, Type type, int address) : name(name), type(type), address(address){}
+    // Mode d'emploi :
+    //
+    // Contrat :
+    //
+
+    virtual ~Variable ( );
 
 //------------------------------------------------------------------ PRIVE
 
@@ -54,11 +75,14 @@ protected:
 //----------------------------------------------------- Méthodes protégées
 
 //----------------------------------------------------- Attributs protégés
+  string name;
+  Type type;
+  int address;
 
-unordered_map<string, Variable> variables; // <liste des variables dans le bloc principal>
+
 
 };
 
-//-------------------------------- Autres définitions dépendantes de <Bloc>
+//-------------------------------- Autres définitions dépendantes de <Variable>
 
-#endif // BLOC_H
+#endif // VARIABLE_H

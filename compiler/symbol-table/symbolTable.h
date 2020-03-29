@@ -1,72 +1,57 @@
 /*************************************************************************
-                           Variable  -  description
+                           SymbolTable  -  description
                              -------------------
     début                : $DATE$
     copyright            : (C) $YEAR$ par $AUTHOR$
     e-mail               : $EMAIL$
 *************************************************************************/
 
-//---------- Interface de la classe <Variable> (fichier Variable.h) ----------------
-#if ! defined ( VARIABLE_H )
-#define VARIABLE_H
+//---------- Interface de la classe <SymbolTable> (fichier SymbolTable.h) ----------------
+#if ! defined ( SYMBOLTABLE_H )
+#define SYMBOLTABLE_H
 
 //--------------------------------------------------- Interfaces utilisées
+#include <unordered_map>
 #include <string>
+#include "variable.h"
 
 //------------------------------------------------------------- Constantes
 
 //------------------------------------------------------------------ Types
-using namespace std;
-
 //------------------------------------------------------------------------
-// Rôle de la classe <Variable>
+// Rôle de la classe <SymbolTable>
 //
-// Cette classe correspond a l'objet represetant toues les informations d'une
-// variable. Elle contient toutes les donnees nécessaires concernant les
-// variables pendant la compilation.
+// Cette classe correspond a l'objet represetant toues les informations d'un
+// SymbolTable. Elle contient toutes les donnees nécessaires pour la gestion des blocs
+// pendant la compilation.
 //
 //------------------------------------------------------------------------
-class Variable
+class SymbolTable
 {
 //----------------------------------------------------------------- PUBLIC
 
 public:
 //----------------------------------------------------- Méthodes publiques
-  string getName()
-  {
-    return this->name;
-  }
 
-  string getType()
-  {
-    return this->type;
-  }
+    bool variableExiste(string nom);
+    Variable* getVariable(string nom);
+    void addVariable(Variable &var);
 
-  int getAddress()
-  {
-    return this->address;
-  }
+    string varToAsm(string reg);
 
-
-
+    int bitesSize();
 
 //------------------------------------------------- Surcharge d'opérateurs
 
 //-------------------------------------------- Constructeurs - destructeur
-    // Variable (const Variable & unVariable);
-    Variable ();
+    // SymbolTable (const SymbolTable & unSymbolTable);
+    SymbolTable ();
     // Mode d'emploi :
     //
     // Contrat :
     //
 
-    Variable (string name, string type, int address) : name(name), type(type), address(address){}
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
-
-    virtual ~Variable ( );
+    virtual ~SymbolTable ( );
 
 //------------------------------------------------------------------ PRIVE
 
@@ -74,14 +59,11 @@ protected:
 //----------------------------------------------------- Méthodes protégées
 
 //----------------------------------------------------- Attributs protégés
-  string name;
-  string type;
-  int address;
 
-
+unordered_map<string, Variable> variables; // <liste des variables dans le bloc principal>
 
 };
 
-//-------------------------------- Autres définitions dépendantes de <Variable>
+//-------------------------------- Autres définitions dépendantes de <SymbolTable>
 
-#endif // VARIABLE_H
+#endif // SYMBOLTABLE_H
