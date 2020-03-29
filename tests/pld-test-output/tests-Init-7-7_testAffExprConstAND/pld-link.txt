@@ -1,0 +1,4 @@
+asm-pld.s: Assembler messages:
+asm-pld.s:8: Error: expecting operand after ','; got nothing
+
+return code: 1

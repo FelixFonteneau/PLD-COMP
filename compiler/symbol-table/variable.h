@@ -12,14 +12,10 @@
 
 //--------------------------------------------------- Interfaces utilisées
 #include <string>
-
+#include "type.h"
 //------------------------------------------------------------- Constantes
 
 //------------------------------------------------------------------ Types
-typedef enum {
-  intime, //todo
-  charete //todo
-} Type;
 
 using namespace std;
 

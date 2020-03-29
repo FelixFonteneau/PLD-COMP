@@ -1,9 +1,45 @@
 // Generated from ifcc.g4 by ANTLR 4.7.2
 #include "visitor.h"
 
-Visitor::Visitor(vector<*CFG> cfgs_)
+#include "intermediate-representation/IRInstr.h"
+#include "intermediate-representation/BasicBlock.h"
+#include "intermediate-representation/CFG.h"
+
+Visitor::Visitor(vector<CFG*>* cfgs_)
 {
-  cfgs = cfgs_;
+    cfgs = cfgs_;
+    currentCFG = nullptr;
+    currentBasicBlock = nullptr;
+    /*addressIterator = 4;
+    labelcounter = 0;
+    eax.name = "eax";
+    eax.used = false;
+    registers[0] = eax;
+    ebx.name = "ebx";
+    ebx.used = false;
+    registers[1] = ebx;
+    ecx.name = "ecx";
+    ecx.used = false;
+    registers[2] = ecx;
+    edx.name = "edx";
+    edx.used = false;
+    registers[3] = edx;
+    edi.name = "edi";
+    edi.used = false;
+    registers[4] = edi;
+    esi.name = "esi";
+    esi.used = false;
+    registers[5] = esi;
+    ebp.name = "ebp";
+    ebp.used = false;
+    registers[6] = ebp;
+    esp.name = "esp";
+    esp.used = false;
+    registers[7] = esp;
+    eip.name = "eip";
+    eip.used = false;
+    registers[8] = eip;
+    currentRegister = registers;*/
 }
 
 antlrcpp::Any Visitor::visitAxiom(ifccParser::AxiomContext *ctx)
@@ -13,23 +49,22 @@ antlrcpp::Any Visitor::visitAxiom(ifccParser::AxiomContext *ctx)
 
 antlrcpp::Any Visitor::visitProg(ifccParser::ProgContext *ctx)
 {
-  // visit the main function of the program and create the first cfg
-  CFG main = new CFG("main");
-  visitChildren(ctx);
-  return 0;
+    currentCFG = new CFG("main");
+    (*cfgs).push_back(currentCFG);
+    currentBasicBlock = currentCFG->createNewBB();
+
+    visitChildren(ctx);
+    return 0;
 }
 
 antlrcpp::Any Visitor::visitDec(ifccParser::DecContext *ctx)
 {
     string variableName = ctx->VAR()->getText();
-    if (blocPrincipal.variableExiste(variableName))
+    if (currentCFG->symbolTable.variableExiste(variableName))
     {
         // if the variable name already exists, we throw an error.
     }
-    int memoryAddress = addressIterator;
-    addressIterator += 4;
-    Variable* variable = new Variable(variableName, intime, memoryAddress);
-    blocPrincipal.addVariable(*variable);
+    currentCFG->addToSymbolTable(variableName, INT);
     return visitChildren(ctx);
 }
 
@@ -37,38 +72,37 @@ antlrcpp::Any Visitor::visitAffDecConst(ifccParser::AffDecConstContext *ctx)
 {
     int retval = stoi(ctx->CONST()->getText());
     string variableName = ctx->VAR()->getText();
-    if (blocPrincipal.variableExiste(variableName))
+    if (currentCFG->symbolTable.variableExiste(variableName))
     {
         // if the variable name already exists, we throw an error.
     }
-    int memoryAddress = addressIterator;
-    addressIterator += 4;
-    cout << " movl $" << retval << ", -" << memoryAddress << "(%rbp)" << endl;
-    Variable* variable = new Variable(variableName, intime, memoryAddress);
-    blocPrincipal.addVariable(*variable);
+    currentCFG->addToSymbolTable(variableName, INT);
+    string constant = "$"+ to_string(retval) + ",";
+    vector<string> params {constant, currentCFG->symbolTable.varToAsm(variableName)};
+    currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+
     return visitChildren(ctx);
 }
 
 antlrcpp::Any Visitor::visitAffDecVar(ifccParser::AffDecVarContext *ctx)
 {
     string newVariableName = ctx->VAR()[0]->getText();
-    if (blocPrincipal.variableExiste(newVariableName))    {
+    if (currentCFG->symbolTable.variableExiste(newVariableName))    {
         // if the variable name already exists, we throw an error.
     }
     string existingVariableName = ctx->VAR()[1]->getText();
-    if (!blocPrincipal.variableExiste(existingVariableName))    {
+    if (!currentCFG->symbolTable.variableExiste(existingVariableName)){
         // if the variable name does not exist, we throw an error.
     }
-    int memoryAddress = addressIterator;
-    addressIterator += 4;
-    cout << " movl -" << blocPrincipal.getVariable(existingVariableName)->getAddress() << "(%rbp), -" << memoryAddress << "(%rbp)" << endl;
-    Variable* variable = new Variable(newVariableName, intime, memoryAddress);
-    blocPrincipal.addVariable(*variable);
+    currentCFG->addToSymbolTable(newVariableName, INT);
+    vector<string> params {currentCFG->symbolTable.varToAsm(existingVariableName), currentCFG->symbolTable.varToAsm(newVariableName)};
+    currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
     return visitChildren(ctx);
 }
 
 antlrcpp::Any Visitor::visitAffDecExpr(ifccParser::AffDecExprContext *ctx)
 {
+  /*
     string variableName = ctx->VAR()->getText();
     visitChildren(ctx);
     if(blocPrincipal.variableExiste(variableName)){
@@ -77,35 +111,37 @@ antlrcpp::Any Visitor::visitAffDecExpr(ifccParser::AffDecExprContext *ctx)
     int memoryAddress = addressIterator;
     addressIterator += 4;
 
-    cout << " movl %eax, -" << memoryAddress << "(%rbp)" << endl;
-    Variable* variable = new Variable(variableName, intime, memoryAddress);
-    blocPrincipal.addVariable(*variable);
+    cout << "  movl % " << (*currentRegister).name << ", -" << memoryAddress << "(%rbp)" << endl;
+    Variable* variable = new Variable(variableName, "int", memoryAddress);
+    blocPrincipal.AjouterVariable(*variable);
+    */
     return 0;
+
 }
 
 antlrcpp::Any Visitor::visitAffVar(ifccParser::AffVarContext *ctx)
 {
   string leftValName = ctx->VAR()[0]->getText();
-  if (!blocPrincipal.variableExiste(leftValName)) {
+  if (!currentCFG->symbolTable.variableExiste(leftValName)) {
     // if the variable name doesn't exist, we throw an error.
   }
 
   string rightValName = ctx->VAR()[1]->getText();
-  if (!blocPrincipal.variableExiste(rightValName)) {
+  if (!currentCFG->symbolTable.variableExiste(rightValName)) {
     // if the variable name doesn't exist, we throw an error.
   }
+  vector<string> params {currentCFG->symbolTable.varToAsm(rightValName), "%eax"};
+  vector<string> params2 {"%eax", currentCFG->symbolTable.varToAsm(leftValName)};
 
-  int rightValAddr = blocPrincipal.getVariable(rightValName)->getAddress();
-  int leftValAddr = blocPrincipal.getVariable(leftValName)->getAddress();
-
-  cout << "  movl -" << rightValAddr << "(%rbp), %eax" << endl;
-  cout << "  movl %eax, -" << leftValAddr << "(%rbp)" << endl;
+  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params2);
 
   return 0;
 }
 
 antlrcpp::Any Visitor::visitAffConst(ifccParser::AffConstContext *ctx)
 {
+  /*
     int retval = stoi(ctx->CONST()->getText());
     string variableName = ctx->VAR()->getText();
     if (!blocPrincipal.variableExiste(variableName))
@@ -114,12 +150,15 @@ antlrcpp::Any Visitor::visitAffConst(ifccParser::AffConstContext *ctx)
     }
     int memoryAddress = blocPrincipal.getVariable(variableName)->getAddress();
     cout << " movl $" << retval << ", -" << memoryAddress << "(%rbp)" << endl;
+    */
     return visitChildren(ctx);
     //cout << "Coucou dans le visitAffConst" << endl;
+
 }
 
 antlrcpp::Any Visitor::visitAffExpr(ifccParser::AffExprContext *ctx)
 {
+  /*
     string leftValName = ctx->VAR()->getText();
     if (!blocPrincipal.variableExiste(leftValName)) {
       // if the variable name doesn't exist, we throw an error.
@@ -133,24 +172,26 @@ antlrcpp::Any Visitor::visitAffExpr(ifccParser::AffExprContext *ctx)
     } else {
       //cout << "movl $" << val << ", -" << leftValAddr << "(%rbp)" << endl;
     }
-
+*/
     return 0;
 }
 
 antlrcpp::Any Visitor::visitIfNoElse(ifccParser::IfNoElseContext *ctx)
 {
+  /*
   int ifnumber = labelcounter++;
   cout << ".if" << ifnumber << ":" <<endl;
   visit(ctx->testExpr());
   cout << ".fi" << ifnumber << endl;
   visit(ctx->bloc());
   cout << ".fi" << ifnumber << ":" << endl;
-
+*/
   return 0;
 }
 
 antlrcpp::Any Visitor::visitIfWithElse(ifccParser::IfWithElseContext *ctx)
 {
+  /*
   int ifnumber = labelcounter++;
   cout << ".if" << ifnumber << ":" <<endl;
   visit(ctx->testExpr());
@@ -160,12 +201,13 @@ antlrcpp::Any Visitor::visitIfWithElse(ifccParser::IfWithElseContext *ctx)
   cout << ".else" << ifnumber << ":" << endl;
   visit(ctx->bloc()[1]);
   cout << ".fi" << ifnumber << ":" << endl;
-
+*/
   return 0;
 }
 
 antlrcpp::Any Visitor::visitIfElseIf(ifccParser::IfElseIfContext *ctx)
 {
+  /*
   int ifnumber = labelcounter++;
   cout << ".if" << ifnumber << ":" <<endl;
   visit(ctx->testExpr());
@@ -175,12 +217,14 @@ antlrcpp::Any Visitor::visitIfElseIf(ifccParser::IfElseIfContext *ctx)
   cout << ".else" << ifnumber << ":" << endl;
   visit(ctx->ifLoop());
   cout << ".fi" << ifnumber << ":" << endl;
-
+*/
   return 0;
 }
 
 antlrcpp::Any Visitor::visitRelationalTestExpr(ifccParser::RelationalTestExprContext *ctx)
 {
+
+  /*
   visit(ctx->expr()[0]);
   cout << " movl %eax, %ebx" << endl;
   visit(ctx->expr()[1]);
@@ -198,12 +242,13 @@ antlrcpp::Any Visitor::visitRelationalTestExpr(ifccParser::RelationalTestExprCon
   else if(ctx->op->getText() == "<=") {
     cout << " jg ";
   }
-
+  */
   return 0;
 }
 
 antlrcpp::Any Visitor::visitEqualityTestExpr(ifccParser::EqualityTestExprContext *ctx)
 {
+  /*
   visit(ctx->expr()[0]);
   cout << " movl %eax, %ebx" << endl;
   visit(ctx->expr()[1]);
@@ -215,6 +260,7 @@ antlrcpp::Any Visitor::visitEqualityTestExpr(ifccParser::EqualityTestExprContext
   else if(ctx->op->getText() == "!=") {
     cout << " je ";
   }
+  */
   return 0;
 }
 
@@ -225,21 +271,24 @@ antlrcpp::Any Visitor::visitParTestExpr(ifccParser::ParTestExprContext *ctx)
 
 antlrcpp::Any Visitor::visitConstExpr(ifccParser::ConstExprContext *ctx)
 {
+  /*
     int val = stoi(ctx->CONST()->getText());
     cout << "  movl $" << val << ", %" << (*currentRegister).name << endl;
+    */
     return 0;
 }
 
 antlrcpp::Any Visitor::visitVarExpr(ifccParser::VarExprContext *ctx)
 {
-    string var = ctx->VAR()->getText();
+    /*string var = ctx->VAR()->getText();
     cout << "  movl -" << blocPrincipal.getVariable(var)->getAddress() << "(%rbp), %" << (*currentRegister).name << endl;
+    */
     return 0;
 }
 
 antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
 {
-    bool isVar = false;
+    /*bool isVar = false;
     bool isExpr = false;
 
     string exprLeft = ctx->expr()[0]->getText();
@@ -297,33 +346,38 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
         } else if(isVar) {
           cout << "  subl -" << memoryAddressRight << "(%rbp), %" << (*currentRegister).name << endl;
         }
-    }
+    }*/
     return 0;
   }
 
 antlrcpp::Any Visitor::visitParExpr(ifccParser::ParExprContext *ctx)
 {
+  /*
   visitChildren(ctx);
   (*currentRegister).used = true;
+  */
   return 0;
 }
 
 antlrcpp::Any Visitor::visitRetVar(ifccParser::RetVarContext *ctx)
 {
-    string variable = ctx->VAR()->getText();
-    cout << "  movl -" << blocPrincipal.getVariable(variable)->getAddress() << "(%rbp), %eax" << endl;
-    return 0;
+  string variable = ctx->VAR()->getText();
+  vector<string> params {currentCFG->symbolTable.varToAsm(variable), "%eax"};
+  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+  return 0;
 }
 
 antlrcpp::Any Visitor::visitRetConst(ifccParser::RetConstContext *ctx)
 {
-    int retval = stoi(ctx->CONST()->getText());
-    cout << "  movl $" << retval << ", %eax" << endl;
+    string retval = ctx->CONST()->getText();
+    vector<string> params {"$"+retval, "%eax"};
+    currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
     return 0;
 }
 
 antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprContext *ctx)
 {
+  /*
   bool isVar = false;
   bool isExpr = false;
 
@@ -372,6 +426,6 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
       cout << "  imull -" << memoryAddressRight << "(%rbp), %" << (*currentRegister).name << endl;
     }
   }
-
+*/
   return 0;
 }

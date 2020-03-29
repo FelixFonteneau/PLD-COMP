@@ -7,7 +7,10 @@
 #include "antlr4-runtime.h"
 #include "antlr4-generated/ifccBaseVisitor.h"
 #include "symbol-table/symbolTable.h"
-#include "intermediate-representation/IR.h"
+#include "symbol-table/type.h"
+#include "intermediate-representation/IRInstr.h"
+#include "intermediate-representation/BasicBlock.h"
+#include "intermediate-representation/CFG.h"
 
 using namespace std;
 
@@ -17,10 +20,12 @@ using namespace std;
  */
 class  Visitor : public ifccBaseVisitor {
 private:
-  vector<*CFG> cfgs;
+  vector<CFG*>* cfgs;
+  CFG* currentCFG;
+  BasicBlock* currentBasicBlock;
 public:
 
-  Visitor(vector<*CFG> cfgs);
+  Visitor(vector<CFG*>* cfgs);
 
   virtual antlrcpp::Any visitAxiom(ifccParser::AxiomContext *ctx) override;
 
@@ -63,4 +68,7 @@ public:
   virtual antlrcpp::Any visitRetVar(ifccParser::RetVarContext *ctx) override ;
 
   virtual antlrcpp::Any visitRetConst(ifccParser::RetConstContext *ctx) override ;
+
+  virtual antlrcpp::Any visitMultiplicationExpr(ifccParser::MultiplicationExprContext *ctx) override ;
+
 };

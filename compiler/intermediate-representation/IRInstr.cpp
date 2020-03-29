@@ -15,7 +15,7 @@
 using namespace std;
 
 //------------------------------------------------------ Include personnel
-#include "IR.h"
+#include "IRInstr.h"
 
 //------------------------------------------------------------- Constantes
 
@@ -28,7 +28,7 @@ using namespace std;
 //{
 //} //----- Fin de Méthode
 
-void IRInstr::gen_asm(ostream &o){ /**< x86 assembly code generation for this IR instruction */
+void IRInstr::genAsm(ostream &o){ /**< x86 assembly code generation for this IR instruction */
   string operation = "";
   switch (op) {
     case ldconst:
@@ -63,9 +63,9 @@ void IRInstr::gen_asm(ostream &o){ /**< x86 assembly code generation for this IR
       break;
   }
 
-  o << "  " << operation;
+  o << "  " << operation << " ";
   for(vector<string>::iterator it = params.begin(); it != params.end(); it++ ){
-    o << " " <<  *it;
+    o  << *it << (next(it) != params.end() ? ", " : "");
   }
   o << endl;
 }

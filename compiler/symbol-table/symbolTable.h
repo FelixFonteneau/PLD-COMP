@@ -39,6 +39,8 @@ public:
 
     string varToAsm(string reg);
 
+    int bitesSize();
+
 //------------------------------------------------- Surcharge d'opérateurs
 
 //-------------------------------------------- Constructeurs - destructeur

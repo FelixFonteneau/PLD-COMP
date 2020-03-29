@@ -15,7 +15,7 @@
 using namespace std;
 
 //------------------------------------------------------ Include personnel
-#include "IR.h"
+#include "BasicBlock.h"
 
 //------------------------------------------------------------- Constantes
 
@@ -27,14 +27,13 @@ using namespace std;
 //
 //{
 //} //----- Fin de Méthode
-void BasicBlock::gen_asm(ostream &o){ /**< x86 assembly code generation for this basic block (very simple) */
-  o << "." << label << ":" << endl;
+void BasicBlock::genAsm(ostream &o){ /**< x86 assembly code generation for this basic block (very simple) */
   for(vector<IRInstr*>::iterator it = instrs.begin(); it != instrs.end(); it++){
-    (*it)->gen_asm(o);
+    (*it)->genAsm(o);
   }
 
   if(exit_true == nullptr){
-    cfg->gen_asm_epilogue(o);
+    genAsmEpilogue(o);
   } else if(exit_false != nullptr && (*(instrs.end()--))->isComp() ){
     // deux branches conditionnels sur la valeur de la dernière variable assignée
     o << "  je ." << exit_true->getLabel() << endl;
@@ -47,10 +46,19 @@ void BasicBlock::gen_asm(ostream &o){ /**< x86 assembly code generation for this
   o << endl;
 }
 
-void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> params){
+void BasicBlock::addIRInstr(IRInstr::Operation op, Type t, vector<string> params){
   IRInstr* newInstr = new IRInstr(symbolTable, op, t, params);
   instrs.push_back(newInstr);
 
+}
+void BasicBlock::genAsmEpilogue(ostream& o){
+//  o << "  #epilogue" << endl;
+//  o << "  mov	%rsp, %rbp" << endl;
+//  o << "  popq	%rbp"     << endl;
+//  o << "  ret"           << endl;
+cout << "\n  # epilogue\n"
+        "  popq %rbp\n" //restore %rbp from the stack
+        "  ret\n";      //return to the caller (here the shell)
 }
 
 void BasicBlock::setExitTrueBlock(BasicBlock* exit_true_){
@@ -68,11 +76,10 @@ string BasicBlock::getLabel(){
 //------------------------------------------------- Surcharge d'opérateurs
 //-------------------------------------------- Constructeurs - destructeur
 
-BasicBlock::BasicBlock (SymbolTable * symbolTable_, CFG* cfg_, string entry_label)
+BasicBlock::BasicBlock (SymbolTable * symbolTable_, string entry_label)
 // Algorithme :
 //
 {
-  cfg = cfg_;
   symbolTable = symbolTable_;
   label = entry_label;
 } //----- Fin de BasicBlock

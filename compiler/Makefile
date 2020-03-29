@@ -30,7 +30,7 @@ ifcc: dirs antlr  main.cpp visitor.cpp visitor.h
 	$(CC) $(CCARGS) $(IR)/CFG.cpp -o $(OUTPUT)/CFG.o
 	$(CC) $(CCARGS) $(IR)/IRInstr.cpp -o $(OUTPUT)/IRInstr.o
 	$(CC) $(CCARGS) visitor.cpp -o $(OUTPUT)/visitor.o
-	$(CC) $(LDARGS) $(OUTPUT)/main.o $(OUTPUT)/ifccBaseVisitor.o $(OUTPUT)/ifccLexer.o $(OUTPUT)/ifccVisitor.o $(OUTPUT)/ifccParser.o $(OUTPUT)/variable.o $(OUTPUT)/symbolTable.o $(OUTPUT)/visitor.o $(OUTPUT)/syntaxErrorListener.o $(OUTPUT)/syntaxError.o $(ANTLR4_LIBDIR)/libantlr4-runtime.a -o ifcc
+	$(CC) $(LDARGS) $(OUTPUT)/main.o $(OUTPUT)/ifccBaseVisitor.o $(OUTPUT)/ifccLexer.o $(OUTPUT)/ifccVisitor.o $(OUTPUT)/ifccParser.o $(OUTPUT)/variable.o $(OUTPUT)/symbolTable.o $(OUTPUT)/visitor.o $(OUTPUT)/IRInstr.o $(OUTPUT)/BasicBlock.o $(OUTPUT)/CFG.o $(OUTPUT)/syntaxErrorListener.o $(OUTPUT)/syntaxError.o $(ANTLR4_LIBDIR)/libantlr4-runtime.a -o ifcc
 
 antlr: $(GRAMMAR)
 	$(ANTLR4_BINDIR)/antlr4 -visitor -no-listener -Dlanguage=Cpp -o $(GENERATED) $(GRAMMAR)

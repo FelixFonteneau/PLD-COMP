@@ -10,7 +10,7 @@
 #include "antlr4-generated/ifccBaseVisitor.h"
 #include "visitor.h"
 #include "error/syntaxErrorListener.h"
-#include "intermediate-representation/IR.h"
+#include "intermediate-representation/CFG.h"
 
 
 using namespace antlr4;
@@ -45,12 +45,19 @@ int main(int argn, const char **argv) {
     return 1;
   }
 
-  vector<*CFG> cfgs;
+  vector<CFG*> cfgs;
 
-  Visitor visitor(cfgs);
+  Visitor visitor(&cfgs);
   visitor.visit(tree);
 
   // pass CFG to x86 back-end
+
+  cout << ".text \n" //"# declaration of ’text’ section (which means ’program’)" // entry point to the ELF linker or loader.
+          ".global main \n";
+  for(vector<CFG*>::iterator it = cfgs.begin(); it != cfgs.end(); it++){
+    (*it)->genAsm(cout);
+  }
+
 
 
   return 0;

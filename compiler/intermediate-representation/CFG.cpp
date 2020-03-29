@@ -15,7 +15,7 @@
 using namespace std;
 
 //------------------------------------------------------ Include personnel
-#include "IR.h"
+#include "CFG.h"
 //------------------------------------------------------------- Constantes
 
 //----------------------------------------------------------------- PUBLIC
@@ -26,36 +26,42 @@ using namespace std;
 //
 //{
 //} //----- Fin de Méthode
-void CFG::add_bb(BasicBlock* bb){
-  current_bb = bb;
+BasicBlock* CFG::createNewBB(){
+  current_bb  = new BasicBlock( &symbolTable, newBBName());
   nextBBnumber++;
-  bbs.push_back(bb);
+  bbs.push_back(current_bb);
+  return current_bb;
 }
 
-void CFG::gen_asm(ostream& o){
-  gen_asm_prologue(o);
-  o << endl;
+void CFG::genAsm(ostream& o){
+  o << name << ":" << endl;
+
+  int blocNumber = 1;
   for(vector<BasicBlock*>::iterator it = bbs.begin(); it != bbs.end(); it++){
-    (*it)->gen_asm(o);
+    o << "." << (*it)->getLabel() << ":" << endl;
+    if(blocNumber == 1){
+      genAsmPrologue(o);
+    }
+    (*it)->genAsm(o);
+    blocNumber++;
   }
+
+
 }
 
-void CFG::gen_asm_prologue(ostream& o){
+void CFG::genAsmPrologue(ostream& o){
   o << "  #prologue" << endl;
-  o << "  pushq %rbp" << endl;
-  o << "  mov	%rbp, %rsp" << endl;
-  o << "  subl	%rsp," << endl;
+//  o << "  pushq %rbp" << endl;
+//  o << "  mov	%rbp, %rsp" << endl;
+//  o << "  sub	%rsp, " << symbolTable.bitesSize()<< endl;
+  o <<"  pushq %rbp\n"      //save %rbp on the stack
+      "  movq %rsp, %rbp\n"; //define %rbp for the current function
 }
 
-void CFG::gen_asm_epilogue(ostream& o){
-  o << "  #epilogue" << endl;
-  o << "  mov	%rsp, %rbp" << endl;
-  o << "  popq	%rbp"     << endl;
-  o << "  ret"           << endl;
-}
+
 
 // symbol table methods
-void CFG::add_to_symbol_table(string name, Type t){
+void CFG::addToSymbolTable(string name, Type t){
 
   Variable var(name, t, nextFreeSymbolIndex);
   nextFreeSymbolIndex += 4;
@@ -63,11 +69,11 @@ void CFG::add_to_symbol_table(string name, Type t){
 }
 
 //TODO bellow
-string CFG::create_new_tempvar(Type t){return "";}
+string CFG::createNewTempvar(Type t){return "";}
 
 
 // basic block management
-string CFG::new_BB_name(){
+string CFG::newBBName(){
   return name+to_string(nextBBnumber);
 }
 //------------------------------------------------- Surcharge d'opérateurs

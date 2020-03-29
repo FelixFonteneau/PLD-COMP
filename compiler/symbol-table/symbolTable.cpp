@@ -43,6 +43,20 @@ string SymbolTable::varToAsm(string reg){ /**< helper method: inputs a IR reg or
   return "";
 }
 
+int SymbolTable::bitesSize(){
+  int bitesNumber = 0;
+  for (unordered_map<string,Variable>::iterator it = variables.begin(); it != variables.end(); ++it){
+    if(it->second.getType() == INT  ){
+      bitesNumber += 4;
+    } else if(it->second.getType() == CHAR) {
+      bitesNumber += 1;
+    }
+  }
+  return bitesNumber;
+
+}
+
+
 //------------------------------------------------- Surcharge d'opérateurs
 
 
