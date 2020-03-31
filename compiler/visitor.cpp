@@ -258,15 +258,21 @@ antlrcpp::Any Visitor::visitIfWithElse(ifccParser::IfWithElseContext *ctx)
 
 antlrcpp::Any Visitor::visitIfElseIf(ifccParser::IfElseIfContext *ctx)
 {
-  /*
-  visit(ctx->testExpr());
+
+  int testSign = visit(ctx->testExpr());
   BasicBlock* thenBlock = currentCFG->createNewBB();
   BasicBlock* elseBlock = currentCFG->createNewBB();
   BasicBlock* endBlock = currentCFG->createNewBB();
 
   // pour réaliser les blocs du if/else
-  currentBasicBlock->setExitTrueBlock(thenBlock);
-  currentBasicBlock->setExitFalseBlock(elseBlock);
+  if (testSign == 1) {
+    currentBasicBlock->setExitTrueBlock(thenBlock);
+    currentBasicBlock->setExitFalseBlock(elseBlock);
+  }
+  else if (testSign == -1) {
+    currentBasicBlock->setExitTrueBlock(elseBlock);
+    currentBasicBlock->setExitFalseBlock(thenBlock);
+  }
 
   // il faut revenir à un bloc "général" à la fin des réalisations
   thenBlock->setExitTrueBlock(endBlock);
@@ -274,15 +280,15 @@ antlrcpp::Any Visitor::visitIfElseIf(ifccParser::IfElseIfContext *ctx)
 
   //visite du bloc then
   currentBasicBlock = thenBlock;
-  visit(ctx->bloc()[0]);
+  visit(ctx->bloc());
 
   //visite du bloc else
   currentBasicBlock = elseBlock;
-  visit(ctx->bloc()[1]);
+  visit(ctx->ifLoop());
 
   currentBasicBlock = endBlock;
   return 0;
-  */
+
   /*
   int ifnumber = labelcounter++;
   cout << ".if" << ifnumber << ":" <<endl;
@@ -294,7 +300,6 @@ antlrcpp::Any Visitor::visitIfElseIf(ifccParser::IfElseIfContext *ctx)
   visit(ctx->ifLoop());
   cout << ".fi" << ifnumber << ":" << endl;
 */
-  return 0;
 }
 
 antlrcpp::Any Visitor::visitRelationalTestExpr(ifccParser::RelationalTestExprContext *ctx)
