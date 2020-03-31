@@ -74,6 +74,7 @@ void IRInstr::genAsm(ostream &o){ /**< x86 assembly code generation for this IR 
 
 bool IRInstr::isComp(){
   return (op == cmp_eq) || (op == cmp_lt) || (op == cmp_le);
+}
 
 int IRInstr::compType(){
   if (op == cmp_eq) {

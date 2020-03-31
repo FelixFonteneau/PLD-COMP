@@ -187,7 +187,7 @@ antlrcpp::Any Visitor::visitIfNoElse(ifccParser::IfNoElseContext *ctx)
     currentBasicBlock->setExitTrueBlock(thenBlock);
     currentBasicBlock->setExitFalseBlock(endBlock);
   }
-  else {
+  else if (testSign == -1) {
     currentBasicBlock->setExitTrueBlock(endBlock);
     currentBasicBlock->setExitFalseBlock(thenBlock);
   }
@@ -224,7 +224,7 @@ antlrcpp::Any Visitor::visitIfWithElse(ifccParser::IfWithElseContext *ctx)
     currentBasicBlock->setExitTrueBlock(thenBlock);
     currentBasicBlock->setExitFalseBlock(elseBlock);
   }
-  else {
+  else if (testSign == -1) {
     currentBasicBlock->setExitTrueBlock(elseBlock);
     currentBasicBlock->setExitFalseBlock(thenBlock);
   }
@@ -282,6 +282,7 @@ antlrcpp::Any Visitor::visitIfElseIf(ifccParser::IfElseIfContext *ctx)
 
   currentBasicBlock = endBlock;
   return 0;
+  */
   /*
   int ifnumber = labelcounter++;
   cout << ".if" << ifnumber << ":" <<endl;
@@ -299,7 +300,7 @@ antlrcpp::Any Visitor::visitIfElseIf(ifccParser::IfElseIfContext *ctx)
 antlrcpp::Any Visitor::visitRelationalTestExpr(ifccParser::RelationalTestExprContext *ctx)
 {
   visit(ctx->expr()[0]);
-  vector<string> params {"%eax", "%ebx"}
+  vector<string> params {"%eax", "%ebx"};
   currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
 
   visit(ctx->expr()[1]);
@@ -319,6 +320,9 @@ antlrcpp::Any Visitor::visitRelationalTestExpr(ifccParser::RelationalTestExprCon
   else if(ctx->op->getText() == "<=") {
     currentBasicBlock->addIRInstr(IRInstr::cmp_le, INT, params);
     return 1;
+  }
+  else {
+    return 0;
   }
   /*
   visit(ctx->expr()[0]);
@@ -345,7 +349,7 @@ antlrcpp::Any Visitor::visitRelationalTestExpr(ifccParser::RelationalTestExprCon
 antlrcpp::Any Visitor::visitEqualityTestExpr(ifccParser::EqualityTestExprContext *ctx)
 {
   visit(ctx->expr()[0]);
-  vector<string> params {"%eax", "%ebx"}
+  vector<string> params {"%eax", "%ebx"};
   currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
 
   visit(ctx->expr()[1]);
@@ -369,6 +373,9 @@ antlrcpp::Any Visitor::visitEqualityTestExpr(ifccParser::EqualityTestExprContext
   }
   else if(ctx->op->getText() == "!=") {
     return -1;
+  }
+  else {
+    return 0;
   }
 }
 
