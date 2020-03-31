@@ -71,4 +71,8 @@ public:
 
   virtual antlrcpp::Any visitMultiplicationExpr(ifccParser::MultiplicationExprContext *ctx) override ;
 
+  virtual antlrcpp::Any visitNotExpr(ifccParser::NotExprContext *ctx) override;
+
+  virtual antlrcpp::Any visitMinusExpr(ifccParser::MinusExprContext *ctx) override;
+
 };

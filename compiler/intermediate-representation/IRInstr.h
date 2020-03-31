@@ -40,6 +40,8 @@ typedef enum {
  add,
  sub,
  mul,
+ neg,
+ not,
  rmem,
  wmem,
  call,

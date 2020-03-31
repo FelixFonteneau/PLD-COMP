@@ -45,6 +45,12 @@ void IRInstr::genAsm(ostream &o){ /**< x86 assembly code generation for this IR 
 		case mul:
       operation = "imul";
       break;
+    case neg:
+      operation = "negl";
+      break;
+    case not;
+      operation = "notl";
+      break;
 		case rmem:
       operation = "movl";
       break;
