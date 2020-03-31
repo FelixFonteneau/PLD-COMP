@@ -180,25 +180,20 @@ antlrcpp::Any Visitor::visitIfNoElse(ifccParser::IfNoElseContext *ctx)
 {
   visit(ctx->testExpr());
   BasicBlock* thenBlock = currentCFG->createNewBB();
-  BasicBlock* elseBlock = currentCFG->createNewBB();
   BasicBlock* endBlock = currentCFG->createNewBB();
 
-  // pour réaliser les blocs du if/else
+  // pour réaliser le blocs du then
   currentBasicBlock->setExitTrueBlock(thenBlock);
-  currentBasicBlock->setExitFalseBlock(elseBlock);
+  currentBasicBlock->setExitFalseBlock(endBlock);
 
-  // il faut revenir à un bloc "général" à la fin des réalisations
+  // il faut revenir à un bloc "général" à la fin du then
   thenBlock->setExitTrueBlock(endBlock);
-  elseBlock->setExitTrueBlock(endBlock);
 
   //visite du bloc then
   currentBasicBlock = thenBlock;
-  visit(ctx->bloc()[0]);
+  visit(ctx->bloc());
 
-  //visite du bloc else
-  currentBasicBlock = elseBlock;
-  visit(ctx->bloc()[1]);
-
+  currentBasicBlock = endBlock;
   return 0;
 
   /*
@@ -234,6 +229,7 @@ antlrcpp::Any Visitor::visitIfWithElse(ifccParser::IfWithElseContext *ctx)
   currentBasicBlock = elseBlock;
   visit(ctx->bloc()[1]);
 
+  currentBasicBlock = endBlock;
   return 0;
   /*
   int ifnumber = labelcounter++;
