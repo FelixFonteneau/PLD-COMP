@@ -1,3 +1,0 @@
-Segmentation fault (core dumped)
-
-return code: 139

@@ -84,7 +84,7 @@ CFG::CFG(string name_)
 //
 {
   name = name_;
-  nextFreeSymbolIndex = 0;
+  nextFreeSymbolIndex = 4;
   nextBBnumber = 0;
   current_bb = nullptr;
 #ifdef MAP
