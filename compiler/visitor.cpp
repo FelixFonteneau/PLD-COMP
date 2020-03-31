@@ -158,21 +158,23 @@ antlrcpp::Any Visitor::visitAffConst(ifccParser::AffConstContext *ctx)
 
 antlrcpp::Any Visitor::visitAffExpr(ifccParser::AffExprContext *ctx)
 {
-  /*
     string leftValName = ctx->VAR()->getText();
-    if (!blocPrincipal.variableExiste(leftValName)) {
+    if (!currentCFG->symbolTable.variableExiste(leftValName)) {
       // if the variable name doesn't exist, we throw an error.
     }
-    int memoryAddress = blocPrincipal.getVariable(leftValName)->getAddress();
 
-    int val = visitChildren(ctx);
-
+    //code precedent, condition val == 0 -> osef ?
+    //int val = visitChildren(ctx);
+    /*
     if(val==0) {
       cout << " movl %eax, -" << memoryAddress << "(%rbp)" << endl;
     } else {
       //cout << "movl $" << val << ", -" << leftValAddr << "(%rbp)" << endl;
     }
-*/
+    */
+    vector<string> params {currentCFG->symbolTable.varToAsm(leftValName), "%eax"};
+    currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+
     return 0;
 }
 
