@@ -73,7 +73,21 @@ void IRInstr::genAsm(ostream &o){ /**< x86 assembly code generation for this IR 
 }
 
 bool IRInstr::isComp(){
-  return (op == cmp_eq)||(op == cmp_lt)||(op == cmp_le);
+  return (op == cmp_eq) || (op == cmp_lt) || (op == cmp_le);
+
+int IRInstr::compType(){
+  if (op == cmp_eq) {
+    return 1;
+  }
+  else if (op == cmp_lt) {
+    return 2;
+  }
+  else if (op == cmp_le) {
+    return 3;
+  }
+  else {
+    return 0;
+  }
 }
 
 //------------------------------------------------- Surcharge d'opérateurs
