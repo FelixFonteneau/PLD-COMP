@@ -30,7 +30,7 @@ using namespace std;
 
 
 //------------------------------------------------- Surcharge d'opérateurs
-ostream & operator << (ostream & os, const SyntaxError & error){
+/*ostream & operator << (ostream & os, const SyntaxError & error){
   os << "Error " << error.message << ". On position " << error.lineNumber << ":" << error.charPositionInLine << endl;
   os << "   \"" << error.line << "\"" << endl;
   for(int i = 0; i < error.charPositionInLine + 4; i++)
@@ -39,20 +39,16 @@ ostream & operator << (ostream & os, const SyntaxError & error){
   }
   os << "^" << endl;
   return os;
-}
+} */
 
 //-------------------------------------------- Constructeurs - destructeur
-SyntaxError::SyntaxError ( const SyntaxError & unSyntaxError )
+SyntaxError::SyntaxError ( const SyntaxError & unSyntaxError ) :   Error(unSyntaxError.message, unSyntaxError.lineNumber, unSyntaxError.charPositionInLine, unSyntaxError.line)
 // Algorithme :
 //
 {
   recognizer = unSyntaxError.recognizer;
   offendingSymbol = unSyntaxError.offendingSymbol;
-  lineNumber = unSyntaxError.lineNumber;
-  charPositionInLine = unSyntaxError.charPositionInLine;
-  message = unSyntaxError.message;
   e = unSyntaxError.e;
-  line = unSyntaxError.line;
 #ifdef MAP
     cout << "Appel au constructeur de copie de <SyntaxError>" << endl;
 #endif
@@ -60,17 +56,13 @@ SyntaxError::SyntaxError ( const SyntaxError & unSyntaxError )
 
 
 SyntaxError::SyntaxError ( Recognizer *recognizerA, Token * offendingSymbolA, size_t lineNumberA, size_t charPositionInLineA,
-   const std::string & msgA, std::exception_ptr eA, string &lineA)
+   const std::string & msgA, std::exception_ptr eA, string &lineA) :   Error(msgA, lineNumberA, charPositionInLineA, lineA)
 // Algorithme :
 //
 {
- recognizer = recognizerA;
- lineNumber = lineNumberA;
- charPositionInLine = charPositionInLineA;
- message = msgA;
- e = eA;
- line = lineA;
-
+  recognizer = recognizerA;
+  e = eA;
+  offendingSymbol = offendingSymbolA;
 #ifdef MAP
     cout << "Appel au constructeur de <SyntaxError>" << endl;
 #endif
@@ -78,14 +70,6 @@ SyntaxError::SyntaxError ( Recognizer *recognizerA, Token * offendingSymbolA, si
 
 
 
-SyntaxError::~SyntaxError ( )
-// Algorithme :
-//
-{
-#ifdef MAP
-    cout << "Appel au destructeur de <SyntaxError>" << endl;
-#endif
-} //----- Fin de ~SyntaxError
 
 
 //------------------------------------------------------------------ PRIVE

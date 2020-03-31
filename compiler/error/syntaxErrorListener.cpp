@@ -37,8 +37,10 @@ void SyntaxErrorListener::syntaxError(Recognizer *recognizer, Token * offendingS
 
 //------------------------------------------------- Surcharge d'opérateurs
 ostream & operator << (ostream & os, const SyntaxErrorListener & errorlistener){
-  for (auto err = errorlistener.errors.begin(); err != errorlistener.errors.end(); ++err)
-      os << *err << endl;
+  for (auto err = errorlistener.errors.begin(); err != errorlistener.errors.end(); ++err){
+    (*err).showError(os);
+    os << endl;
+  }
   string err = "errors";
   if(errorlistener.errors.size() == 1){
     err = "error";

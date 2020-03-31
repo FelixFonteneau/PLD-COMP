@@ -62,13 +62,14 @@ antlrcpp::Any Visitor::visitDec(ifccParser::DecContext *ctx)
     string variableName = ctx->VAR()->getText();
     if (currentCFG->symbolTable.variableExiste(variableName))
     {
+        //ctx->VAR()->getSymbol(); //return token
         // if the variable name already exists, we throw an error.
     }
     currentCFG->addToSymbolTable(variableName, INT);
     return visitChildren(ctx);
 }
 
-antlrcpp::Any Visitor::visitAffDecConst(ifccParser::AffDecConstContext *ctx)
+antlrcpp::Any Visitor::visitAffDecConst(ifccParser::AffDecConstContext *ctx) // int a = 17;
 {
     int retval = stoi(ctx->CONST()->getText());
     string variableName = ctx->VAR()->getText();
@@ -81,10 +82,13 @@ antlrcpp::Any Visitor::visitAffDecConst(ifccParser::AffDecConstContext *ctx)
     vector<string> params {constant, currentCFG->symbolTable.varToAsm(variableName)};
     currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
 
+
     return visitChildren(ctx);
 }
 
 antlrcpp::Any Visitor::visitAffDecVar(ifccParser::AffDecVarContext *ctx)
+// int b;
+// int a = b;
 {
     string newVariableName = ctx->VAR()[0]->getText();
     if (currentCFG->symbolTable.variableExiste(newVariableName))    {

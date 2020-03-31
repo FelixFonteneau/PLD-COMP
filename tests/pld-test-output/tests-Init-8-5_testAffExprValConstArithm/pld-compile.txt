@@ -1,0 +1,9 @@
+line 3:6 token recognition error at: ','
+Error in input.c.
+Error no viable alternative at input 'int ac'. On position 3:7
+   "	int a,c;"
+           ^
+
+1 error generated.
+
+return code: 1

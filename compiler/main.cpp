@@ -10,6 +10,7 @@
 #include "antlr4-generated/ifccBaseVisitor.h"
 #include "visitor.h"
 #include "error/syntaxErrorListener.h"
+#include "error/semanticErrorListener.h"
 #include "intermediate-representation/CFG.h"
 
 
@@ -46,6 +47,7 @@ int main(int argn, const char **argv) {
   }
 
   vector<CFG*> cfgs;
+  SyntaxErrorListener errorlistener(in.str());
 
   Visitor visitor(&cfgs);
   visitor.visit(tree);
