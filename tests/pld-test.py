@@ -163,7 +163,7 @@ if args.debug:
 
 ######################################################################################
 ## TEST step: actually compile all test-cases with both compilers
-
+jobs.sort()
 for jobname in jobs:
     os.chdir(orig_cwd)
 
@@ -187,15 +187,21 @@ for jobname in jobs:
 
     if gccstatus != 0 and pldstatus != 0:
         ## padawan correctly rejects invalid program -> test-case ok
+        sys.stdout.write("\033[32m")
         print("TEST OK")
+        sys.stdout.write("\033[0m")
         continue
     elif gccstatus != 0 and pldstatus == 0:
         ## padawan wrongly accepts invalid program -> error
+        sys.stdout.write("\033[31m")
         print("TEST FAIL (your compiler accepts an invalid program)")
+        sys.stdout.write("\033[0m")
         continue
     elif gccstatus == 0 and pldstatus != 0:
         ## padawan wrongly rejects valid program -> error
+        sys.stdout.write("\033[31m")
         print("TEST FAIL (your compiler rejects a valid program)")
+        sys.stdout.write("\033[0m")
         if args.verbose:
             dumpfile("pld-compile.txt")
         continue
@@ -203,7 +209,9 @@ for jobname in jobs:
         ## padawan accepts to compile valid program -> let's link it
         ldstatus=command("gcc -o exe-pld asm-pld.s", "pld-link.txt")
         if ldstatus:
+            sys.stdout.write("\033[31m")
             print("TEST FAIL (your compiler produces incorrect assembly)")
+            sys.stdout.write("\033[0m")
             if args.verbose:
                 dumpfile("pld-link.txt")
             continue
@@ -213,7 +221,9 @@ for jobname in jobs:
 
     exepldstatus=command("./exe-pld","pld-execute.txt")
     if open("gcc-execute.txt").read() != open("pld-execute.txt").read() :
+        sys.stdout.write("\033[33m")
         print("TEST FAIL (different results at execution)")
+        sys.stdout.write("\033[0m")
         if args.verbose:
             print("GCC:")
             dumpfile("gcc-execute.txt")
@@ -222,4 +232,6 @@ for jobname in jobs:
         continue
 
     ## last but not least
+    sys.stdout.write("\033[32m")
     print("TEST OK")
+    sys.stdout.write("\033[0m")
