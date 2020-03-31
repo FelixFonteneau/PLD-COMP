@@ -52,6 +52,8 @@ class CFG {
 	BasicBlock* current_bb;
 
   SymbolTable symbolTable;
+
+  
  protected:
   void genAsmPrologue(ostream& o);
   string newBBName();

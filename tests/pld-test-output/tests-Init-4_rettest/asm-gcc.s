@@ -15,7 +15,11 @@ main:
 	movl	-12(%rbp), %eax
 	leal	-10(%rax), %edx
 	movl	-8(%rbp), %eax
+<<<<<<< HEAD
 	addl	$32, %eax
+=======
+	addl	%eax, %eax
+>>>>>>> IR integrated for add sub mul par
 	addl	%edx, %eax
 	movl	%eax, -4(%rbp)
 	movl	-4(%rbp), %eax

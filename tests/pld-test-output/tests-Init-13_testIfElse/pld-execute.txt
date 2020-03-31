@@ -1,2 +1,6 @@
 
+<<<<<<< HEAD
 return code: 17
+=======
+return code: 0
+>>>>>>> IR integrated for add sub mul par

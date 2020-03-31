@@ -1,2 +1,6 @@
 
+<<<<<<< HEAD
 return code: 222
+=======
+return code: 34
+>>>>>>> IR integrated for add sub mul par

@@ -33,35 +33,35 @@
 
 class IRInstr
 {
-public:
-/** The instructions themselves -- feel free to subclass instead */
-typedef enum {
- ldconst,
- add,
- sub,
- mul,
- rmem,
- wmem,
- call,
- cmp_eq,
- cmp_lt,
- cmp_le
-} Operation;
+  public:
+    /** The instructions themselves -- feel free to subclass instead */
+    typedef enum {
+     ldconst,
+     add,
+     sub,
+     mul,
+     rmem,
+     wmem,
+     call,
+     cmp_eq,
+     cmp_lt,
+     cmp_le
+    } Operation;
 
+    /**  constructor */
+    IRInstr(SymbolTable * symbolTable, Operation op, Type t, vector<string> params);
 
-/**  constructor */
-IRInstr(SymbolTable * symbolTable, Operation op, Type t, vector<string> params);
+    /** Actual code generation */
+    void genAsm(ostream &o); /**< x86 assembly code generation for this IR instruction */
+    int compType();
+    bool isComp();
 
-/** Actual code generation */
-void genAsm(ostream &o); /**< x86 assembly code generation for this IR instruction */
-int compType();
-bool isComp();
-private:
-SymbolTable * symbolTable;
-Operation op;
-Type t;
-vector<string> params; /**< For 3-op instrs: d, x, y; for ldconst: d, c;  For call: label, d, params;  for wmem and rmem: choose yourself */
-// if you subclass IRInstr, each IRInstr subclass has its parameters and the previous (very important) comment becomes useless: it would be a better design.
+  private:
+    SymbolTable * symbolTable;
+    Operation op;
+    Type t;
+    vector<string> params; /**< For 3-op instrs: d, x, y; for ldconst: d, c;  For call: label, d, params;  for wmem and rmem: choose yourself */
+    // if you subclass IRInstr, each IRInstr subclass has its parameters and the previous (very important) comment becomes useless: it would be a better design.
 
 };
 

@@ -10,36 +10,35 @@ Visitor::Visitor(vector<CFG*>* cfgs_)
     cfgs = cfgs_;
     currentCFG = nullptr;
     currentBasicBlock = nullptr;
-    /*addressIterator = 4;
-    labelcounter = 0;
-    eax.name = "eax";
+    //labelcounter = 0;
+    eax.name = "%eax";
     eax.used = false;
     registers[0] = eax;
-    ebx.name = "ebx";
+    ebx.name = "%ebx";
     ebx.used = false;
     registers[1] = ebx;
-    ecx.name = "ecx";
+    ecx.name = "%ecx";
     ecx.used = false;
     registers[2] = ecx;
-    edx.name = "edx";
+    edx.name = "%edx";
     edx.used = false;
     registers[3] = edx;
-    edi.name = "edi";
+    edi.name = "%edi";
     edi.used = false;
     registers[4] = edi;
-    esi.name = "esi";
+    esi.name = "%esi";
     esi.used = false;
     registers[5] = esi;
-    ebp.name = "ebp";
+    ebp.name = "%ebp";
     ebp.used = false;
     registers[6] = ebp;
-    esp.name = "esp";
+    esp.name = "%esp";
     esp.used = false;
     registers[7] = esp;
-    eip.name = "eip";
+    eip.name = "%eip";
     eip.used = false;
     registers[8] = eip;
-    currentRegister = registers;*/
+    currentRegister = registers;
 }
 
 antlrcpp::Any Visitor::visitAxiom(ifccParser::AxiomContext *ctx)
@@ -97,26 +96,29 @@ antlrcpp::Any Visitor::visitAffDecVar(ifccParser::AffDecVarContext *ctx)
     currentCFG->addToSymbolTable(newVariableName, INT);
     vector<string> params {currentCFG->symbolTable.varToAsm(existingVariableName), currentCFG->symbolTable.varToAsm(newVariableName)};
     currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+
     return visitChildren(ctx);
 }
 
 antlrcpp::Any Visitor::visitAffDecExpr(ifccParser::AffDecExprContext *ctx)
 {
-  /*
     string variableName = ctx->VAR()->getText();
     visitChildren(ctx);
-    if(blocPrincipal.variableExiste(variableName)){
+    if(currentCFG->symbolTable.variableExiste(variableName)) {
       // if the variable name already exists, we throw an error.
     }
-    int memoryAddress = addressIterator;
-    addressIterator += 4;
 
-    cout << "  movl % " << (*currentRegister).name << ", -" << memoryAddress << "(%rbp)" << endl;
-    Variable* variable = new Variable(variableName, "int", memoryAddress);
-    blocPrincipal.AjouterVariable(*variable);
-    */
+    //int memoryAddress = addressIterator;
+    //addressIterator += 4;
+
+    currentCFG->addToSymbolTable(variableName, INT);
+    vector<string> params {(*currentRegister).name, currentCFG->symbolTable.varToAsm(variableName)};
+    currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+
+    //cout << "  movl % " << (*currentRegister).name << ", -" << memoryAddress << "(%rbp)" << endl;
+    //Variable* variable = new Variable(variableName, "int", memoryAddress);
+    //blocPrincipal.AjouterVariable(*variable);
     return 0;
-
 }
 
 antlrcpp::Any Visitor::visitAffVar(ifccParser::AffVarContext *ctx)
@@ -391,24 +393,25 @@ antlrcpp::Any Visitor::visitParTestExpr(ifccParser::ParTestExprContext *ctx)
 
 antlrcpp::Any Visitor::visitConstExpr(ifccParser::ConstExprContext *ctx)
 {
-  /*
-    int val = stoi(ctx->CONST()->getText());
-    cout << "  movl $" << val << ", %" << (*currentRegister).name << endl;
-    */
+    string constant = "$" + ctx->CONST()->getText();
+    vector<string> params {constant, (*currentRegister).name};
+    currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+    //cout << "  movl $" << val << ", %" << (*currentRegister).name << endl;
     return 0;
 }
 
 antlrcpp::Any Visitor::visitVarExpr(ifccParser::VarExprContext *ctx)
 {
-    /*string var = ctx->VAR()->getText();
-    cout << "  movl -" << blocPrincipal.getVariable(var)->getAddress() << "(%rbp), %" << (*currentRegister).name << endl;
-    */
+    string var = ctx->VAR()->getText();
+    vector<string> params {currentCFG->symbolTable.varToAsm(var), (*currentRegister).name};
+    currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+    //cout << "  movl -" << blocPrincipal.getVariable(var)->getAddress() << "(%rbp), %" << (*currentRegister).name << endl;
     return 0;
 }
 
 antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
 {
-    /*bool isVar = false;
+    bool isVar = false;
     bool isExpr = false;
 
     string exprLeft = ctx->expr()[0]->getText();
@@ -417,12 +420,14 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
     int memoryAddressLeft = 0;
     int memoryAddressRight = 0;
 
-    if(blocPrincipal.variableExiste(exprLeft)) {
-      memoryAddressLeft = blocPrincipal.getVariable(exprLeft)->getAddress();
-    }
 
-    if(blocPrincipal.variableExiste(exprRight)) {
-      memoryAddressRight = blocPrincipal.getVariable(exprRight)->getAddress();
+/*
+    if(currentCFG->symbolTable.variableExiste(exprLeft)) {
+      memoryAddressLeft = currentCFG->symbolTable.getVariable(exprLeft)->getAddress();
+    }
+*/
+    if(currentCFG->symbolTable.variableExiste(exprRight)) {
+      memoryAddressRight = currentCFG->symbolTable.getVariable(exprRight)->getAddress();
     }
 
     if(exprRight.find("(") != string::npos || exprRight.find("*") != string::npos) {
@@ -439,7 +444,7 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
         currentRegister++;
       }
       visit(ctx->expr()[1]);
-      if((*currentRegister).name != "eax") {
+      if((*currentRegister).name != "%eax") {
         currentRegister--;
       }
     }
@@ -447,35 +452,46 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
     if(ctx->op->getText() == "+") {
         if(!isVar) {
           if(!isExpr) {
-            int rightVal = stoi(exprRight);
-            cout << "  addl $" << rightVal << ", %" << (*currentRegister).name << endl;
+            string rightVal = "$" + exprRight;
+            vector<string> params {rightVal, (*currentRegister).name};
+            currentBasicBlock->addIRInstr(IRInstr::add, INT, params);
+            //cout << "  addl $" << rightVal << ", %" << (*currentRegister).name << endl;
           } else {
-            cout << "  addl %" << (*(currentRegister + 1)).name << ", %" << (*currentRegister).name << endl;
+            vector<string> params {(*(currentRegister + 1)).name, (*currentRegister).name};
+            currentBasicBlock->addIRInstr(IRInstr::add, INT, params);
+            //cout << "  addl %" << (*(currentRegister + 1)).name << ", %" << (*currentRegister).name << endl;
           }
         } else if(isVar) {
-          cout << "  addl -" << memoryAddressRight << "(%rbp), %" << (*currentRegister).name << endl;
+          vector<string> params {currentCFG->symbolTable.varToAsm(exprRight), (*currentRegister).name};
+          currentBasicBlock->addIRInstr(IRInstr::add, INT, params);
+          //cout << "  addl -" << memoryAddressRight << "(%rbp), %" << (*currentRegister).name << endl;
         }
       } else {
         if(!isVar) {
           if(!isExpr) {
-            int rightVal = stoi(exprRight);
-            cout << "  subl $" << rightVal << ", %" << (*currentRegister).name << endl;
+            //int rightVal = stoi(exprRight);
+            string rightVal = "$" + exprRight;
+            vector<string> params {rightVal, (*currentRegister).name};
+            currentBasicBlock->addIRInstr(IRInstr::sub, INT, params);
+            //cout << "  subl $" << rightVal << ", %" << (*currentRegister).name << endl;
           } else {
-            cout << "  subl %" << (*(currentRegister + 1)).name << ", %" << (*currentRegister).name << endl;
+            vector<string> params {(*(currentRegister + 1)).name, (*currentRegister).name};
+            currentBasicBlock->addIRInstr(IRInstr::sub, INT, params);
+            //cout << "  subl %" << (*(currentRegister + 1)).name << ", %" << (*currentRegister).name << endl;
           }
         } else if(isVar) {
-          cout << "  subl -" << memoryAddressRight << "(%rbp), %" << (*currentRegister).name << endl;
+          vector<string> params {currentCFG->symbolTable.varToAsm(exprRight), (*currentRegister).name};
+          currentBasicBlock->addIRInstr(IRInstr::sub, INT, params);
+          //cout << "  subl -" << memoryAddressRight << "(%rbp), %" << (*currentRegister).name << endl;
         }
-    }*/
+    }
     return 0;
   }
 
 antlrcpp::Any Visitor::visitParExpr(ifccParser::ParExprContext *ctx)
 {
-  /*
   visitChildren(ctx);
   (*currentRegister).used = true;
-  */
   return 0;
 }
 
@@ -497,7 +513,6 @@ antlrcpp::Any Visitor::visitRetConst(ifccParser::RetConstContext *ctx)
 
 antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprContext *ctx)
 {
-  /*
   bool isVar = false;
   bool isExpr = false;
 
@@ -507,12 +522,12 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
   int memoryAddressLeft = 0;
   int memoryAddressRight = 0;
 
-  if(blocPrincipal.variableExiste(exprLeft)) {
-    memoryAddressLeft = blocPrincipal.getVariable(exprLeft)->getAddress();
+  if(currentCFG->symbolTable.variableExiste(exprLeft)) {
+    memoryAddressLeft = currentCFG->symbolTable.getVariable(exprLeft)->getAddress();
   }
 
-  if(blocPrincipal.variableExiste(exprRight)) {
-    memoryAddressRight = blocPrincipal.getVariable(exprRight)->getAddress();
+  if(currentCFG->symbolTable.variableExiste(exprRight)) {
+    memoryAddressRight = currentCFG->symbolTable.getVariable(exprRight)->getAddress();
   }
 
   if(exprRight.find("(") != string::npos) {
@@ -529,7 +544,7 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
       currentRegister++;
     }
     visit(ctx->expr()[1]);
-    if((*currentRegister).name != "eax") {
+    if((*currentRegister).name != "%eax") {
       currentRegister--;
     }
   }
@@ -537,15 +552,17 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
   if(ctx->op->getText() == "*") {
     if(!isVar) {
       if(!isExpr) {
-        int rightVal = stoi(exprRight);
-        cout << "  imull $" << rightVal << ", %" << (*currentRegister).name << endl;
+        string rightVal = "$" + exprRight;
+        vector<string> params {rightVal, (*currentRegister).name};
+        currentBasicBlock->addIRInstr(IRInstr::mul, INT, params);
       } else {
-        cout << "  imull %" << (*(currentRegister + 1)).name << ", %" << (*currentRegister).name << endl;
+        vector<string> params {(*(currentRegister + 1)).name, (*currentRegister).name};
+        currentBasicBlock->addIRInstr(IRInstr::mul, INT, params);
       }
     } else if(isVar) {
-      cout << "  imull -" << memoryAddressRight << "(%rbp), %" << (*currentRegister).name << endl;
+      vector<string> params {currentCFG->symbolTable.varToAsm(exprRight), (*currentRegister).name};
+      currentBasicBlock->addIRInstr(IRInstr::mul, INT, params);
     }
   }
-*/
   return 0;
 }
