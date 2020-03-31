@@ -1,33 +1,31 @@
 /*************************************************************************
-                           SyntaxError  -  description
+                           Error  -  description
                              -------------------
     début                : $DATE$
     copyright            : (C) $YEAR$ par $AUTHOR$
     e-mail               : $EMAIL$
 *************************************************************************/
 
-//---------- Interface de la classe <SyntaxError> (fichier SyntaxError.h) ----------------
-#if ! defined ( SYNTAXERROR_H )
-#define SYNTAXERROR_H
+//---------- Interface de la classe <Error> (fichier Error.h) ----------------
+#if ! defined ( ERROR_H )
+#define ERROR_H
 
 //--------------------------------------------------- Interfaces utilisées
 #include <string>
-
-#include "error.h"
-#include "antlr4-runtime.h"
+#include <iostream>
+using namespace std;
 
 //------------------------------------------------------------- Constantes
 
 //------------------------------------------------------------------ Types
-using namespace std;
-using namespace antlr4;
+
 //------------------------------------------------------------------------
-// Rôle de la classe <SyntaxError>
+// Rôle de la classe <Error>
 //
 //
 //------------------------------------------------------------------------
 
-class SyntaxError : Error
+class Error
 {
 //----------------------------------------------------------------- PUBLIC
 
@@ -38,29 +36,23 @@ public:
     //
     // Contrat :
     //
-    void showError(ostream & os) const
-    {
-      Error::showError(os);
-    }
+    virtual void showError(ostream & os) const;
 
 
 //------------------------------------------------- Surcharge d'opérateurs
 
 
-
 //-------------------------------------------- Constructeurs - destructeur
-    SyntaxError ( const SyntaxError & unSyntaxError );
-    // Mode d'emploi (constructeur de copie) :
-    //
-    // Contrat :
-    //
 
-    SyntaxError (Recognizer *recognizerA, Token * offendingSymbolA, size_t lineNumberA, size_t charPositionInLineA,
-       const std::string &msgA, std::exception_ptr eA, string &lineA);
+    Error (string message, int lineNb, int charPos, string line ) : message(message),
+                                                                    lineNumber(lineNb),
+                                                                    charPositionInLine(charPos),
+                                                                    line(line){}
     // Mode d'emploi :
     //
     // Contrat :
     //
+
 
 //------------------------------------------------------------------ PRIVE
 
@@ -68,11 +60,12 @@ protected:
 //----------------------------------------------------- Méthodes protégées
 
 //----------------------------------------------------- Attributs protégés
-  Recognizer *recognizer;
-  Token * offendingSymbol;
-  exception_ptr e;
+  string message;
+  size_t lineNumber;
+  size_t charPositionInLine;
+  string line;
 };
 
-//-------------------------------- Autres définitions dépendantes de <SyntaxError>
+//-------------------------------- Autres définitions dépendantes de <Error>
 
-#endif // SYNTAXERROR_H
+#endif // ERROR_H

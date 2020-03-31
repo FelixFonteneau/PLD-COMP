@@ -1,7 +1,7 @@
 #include <inttypes.h>
 int main() {
-	int a = 42;
-	int c = 100;
-	a = c;
+	int a=42;
+  int b = a;
+  int a = b;
 	return a;
 }

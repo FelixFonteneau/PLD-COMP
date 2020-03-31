@@ -1,66 +1,61 @@
 /*************************************************************************
-                           SyntaxError  -  description
+                           SemanticErrorListener  -  description
                              -------------------
     début                : $DATE$
     copyright            : (C) $YEAR$ par $AUTHOR$
     e-mail               : $EMAIL$
 *************************************************************************/
 
-//---------- Interface de la classe <SyntaxError> (fichier SyntaxError.h) ----------------
-#if ! defined ( SYNTAXERROR_H )
-#define SYNTAXERROR_H
+//---------- Interface de la classe <SemanticErrorListener> (fichier SemanticErrorListener.h) ----------------
+#if ! defined ( SEMANTICERRORLISTENER_H )
+#define SEMANTICERRORLISTENER_H
 
 //--------------------------------------------------- Interfaces utilisées
 #include <string>
+#include <vector>
+#include <iostream>
+#include <sstream>
 
-#include "error.h"
 #include "antlr4-runtime.h"
-
+#include "semanticError.h"
 //------------------------------------------------------------- Constantes
 
 //------------------------------------------------------------------ Types
 using namespace std;
-using namespace antlr4;
-//------------------------------------------------------------------------
-// Rôle de la classe <SyntaxError>
-//
-//
-//------------------------------------------------------------------------
 
-class SyntaxError : Error
+//------------------------------------------------------------------------
+// Rôle de la classe <SemanticErrorListener>
+//
+//
+//
+//
+//------------------------------------------------------------------------
+class SemanticErrorListener
 {
 //----------------------------------------------------------------- PUBLIC
 
 public:
 //----------------------------------------------------- Méthodes publiques
-    // type Méthode ( liste des paramètres );
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
-    void showError(ostream & os) const
-    {
-      Error::showError(os);
-    }
+  bool Error() { return etatErreur; }
+
+  void addSemanticError(antlr4::Token* symbol, string message);
+
+
 
 
 //------------------------------------------------- Surcharge d'opérateurs
-
-
+  friend ostream & operator << (ostream & os, const SemanticErrorListener & errorlistener);
+    // Mode d'emploi :
 
 //-------------------------------------------- Constructeurs - destructeur
-    SyntaxError ( const SyntaxError & unSyntaxError );
-    // Mode d'emploi (constructeur de copie) :
-    //
-    // Contrat :
-    //
+    // SemanticErrorListener (const SemanticErrorListener & unSemanticErrorListener);
+    SemanticErrorListener (string inputFile){
+      file = inputFile;
+      etatErreur = false;
+    };
 
-    SyntaxError (Recognizer *recognizerA, Token * offendingSymbolA, size_t lineNumberA, size_t charPositionInLineA,
-       const std::string &msgA, std::exception_ptr eA, string &lineA);
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
+
+
 
 //------------------------------------------------------------------ PRIVE
 
@@ -68,11 +63,12 @@ protected:
 //----------------------------------------------------- Méthodes protégées
 
 //----------------------------------------------------- Attributs protégés
-  Recognizer *recognizer;
-  Token * offendingSymbol;
-  exception_ptr e;
+  bool etatErreur;
+  vector<SemanticError> errors;
+  string file;
+
 };
 
-//-------------------------------- Autres définitions dépendantes de <SyntaxError>
+//-------------------------------- Autres définitions dépendantes de <SemanticErrorListener>
 
-#endif // SYNTAXERROR_H
+#endif // SEMANTICERRORLISTENER_H

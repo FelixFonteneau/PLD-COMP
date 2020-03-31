@@ -1,6 +1,7 @@
 #include <inttypes.h>
 int main() {
-	int a = 1;
-	a = 32+69+29;
+	int a;
+  a = b;
+  int a = 5;
 	return a;
 }

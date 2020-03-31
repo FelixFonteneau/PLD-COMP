@@ -11,6 +11,7 @@
 #include "intermediate-representation/IRInstr.h"
 #include "intermediate-representation/BasicBlock.h"
 #include "intermediate-representation/CFG.h"
+#include "error/semanticErrorListener.h"
 
 using namespace std;
 
@@ -21,6 +22,7 @@ using namespace std;
 class  Visitor : public ifccBaseVisitor {
 
   private:
+    SemanticErrorListener* errorlistener;
     vector<CFG*>* cfgs;
     CFG* currentCFG;
     BasicBlock* currentBasicBlock;
@@ -33,7 +35,7 @@ class  Visitor : public ifccBaseVisitor {
 
   public:
 
-    Visitor(vector<CFG*>* cfgs);
+    Visitor(vector<CFG*>* cfgs, SemanticErrorListener* errorlistener);
 
     virtual antlrcpp::Any visitAxiom(ifccParser::AxiomContext *ctx) override;
 

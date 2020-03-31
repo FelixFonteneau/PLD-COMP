@@ -1,33 +1,31 @@
 /*************************************************************************
-                           SyntaxError  -  description
+                           SemanticError  -  description
                              -------------------
     début                : $DATE$
     copyright            : (C) $YEAR$ par $AUTHOR$
     e-mail               : $EMAIL$
 *************************************************************************/
 
-//---------- Interface de la classe <SyntaxError> (fichier SyntaxError.h) ----------------
-#if ! defined ( SYNTAXERROR_H )
-#define SYNTAXERROR_H
+//---------- Interface de la classe <SemanticError> (fichier SemanticError.h) ----------------
+#if ! defined ( SEMANTICERROR_H )
+#define SEMANTICERROR_H
 
 //--------------------------------------------------- Interfaces utilisées
 #include <string>
-
+#include <iostream>
 #include "error.h"
-#include "antlr4-runtime.h"
 
 //------------------------------------------------------------- Constantes
 
 //------------------------------------------------------------------ Types
-using namespace std;
-using namespace antlr4;
+
 //------------------------------------------------------------------------
-// Rôle de la classe <SyntaxError>
+// Rôle de la classe <SemanticError>
 //
 //
 //------------------------------------------------------------------------
 
-class SyntaxError : Error
+class SemanticError : public Error
 {
 //----------------------------------------------------------------- PUBLIC
 
@@ -38,6 +36,7 @@ public:
     //
     // Contrat :
     //
+
     void showError(ostream & os) const
     {
       Error::showError(os);
@@ -47,16 +46,11 @@ public:
 //------------------------------------------------- Surcharge d'opérateurs
 
 
-
 //-------------------------------------------- Constructeurs - destructeur
-    SyntaxError ( const SyntaxError & unSyntaxError );
-    // Mode d'emploi (constructeur de copie) :
-    //
-    // Contrat :
-    //
 
-    SyntaxError (Recognizer *recognizerA, Token * offendingSymbolA, size_t lineNumberA, size_t charPositionInLineA,
-       const std::string &msgA, std::exception_ptr eA, string &lineA);
+  SemanticError (size_t lineNumberA, size_t charPositionInLineA,
+   const std::string &msgA, string &lineA) :
+                  Error(msgA, lineNumberA, charPositionInLineA, lineA){}
     // Mode d'emploi :
     //
     // Contrat :
@@ -68,11 +62,9 @@ protected:
 //----------------------------------------------------- Méthodes protégées
 
 //----------------------------------------------------- Attributs protégés
-  Recognizer *recognizer;
-  Token * offendingSymbol;
-  exception_ptr e;
+
 };
 
-//-------------------------------- Autres définitions dépendantes de <SyntaxError>
+//-------------------------------- Autres définitions dépendantes de <SemanticError>
 
-#endif // SYNTAXERROR_H
+#endif // SEMANTICERROR_H
