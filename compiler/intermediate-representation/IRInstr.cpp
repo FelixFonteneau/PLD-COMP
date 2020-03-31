@@ -32,6 +32,8 @@ void IRInstr::genAsm(ostream &o){ /**< x86 assembly code generation for this IR 
   string operation = "";
   switch (op) {
     case ldconst:
+      //ld (LoaD) est normalement une instruction qui charge des données
+      //  de la mémoire veres un registre
       operation = "ldconst"; //à implementer
       break;
 		case add:

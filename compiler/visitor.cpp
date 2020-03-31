@@ -178,13 +178,19 @@ antlrcpp::Any Visitor::visitAffExpr(ifccParser::AffExprContext *ctx)
 
 antlrcpp::Any Visitor::visitIfNoElse(ifccParser::IfNoElseContext *ctx)
 {
-  visit(ctx->testExpr());
+  int testSign = visit(ctx->testExpr());
   BasicBlock* thenBlock = currentCFG->createNewBB();
   BasicBlock* endBlock = currentCFG->createNewBB();
 
   // pour réaliser le blocs du then
-  currentBasicBlock->setExitTrueBlock(thenBlock);
-  currentBasicBlock->setExitFalseBlock(endBlock);
+  if (testSign == 1) {
+    currentBasicBlock->setExitTrueBlock(thenBlock);
+    currentBasicBlock->setExitFalseBlock(endBlock);
+  }
+  else {
+    currentBasicBlock->setExitTrueBlock(endBlock);
+    currentBasicBlock->setExitFalseBlock(thenBlock);
+  }
 
   // il faut revenir à un bloc "général" à la fin du then
   thenBlock->setExitTrueBlock(endBlock);
@@ -208,14 +214,20 @@ antlrcpp::Any Visitor::visitIfNoElse(ifccParser::IfNoElseContext *ctx)
 
 antlrcpp::Any Visitor::visitIfWithElse(ifccParser::IfWithElseContext *ctx)
 {
-  visit(ctx->testExpr());
+  int testSign = visit(ctx->testExpr());
   BasicBlock* thenBlock = currentCFG->createNewBB();
   BasicBlock* elseBlock = currentCFG->createNewBB();
   BasicBlock* endBlock = currentCFG->createNewBB();
 
   // pour réaliser les blocs du if/else
-  currentBasicBlock->setExitTrueBlock(thenBlock);
-  currentBasicBlock->setExitFalseBlock(elseBlock);
+  if (testSign == 1) {
+    currentBasicBlock->setExitTrueBlock(thenBlock);
+    currentBasicBlock->setExitFalseBlock(elseBlock);
+  }
+  else {
+    currentBasicBlock->setExitTrueBlock(elseBlock);
+    currentBasicBlock->setExitFalseBlock(thenBlock);
+  }
 
   // il faut revenir à un bloc "général" à la fin des réalisations
   thenBlock->setExitTrueBlock(endBlock);
@@ -286,7 +298,28 @@ antlrcpp::Any Visitor::visitIfElseIf(ifccParser::IfElseIfContext *ctx)
 
 antlrcpp::Any Visitor::visitRelationalTestExpr(ifccParser::RelationalTestExprContext *ctx)
 {
+  visit(ctx->expr()[0]);
+  vector<string> params {"%eax", "%ebx"}
+  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
 
+  visit(ctx->expr()[1]);
+
+  if(ctx->op->getText() == ">") {
+    currentBasicBlock->addIRInstr(IRInstr::cmp_le, INT, params);
+    return -1;
+  }
+  else if(ctx->op->getText() == "<") {
+    currentBasicBlock->addIRInstr(IRInstr::cmp_lt, INT, params);
+    return 1;
+  }
+  else if(ctx->op->getText() == ">=") {
+    currentBasicBlock->addIRInstr(IRInstr::cmp_lt, INT, params);
+    return -1;
+  }
+  else if(ctx->op->getText() == "<=") {
+    currentBasicBlock->addIRInstr(IRInstr::cmp_le, INT, params);
+    return 1;
+  }
   /*
   visit(ctx->expr()[0]);
   cout << " movl %eax, %ebx" << endl;
@@ -306,11 +339,17 @@ antlrcpp::Any Visitor::visitRelationalTestExpr(ifccParser::RelationalTestExprCon
     cout << " jg ";
   }
   */
-  return 0;
+  //return 0;
 }
 
 antlrcpp::Any Visitor::visitEqualityTestExpr(ifccParser::EqualityTestExprContext *ctx)
 {
+  visit(ctx->expr()[0]);
+  vector<string> params {"%eax", "%ebx"}
+  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+
+  visit(ctx->expr()[1]);
+  currentBasicBlock->addIRInstr(IRInstr::cmp_eq, INT, params);
   /*
   visit(ctx->expr()[0]);
   cout << " movl %eax, %ebx" << endl;
@@ -324,7 +363,13 @@ antlrcpp::Any Visitor::visitEqualityTestExpr(ifccParser::EqualityTestExprContext
     cout << " je ";
   }
   */
-  return 0;
+
+  if(ctx->op->getText() == "==") {
+    return 1;
+  }
+  else if(ctx->op->getText() == "!=") {
+    return -1;
+  }
 }
 
 antlrcpp::Any Visitor::visitParTestExpr(ifccParser::ParTestExprContext *ctx)
