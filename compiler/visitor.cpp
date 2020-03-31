@@ -165,16 +165,9 @@ antlrcpp::Any Visitor::visitAffExpr(ifccParser::AffExprContext *ctx)
       // if the variable name doesn't exist, we throw an error.
     }
 
-    //code precedent, condition val == 0 -> osef ?
-    //int val = visitChildren(ctx);
-    /*
-    if(val==0) {
-      cout << " movl %eax, -" << memoryAddress << "(%rbp)" << endl;
-    } else {
-      //cout << "movl $" << val << ", -" << leftValAddr << "(%rbp)" << endl;
-    }
-    */
-    vector<string> params {currentCFG->symbolTable.varToAsm(leftValName), "%eax"};
+    visitChildren(ctx);
+
+    vector<string> params { "%eax", currentCFG->symbolTable.varToAsm(leftValName)}; //TODO eax par current register
     currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
 
     return 0;
