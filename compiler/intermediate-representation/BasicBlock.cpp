@@ -35,10 +35,26 @@ void BasicBlock::genAsm(ostream &o){ /**< x86 assembly code generation for this 
   if(exit_true == nullptr){
     genAsmEpilogue(o);
   } else if(exit_false != nullptr && (*(instrs.end()--))->isComp() ){
-    // deux branches conditionnels sur la valeur de la dernière variable assignée
-    o << "  je ." << exit_true->getLabel() << endl;
-    o << "  jne ." << exit_false->getLabel() << endl;
+    // deux branches conditionnelles sur la valeur de la dernière variable assignée
+    string opTrue, opFalse;
+    IRInstr* lastInstr = *(instrs.end()--);
 
+    int compType = lastInstr->compType();
+    if (compType == 1) {
+      opTrue = "je";
+      opFalse = "jne";
+    }
+    else if (compType == 2) {
+      opTrue = "jl";
+      opFalse = "jge";
+    }
+    else if (compType == 3) {
+      opTrue = "jle";
+      opFalse = "jg";
+    }
+
+    o << "  " << opTrue << " ." << exit_true->getLabel() << endl;
+    o << "  " << opFalse << " ." << exit_false->getLabel() << endl;
   } else {
     // saut inconditionel vers la true branch
     o << "  jmp ." << exit_true->getLabel() << endl;

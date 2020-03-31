@@ -54,6 +54,7 @@ IRInstr(SymbolTable * symbolTable, Operation op, Type t, vector<string> params);
 
 /** Actual code generation */
 void genAsm(ostream &o); /**< x86 assembly code generation for this IR instruction */
+int compType();
 bool isComp();
 private:
 SymbolTable * symbolTable;
