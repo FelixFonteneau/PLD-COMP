@@ -41,7 +41,7 @@ typedef enum {
  sub,
  mul,
  neg,
- not,
+ not_op,
  rmem,
  wmem,
  call,
