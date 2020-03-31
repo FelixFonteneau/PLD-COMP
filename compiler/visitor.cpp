@@ -554,10 +554,14 @@ antlrcpp::Any Visitor::visitNotExpr(ifccParser::NotExprContext *ctx) {
   visit(ctx->expr());
   vector<string> params {"%eax"};
   currentBasicBlock->addIRInstr(IRInstr::not_op, INT, params);
+
+  return 0;
 }
 
 antlrcpp::Any Visitor::visitMinusExpr(ifccParser::MinusExprContext *ctx) {
   visit(ctx->expr());
   vector<string> params {"%eax"};
   currentBasicBlock->addIRInstr(IRInstr::neg, INT, params);
+
+  return 0;
 }
