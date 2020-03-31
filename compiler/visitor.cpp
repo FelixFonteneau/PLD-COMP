@@ -139,18 +139,18 @@ antlrcpp::Any Visitor::visitAffVar(ifccParser::AffVarContext *ctx)
   return 0;
 }
 
-antlrcpp::Any Visitor::visitAffConst(ifccParser::AffConstContext *ctx)
+antlrcpp::Any Visitor::visitAffConst(ifccParser::AffConstContext *ctx) // a = 2
 {
-  /*
+
     int retval = stoi(ctx->CONST()->getText());
     string variableName = ctx->VAR()->getText();
-    if (!blocPrincipal.variableExiste(variableName))
+    if (!currentCFG->symbolTable.variableExiste(variableName))
     {
         // if the variable name already exists, we throw an error.
     }
-    int memoryAddress = blocPrincipal.getVariable(variableName)->getAddress();
-    cout << " movl $" << retval << ", -" << memoryAddress << "(%rbp)" << endl;
-    */
+    string constant = "$"+ to_string(retval);
+    vector<string> params {constant, currentCFG->symbolTable.varToAsm(variableName)};
+    currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
     return visitChildren(ctx);
     //cout << "Coucou dans le visitAffConst" << endl;
 

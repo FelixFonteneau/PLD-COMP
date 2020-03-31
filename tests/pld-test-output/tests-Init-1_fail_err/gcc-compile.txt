@@ -1,0 +1,19 @@
+input.c: In function ‘main’:
+input.c:3:9: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before numeric constant
+  int a  42;
+         ^~
+input.c:5:2: error: ‘a’ undeclared (first use in this function)
+  a = ;
+  ^
+input.c:5:2: note: each undeclared identifier is reported only once for each function it appears in
+input.c:5:6: error: expected expression before ‘;’ token
+  a = ;
+      ^
+input.c:8:10: error: expected ‘;’ before ‘}’ token
+  return a
+          ^
+          ;
+ }
+ ~         
+
+return code: 1
