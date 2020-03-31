@@ -15,7 +15,7 @@ main:
 	movl	-12(%rbp), %eax
 	leal	-10(%rax), %edx
 	movl	-8(%rbp), %eax
-	addl	$32, %eax
+	addl	%eax, %eax
 	addl	%edx, %eax
 	movl	%eax, -4(%rbp)
 	movl	-4(%rbp), %eax

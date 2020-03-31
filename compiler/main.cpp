@@ -47,10 +47,17 @@ int main(int argn, const char **argv) {
   }
 
   vector<CFG*> cfgs;
-  SyntaxErrorListener errorlistener(in.str());
+  SemanticErrorListener semanticErrorListener(in.str());
 
-  Visitor visitor(&cfgs);
+  Visitor visitor(&cfgs, &semanticErrorListener);
   visitor.visit(tree);
+
+  if (semanticErrorListener.Error()){
+    cerr << "Error in " << argv[1] << "." << endl;
+    cerr << semanticErrorListener;
+    return 1;
+  }
+
 
   // pass CFG to x86 back-end
 

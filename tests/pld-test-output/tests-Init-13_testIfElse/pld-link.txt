@@ -1,2 +1,4 @@
+asm-pld.s: Assembler messages:
+asm-pld.s:13: Error: no such instruction: `cmp_lt %eax,%ebx'
 
-return code: 0
+return code: 1

@@ -5,9 +5,9 @@ main:
   #prologue
   pushq %rbp
   movq %rsp, %rbp
+  movl $17, -4(%rbp)
+  movl $42, -8(%rbp)
+  movl -4(%rbp), %eax
+  movl %eax, %ebx
   movl -8(%rbp), %eax
-
-  # epilogue
-  popq %rbp
-  ret
-
+  cmp_le %eax, %ebx
