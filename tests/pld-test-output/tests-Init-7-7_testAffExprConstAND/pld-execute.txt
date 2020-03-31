@@ -1,6 +1,0 @@
-
-<<<<<<< HEAD
-return code: 3
-=======
-return code: 1
->>>>>>> IR integrated for add sub mul par

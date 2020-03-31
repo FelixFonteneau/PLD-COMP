@@ -1,8 +1,0 @@
-<<<<<<< HEAD
-Segmentation fault (core dumped)
-
-return code: 139
-=======
-
-return code: 0
->>>>>>> IR integrated for add sub mul par
