@@ -40,6 +40,8 @@ class IRInstr
      add,
      sub,
      mul,
+     neg,
+     not_op,
      rmem,
      wmem,
      call,
