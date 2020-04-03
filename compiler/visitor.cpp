@@ -213,7 +213,10 @@ antlrcpp::Any Visitor::visitIfNoElse(ifccParser::IfNoElseContext *ctx)
 
   //visite du bloc then
   currentBasicBlock = thenBlock;
+
+  currentCFG->enteringNewScope();
   visit(ctx->bloc());
+  currentCFG->exitScope();
 
   currentBasicBlock = endBlock;
   return endBlock;
@@ -254,11 +257,17 @@ antlrcpp::Any Visitor::visitIfWithElse(ifccParser::IfWithElseContext *ctx)
 
   //visite du bloc then
   currentBasicBlock = thenBlock;
+
+  currentCFG->enteringNewScope();
   visit(ctx->bloc()[0]);
+  currentCFG->exitScope();
 
   //visite du bloc else
   currentBasicBlock = elseBlock;
+
+  currentCFG->enteringNewScope();
   visit(ctx->bloc()[1]);
+  currentCFG->exitScope();
 
   currentBasicBlock = endBlock;
   return endBlock;
@@ -297,11 +306,17 @@ antlrcpp::Any Visitor::visitIfElseIf(ifccParser::IfElseIfContext *ctx)
 
   //visite du bloc then
   currentBasicBlock = thenBlock;
+
+  currentCFG->enteringNewScope();
   visit(ctx->bloc());
+  currentCFG->exitScope();
 
   //visite du bloc else
   currentBasicBlock = elseBlock;
+
+  currentCFG->enteringNewScope();
   BasicBlock* endBlock = visit(ctx->ifLoop());
+  currentCFG->exitScope();
 
   // il faut revenir à un bloc "général" à la fin des réalisations
   thenBlock->setExitTrueBlock(endBlock);
@@ -667,7 +682,7 @@ antlrcpp::Any Visitor::visitAffChar(ifccParser::AffCharContext *ctx)
 antlrcpp::Any Visitor::visitDeclMult(ifccParser::DeclMultContext *ctx) {
   string variableName = ctx->VAR()->getText();
 
-  if (currentCFG->symbolTable.variableExiste(variableName))
+  if (currentCFG->isVarExist(variableName))
   {
     // if the variable name already exists, we throw an error.
       string message = "variable " + variableName + " is already defined";
@@ -681,7 +696,7 @@ antlrcpp::Any Visitor::visitDeclMult(ifccParser::DeclMultContext *ctx) {
 antlrcpp::Any Visitor::visitLastDecl(ifccParser::LastDeclContext *ctx) {
   string variableName = ctx->VAR()->getText();
 
-  if (currentCFG->symbolTable.variableExiste(variableName))
+  if (currentCFG->isVarExist(variableName))
   {
     // if the variable name already exists, we throw an error.
       string message = "variable " + variableName + " is already defined";
@@ -720,7 +735,10 @@ antlrcpp::Any Visitor::visitWhileLoop(ifccParser::WhileLoopContext *ctx) {
 
   //visite du bloc then (pour générer l'assembleur)
   currentBasicBlock = whileBlock;
+
+  currentCFG->enteringNewScope();
   visit(ctx->bloc());
+  currentCFG->exitScope();
 
   currentBasicBlock = endBlock;
 
