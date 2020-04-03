@@ -34,20 +34,16 @@ testExpr  : expr op=('<=' | '>=' | '<' | '>') expr    #relationalTestExpr
           | '(' testExpr ')'                          #parTestExpr
           ;
 
-dec   : 'int' VAR #decInt
-      | 'char' VAR #decChar
-      ;
+dec   : type VAR;
 
-aff   : 'int' VAR '=' CONST               # affDecConst
-      | 'int' VAR '=' VAR                 # affDecVar
-      | 'int' VAR '=' expr                # affDecExpr
-      | 'char' VAR '=' CONST              # affCharDecConst
-      | 'char' VAR '=' CHAR               # affCharDecChar   
-      | 'char' VAR '=' VAR                # affCharDecVar
-      | 'char' VAR '=' expr               # affCharDecExpr
+
+aff   : type VAR '=' CONST                # affDecConst
+      | type VAR '=' VAR                  # affDecVar
+      | type VAR '=' expr                 # affDecExpr
+      | type VAR '=' CHAREXP              # affDecChar   
       | VAR '=' VAR                       # affVar
       | VAR '=' CONST                     # affConst
-      | VAR '=' CHAR                      # affChar
+      | VAR '=' CHAREXP                   # affChar
       | VAR '=' expr                      # affExpr
       ;
 
@@ -60,8 +56,14 @@ ret   : RET VAR   # retVar
       | RET CONST # retConst
       ;
 
+type : INT
+      | CHAR
+      ;
+
+INT : 'int' ;
+CHAR : 'char' ;
 RET : 'return' ;
-CHAR : '\'' .*? '\'' ; // prends tout ce qu'il y a entre les ' ' -> TODO verifier si c'est un char ou pas lors de l'affectation
+CHAREXP : '\'' .*? '\'' ; // prends tout ce qu'il y a entre les ' ' -> TODO verifier si c'est un char ou pas lors de l'affectation
 VAR : [a-z]+ ;
 CONST : [0-9]+ ;
 COMMENT : '/*' .*? '*/' -> skip ;
