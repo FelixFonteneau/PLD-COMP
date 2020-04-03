@@ -606,3 +606,20 @@ antlrcpp::Any Visitor::visitMinusExpr(ifccParser::MinusExprContext *ctx) {
 
   return 0;
 }
+
+antlrcpp::Any Visitor::visitBitsExpr(ifccParser::BitsExprContext *ctx) {
+  visit(ctx->expr()[1]);
+
+  vector<string> params = {"%eax", "%ebx"};
+  currentBasicBlock->addIRInstr(IRInstr::rmem, INT, params);
+
+  visit(ctx->expr()[0]);
+
+  if (ctx->op->getText() == '&') {
+    currentBasicBlock->addIRInstr(IRInstr::and_bit, INT, params);
+  } else if (ctx->op->getText() == '|') {
+    currentBasicBlock->addIRInstr(IRInstr::or_bit, INT, params);
+  } else if (ctx->op->getText() == '^') {
+    currentBasicBlock->addIRInstr(IRInstr::xor_bit, INT, params);
+  }
+}
