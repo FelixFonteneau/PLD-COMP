@@ -69,6 +69,15 @@ void IRInstr::genAsm(ostream &o){ /**< x86 assembly code generation for this IR 
 		case cmp_le:
       operation = "cmp_le"; //à implementer
       break;
+    case and_bit :
+      operation = "andl";
+      break;
+    case or_bit :
+      operation = "orl";
+      break;
+    case xor_bit :
+      operation = "xorl";
+      break;
   }
 
   o << "  " << operation << " ";
