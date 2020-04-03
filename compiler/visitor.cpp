@@ -96,19 +96,6 @@ antlrcpp::Any Visitor::visitFuncCall(ifccParser::FuncCallContext *ctx)
     return 0;
 }
 
-antlrcpp::Any Visitor::visitDec(ifccParser::DecContext *ctx)
-{
-    string variableName = ctx->VAR()->getText();
-    if (currentCFG->isVarExist(variableName))
-    {
-      // if the variable name already exists, we throw an error.
-        string message = "variable " + variableName + " is already defined";
-        errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
-    }
-    currentCFG->addToSymbolTable(variableName, INT);
-    return visitChildren(ctx);
-}
-
 antlrcpp::Any Visitor::visitAffDecConst(ifccParser::AffDecConstContext *ctx) // int a = 17;
 {
   int retval = stoi(ctx->CONST()->getText());
