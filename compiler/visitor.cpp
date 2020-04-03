@@ -615,12 +615,14 @@ antlrcpp::Any Visitor::visitBitsExpr(ifccParser::BitsExprContext *ctx) {
 
   visit(ctx->expr()[0]);
 
+  vector<string> params_op = {"%ebx", "%eax"};
+
   if (ctx->op->getText() == "&") {
-    currentBasicBlock->addIRInstr(IRInstr::and_bit, INT, params);
+    currentBasicBlock->addIRInstr(IRInstr::and_bit, INT, params_op);
   } else if (ctx->op->getText() == "|") {
-    currentBasicBlock->addIRInstr(IRInstr::or_bit, INT, params);
+    currentBasicBlock->addIRInstr(IRInstr::or_bit, INT, params_op);
   } else if (ctx->op->getText() == "^") {
-    currentBasicBlock->addIRInstr(IRInstr::xor_bit, INT, params);
+    currentBasicBlock->addIRInstr(IRInstr::xor_bit, INT, params_op);
   }
 
   return 0;
