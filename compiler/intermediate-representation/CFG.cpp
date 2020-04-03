@@ -103,6 +103,7 @@ string CFG::varToAsm(string var){
     }
   }
   return "";
+}
 
 string CFG::arrayToAsm(string arrayName, int index){
   for(vector<SymbolTable*>::reverse_iterator it = symbolTableStack.rbegin(); it != symbolTableStack.rend(); ++it ){
