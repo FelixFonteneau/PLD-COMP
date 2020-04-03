@@ -1,8 +1,0 @@
-Error in input.c.
-Error variable a is already defined. On position 5:6
-   "  int a = b;"
-          ^
-
-1 error generated.
-
-return code: 1
