@@ -63,7 +63,7 @@ void BasicBlock::genAsm(ostream &o){ /**< x86 assembly code generation for this 
 }
 
 void BasicBlock::addIRInstr(IRInstr::Operation op, Type t, vector<string> params){
-  IRInstr* newInstr = new IRInstr(symbolTable, op, t, params);
+  IRInstr* newInstr = new IRInstr(op, t, params);
   instrs.push_back(newInstr);
 
 }
@@ -92,13 +92,12 @@ string BasicBlock::getLabel(){
 //------------------------------------------------- Surcharge d'opérateurs
 //-------------------------------------------- Constructeurs - destructeur
 
-BasicBlock::BasicBlock (SymbolTable * symbolTable_, string entry_label)
+BasicBlock::BasicBlock (string entry_label)
 // Algorithme :
 //
 {
   exit_true = nullptr;
   exit_false = nullptr;
-  symbolTable = symbolTable_;
   label = entry_label;
 } //----- Fin de BasicBlock
 

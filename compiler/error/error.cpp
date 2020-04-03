@@ -15,7 +15,7 @@
 using namespace std;
 
 //------------------------------------------------------ Include personnel
-#include "Error.h"
+#include "error.h"
 
 //------------------------------------------------------------- Constantes
 

@@ -20,6 +20,7 @@ using namespace std;
 //------------------------------------------------------------- Constantes
 
 //----------------------------------------------------------------- PUBLIC
+SymbolTable* SymbolTable::globalVariables;
 
 //----------------------------------------------------- Méthodes publiques
 bool SymbolTable::variableExiste(string nom){
@@ -57,6 +58,13 @@ int SymbolTable::bitesSize(){
 }
 
 
+void SymbolTable::createGlobalVariablesST(vector<string> variables){
+
+}
+
+SymbolTable* SymbolTable::getGlobalVariablesST(){
+  return globalVariables;
+}
 //------------------------------------------------- Surcharge d'opérateurs
 
 
@@ -64,9 +72,7 @@ int SymbolTable::bitesSize(){
 SymbolTable::SymbolTable()
 
 {
-  #ifdef MAP
-      cout << "Appel au constructeur de <bloc>" << endl;
-  #endif
+  globalVariables = nullptr;
 }
 
 
@@ -75,9 +81,7 @@ SymbolTable::~SymbolTable ( )
 // Algorithme :
 //
 {
-#ifdef MAP
-   cout << "Appel au destructeur de <SymbolTable>" << endl;
-#endif
+
 } //----- Fin de ~SymbolTable
 
 
