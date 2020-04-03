@@ -60,7 +60,7 @@ antlrcpp::Any Visitor::visitProg(ifccParser::ProgContext *ctx)
 antlrcpp::Any Visitor::visitDec(ifccParser::DecContext *ctx)
 {
     string variableName = ctx->VAR()->getText();
-    if (currentCFG->symbolTable.variableExiste(variableName))
+    if (currentCFG->isVarExist(variableName))
     {
       // if the variable name already exists, we throw an error.
         string message = "variable " + variableName + " is already defined";
@@ -74,7 +74,7 @@ antlrcpp::Any Visitor::visitAffDecConst(ifccParser::AffDecConstContext *ctx) // 
 {
     int retval = stoi(ctx->CONST()->getText());
     string variableName = ctx->VAR()->getText();
-    if (currentCFG->symbolTable.variableExiste(variableName))
+    if (currentCFG->isVarExist(variableName))
     {
       string message = "variable " + variableName + " is already defined";
       errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
@@ -94,13 +94,13 @@ antlrcpp::Any Visitor::visitAffDecVar(ifccParser::AffDecVarContext *ctx)
 // int a = b;
 {
     string newVariableName = ctx->VAR()[0]->getText();
-    if (currentCFG->symbolTable.variableExiste(newVariableName))    {
+    if (currentCFG->isVarExist(newVariableName))    {
       string message = "variable " + newVariableName + " is already defined";
       errorlistener->addSemanticError(ctx->VAR()[0]->getSymbol(), message);
         // if the variable name already exists, we throw an error.
     }
     string existingVariableName = ctx->VAR()[1]->getText();
-    if (!currentCFG->symbolTable.variableExiste(existingVariableName)){
+    if (!currentCFG->isVarExist(existingVariableName)){
       string message = "variable " + existingVariableName + " does not exist";
       errorlistener->addSemanticError(ctx->VAR()[1]->getSymbol(), message);
         // if the variable name does not exist, we throw an error.
@@ -120,7 +120,7 @@ antlrcpp::Any Visitor::visitAffDecExpr(ifccParser::AffDecExprContext *ctx)
 {
     string variableName = ctx->VAR()->getText();
     visitChildren(ctx);
-    if(currentCFG->symbolTable.variableExiste(variableName)) {
+    if(currentCFG->isVarExist(variableName)) {
       string message = "variable " + variableName + " is already defined";
       errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
       // if the variable name already exists, we throw an error.
@@ -143,14 +143,14 @@ antlrcpp::Any Visitor::visitAffDecExpr(ifccParser::AffDecExprContext *ctx)
 antlrcpp::Any Visitor::visitAffVar(ifccParser::AffVarContext *ctx)
 {
   string leftValName = ctx->VAR()[0]->getText();
-  if (!currentCFG->symbolTable.variableExiste(leftValName)) {
+  if (!currentCFG->isVarExist(leftValName)) {
     // if the variable name already exist, we throw an error.
     string message = "variable " + leftValName + " already defined";
     errorlistener->addSemanticError(ctx->VAR()[0]->getSymbol(), message);
   }
 
   string rightValName = ctx->VAR()[1]->getText();
-  if (!currentCFG->symbolTable.variableExiste(rightValName)) {
+  if (!currentCFG->isVarExist(rightValName)) {
     // if the variable name doesn't exist, we throw an error.
     string message = "variable " + rightValName + " does not exist";
     errorlistener->addSemanticError(ctx->VAR()[1]->getSymbol(), message);
@@ -170,7 +170,7 @@ antlrcpp::Any Visitor::visitAffConst(ifccParser::AffConstContext *ctx) // a = 2
 
     int retval = stoi(ctx->CONST()->getText());
     string variableName = ctx->VAR()->getText();
-    if (!currentCFG->symbolTable.variableExiste(variableName))
+    if (!currentCFG->isVarExist(variableName))
     {
         // if the variable name already exists, we throw an error.
         string message = "variable " + variableName + " is already defined";
@@ -187,7 +187,7 @@ antlrcpp::Any Visitor::visitAffConst(ifccParser::AffConstContext *ctx) // a = 2
 antlrcpp::Any Visitor::visitAffExpr(ifccParser::AffExprContext *ctx)
 {
     string leftValName = ctx->VAR()->getText();
-    if (!currentCFG->symbolTable.variableExiste(leftValName)) {
+    if (!currentCFG->isVarExist(leftValName)) {
       // if the variable name doesn't exist, we throw an error.
       string message = "variable " + leftValName + " does not exist";
       errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
@@ -446,11 +446,11 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
 
 
 /*
-    if(currentCFG->symbolTable.variableExiste(exprLeft)) {
+    if(currentCFG->isVarExist(exprLeft)) {
       memoryAddressLeft = currentCFG->symbolTable.getVariable(exprLeft)->getAddress();
     }
 */
-    if(currentCFG->symbolTable.variableExiste(exprRight)) {
+    if(currentCFG->isVarExist(exprRight)) {
       memoryAddressRight = currentCFG->symbolTable.getVariable(exprRight)->getAddress();
     }
 
@@ -546,11 +546,11 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
   int memoryAddressLeft = 0;
   int memoryAddressRight = 0;
 
-  if(currentCFG->symbolTable.variableExiste(exprLeft)) {
+  if(currentCFG->isVarExist(exprLeft)) {
     memoryAddressLeft = currentCFG->symbolTable.getVariable(exprLeft)->getAddress();
   }
 
-  if(currentCFG->symbolTable.variableExiste(exprRight)) {
+  if(currentCFG->isVarExist(exprRight)) {
     memoryAddressRight = currentCFG->symbolTable.getVariable(exprRight)->getAddress();
   }
 

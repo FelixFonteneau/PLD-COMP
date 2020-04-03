@@ -51,9 +51,10 @@ class CFG {
 	// basic block management
 	BasicBlock* current_bb;
 
+  bool isVarExist(string var);
+
   SymbolTable symbolTable;
 
-  
  protected:
   void genAsmPrologue(ostream& o);
   string newBBName();

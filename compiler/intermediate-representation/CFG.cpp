@@ -49,14 +49,6 @@ void CFG::genAsm(ostream& o){
 
 }
 
-void CFG::genAsmPrologue(ostream& o){
-  o << "  #prologue" << endl;
-//  o << "  pushq %rbp" << endl;
-//  o << "  mov	%rbp, %rsp" << endl;
-//  o << "  sub	%rsp, " << symbolTable.bitesSize()<< endl;
-  o <<"  pushq %rbp\n"      //save %rbp on the stack
-      "  movq %rsp, %rbp\n"; //define %rbp for the current function
-}
 
 
 
@@ -71,11 +63,10 @@ void CFG::addToSymbolTable(string name, Type t){
 //TODO bellow
 string CFG::createNewTempvar(Type t){return "";}
 
-
-// basic block management
-string CFG::newBBName(){
-  return name+to_string(nextBBnumber);
+bool CFG::isVarExist(string var){
+  return symbolTable.variableExiste(var);
 }
+
 //------------------------------------------------- Surcharge d'opérateurs
 //-------------------------------------------- Constructeurs - destructeur
 
@@ -110,3 +101,16 @@ CFG::~CFG ( )
 //------------------------------------------------------------------ PRIVE
 
 //----------------------------------------------------- Méthodes protégées
+void CFG::genAsmPrologue(ostream& o){
+  o << "  #prologue" << endl;
+//  o << "  pushq %rbp" << endl;
+//  o << "  mov	%rbp, %rsp" << endl;
+//  o << "  sub	%rsp, " << symbolTable.bitesSize()<< endl;
+  o <<"  pushq %rbp\n"      //save %rbp on the stack
+      "  movq %rsp, %rbp\n"; //define %rbp for the current function
+}
+
+// basic block management
+string CFG::newBBName(){
+  return name+to_string(nextBBnumber);
+}
