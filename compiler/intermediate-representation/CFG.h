@@ -61,7 +61,7 @@ class CFG {
   void genAsmPrologue(ostream& o);
   string newBBName();
 
-  vector<SymbolTable*> symbolTables;
+  vector<SymbolTable*> symbolTableStack; // stack of symbol table. Access the last in first.
   SymbolTable* currentSymbolTable;
   string name;
 	int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
