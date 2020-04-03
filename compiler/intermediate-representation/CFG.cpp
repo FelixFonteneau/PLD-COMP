@@ -67,6 +67,10 @@ bool CFG::isVarExist(string var){
   return symbolTable.variableExiste(var);
 }
 
+string CFG::varToAsm(string var){
+  return symbolTable.varToAsm(var);
+}
+
 //------------------------------------------------- Surcharge d'opérateurs
 //-------------------------------------------- Constructeurs - destructeur
 

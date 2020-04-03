@@ -82,7 +82,7 @@ antlrcpp::Any Visitor::visitAffDecConst(ifccParser::AffDecConstContext *ctx) // 
     }
     currentCFG->addToSymbolTable(variableName, INT);
     string constant = "$"+ to_string(retval);
-    vector<string> params {constant, currentCFG->symbolTable.varToAsm(variableName)};
+    vector<string> params {constant, currentCFG->varToAsm(variableName)};
     currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
 
 
@@ -110,7 +110,7 @@ antlrcpp::Any Visitor::visitAffDecVar(ifccParser::AffDecVarContext *ctx)
 
     }
     currentCFG->addToSymbolTable(newVariableName, INT);
-    vector<string> params {currentCFG->symbolTable.varToAsm(existingVariableName), currentCFG->symbolTable.varToAsm(newVariableName)};
+    vector<string> params {currentCFG->varToAsm(existingVariableName), currentCFG->varToAsm(newVariableName)};
     currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
 
     return visitChildren(ctx);
@@ -131,7 +131,7 @@ antlrcpp::Any Visitor::visitAffDecExpr(ifccParser::AffDecExprContext *ctx)
     //addressIterator += 4;
 
     currentCFG->addToSymbolTable(variableName, INT);
-    vector<string> params {(*currentRegister).name, currentCFG->symbolTable.varToAsm(variableName)};
+    vector<string> params {(*currentRegister).name, currentCFG->varToAsm(variableName)};
     currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
 
     //cout << "  movl % " << (*currentRegister).name << ", -" << memoryAddress << "(%rbp)" << endl;
@@ -156,8 +156,8 @@ antlrcpp::Any Visitor::visitAffVar(ifccParser::AffVarContext *ctx)
     errorlistener->addSemanticError(ctx->VAR()[1]->getSymbol(), message);
     return 0;
   }
-  vector<string> params {currentCFG->symbolTable.varToAsm(rightValName), "%eax"};
-  vector<string> params2 {"%eax", currentCFG->symbolTable.varToAsm(leftValName)};
+  vector<string> params {currentCFG->varToAsm(rightValName), "%eax"};
+  vector<string> params2 {"%eax", currentCFG->varToAsm(leftValName)};
 
   currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
   currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params2);
@@ -177,7 +177,7 @@ antlrcpp::Any Visitor::visitAffConst(ifccParser::AffConstContext *ctx) // a = 2
         errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
     }
     string constant = "$"+ to_string(retval);
-    vector<string> params {constant, currentCFG->symbolTable.varToAsm(variableName)};
+    vector<string> params {constant, currentCFG->varToAsm(variableName)};
     currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
     return visitChildren(ctx);
     //cout << "Coucou dans le visitAffConst" << endl;
@@ -196,7 +196,7 @@ antlrcpp::Any Visitor::visitAffExpr(ifccParser::AffExprContext *ctx)
 
     visitChildren(ctx);
 
-    vector<string> params { "%eax", currentCFG->symbolTable.varToAsm(leftValName)}; //TODO eax par current register
+    vector<string> params { "%eax", currentCFG->varToAsm(leftValName)}; //TODO eax par current register
     currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
 
     return 0;
@@ -427,7 +427,7 @@ antlrcpp::Any Visitor::visitConstExpr(ifccParser::ConstExprContext *ctx)
 antlrcpp::Any Visitor::visitVarExpr(ifccParser::VarExprContext *ctx)
 {
     string var = ctx->VAR()->getText();
-    vector<string> params {currentCFG->symbolTable.varToAsm(var), (*currentRegister).name};
+    vector<string> params {currentCFG->varToAsm(var), (*currentRegister).name};
     currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
     //cout << "  movl -" << blocPrincipal.getVariable(var)->getAddress() << "(%rbp), %" << (*currentRegister).name << endl;
     return 0;
@@ -486,7 +486,7 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
             //cout << "  addl %" << (*(currentRegister + 1)).name << ", %" << (*currentRegister).name << endl;
           }
         } else if(isVar) {
-          vector<string> params {currentCFG->symbolTable.varToAsm(exprRight), (*currentRegister).name};
+          vector<string> params {currentCFG->varToAsm(exprRight), (*currentRegister).name};
           currentBasicBlock->addIRInstr(IRInstr::add, INT, params);
           //cout << "  addl -" << memoryAddressRight << "(%rbp), %" << (*currentRegister).name << endl;
         }
@@ -504,7 +504,7 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
             //cout << "  subl %" << (*(currentRegister + 1)).name << ", %" << (*currentRegister).name << endl;
           }
         } else if(isVar) {
-          vector<string> params {currentCFG->symbolTable.varToAsm(exprRight), (*currentRegister).name};
+          vector<string> params {currentCFG->varToAsm(exprRight), (*currentRegister).name};
           currentBasicBlock->addIRInstr(IRInstr::sub, INT, params);
           //cout << "  subl -" << memoryAddressRight << "(%rbp), %" << (*currentRegister).name << endl;
         }
@@ -522,7 +522,7 @@ antlrcpp::Any Visitor::visitParExpr(ifccParser::ParExprContext *ctx)
 antlrcpp::Any Visitor::visitRetVar(ifccParser::RetVarContext *ctx)
 {
   string variable = ctx->VAR()->getText();
-  vector<string> params {currentCFG->symbolTable.varToAsm(variable), "%eax"};
+  vector<string> params {currentCFG->varToAsm(variable), "%eax"};
   currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
   return 0;
 }
@@ -584,7 +584,7 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
         currentBasicBlock->addIRInstr(IRInstr::mul, INT, params);
       }
     } else if(isVar) {
-      vector<string> params {currentCFG->symbolTable.varToAsm(exprRight), (*currentRegister).name};
+      vector<string> params {currentCFG->varToAsm(exprRight), (*currentRegister).name};
       currentBasicBlock->addIRInstr(IRInstr::mul, INT, params);
     }
   }

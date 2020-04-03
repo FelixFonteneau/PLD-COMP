@@ -47,11 +47,13 @@ class CFG {
 	// symbol table methods
 	void addToSymbolTable(string name, Type t);
 	string createNewTempvar(Type t);
+  bool isVarExist(string var);
+  string varToAsm(string var);
 
 	// basic block management
 	BasicBlock* current_bb;
 
-  bool isVarExist(string var);
+
 
   SymbolTable symbolTable;
 
