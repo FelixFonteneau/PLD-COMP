@@ -34,7 +34,11 @@ testExpr  : expr op=('<=' | '>=' | '<' | '>') expr    #relationalTestExpr
           | '(' testExpr ')'                          #parTestExpr
           ;
 
-dec   : 'int' VAR;
+vars  : VAR ',' vars  #declMult
+      | VAR           #lastDecl
+      ;
+
+dec   : 'int' vars;
 
 aff   : 'int' VAR '=' CONST # affDecConst
       | 'int' VAR '=' VAR   # affDecVar
