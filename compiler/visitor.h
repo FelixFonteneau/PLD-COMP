@@ -89,4 +89,6 @@ class  Visitor : public ifccBaseVisitor {
 
     virtual antlrcpp::Any visitLastDecl(ifccParser::LastDeclContext *ctx) override;
 
+    virtual antlrcpp::Any visitWhileLoop(ifccParser::WhileLoopContext *ctx) override;
+
 };
