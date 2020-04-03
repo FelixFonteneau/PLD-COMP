@@ -216,7 +216,7 @@ antlrcpp::Any Visitor::visitIfNoElse(ifccParser::IfNoElseContext *ctx)
   visit(ctx->bloc());
 
   currentBasicBlock = endBlock;
-  return 0;
+  return endBlock;
 
   /*
   int ifnumber = labelcounter++;
@@ -261,7 +261,7 @@ antlrcpp::Any Visitor::visitIfWithElse(ifccParser::IfWithElseContext *ctx)
   visit(ctx->bloc()[1]);
 
   currentBasicBlock = endBlock;
-  return 0;
+  return endBlock;
   /*
   int ifnumber = labelcounter++;
   cout << ".if" << ifnumber << ":" <<endl;
@@ -281,7 +281,6 @@ antlrcpp::Any Visitor::visitIfElseIf(ifccParser::IfElseIfContext *ctx)
   int testSign = visit(ctx->testExpr());
   BasicBlock* thenBlock = currentCFG->createNewBB();
   BasicBlock* elseBlock = currentCFG->createNewBB();
-  BasicBlock* endBlock = currentCFG->createNewBB();
 
   // pour réaliser les blocs du if/else
   if (testSign == 1) {
@@ -296,20 +295,20 @@ antlrcpp::Any Visitor::visitIfElseIf(ifccParser::IfElseIfContext *ctx)
     cout << "error : mauvais opérateur" << endl;
   }
 
-  // il faut revenir à un bloc "général" à la fin des réalisations
-  thenBlock->setExitTrueBlock(endBlock);
-  elseBlock->setExitTrueBlock(endBlock);
-
   //visite du bloc then
   currentBasicBlock = thenBlock;
   visit(ctx->bloc());
 
   //visite du bloc else
   currentBasicBlock = elseBlock;
-  visit(ctx->ifLoop());
+  BasicBlock* endBlock = visit(ctx->ifLoop());
+
+  // il faut revenir à un bloc "général" à la fin des réalisations
+  thenBlock->setExitTrueBlock(endBlock);
+  //elseBlock->setExitTrueBlock(endBlock);
 
   currentBasicBlock = endBlock;
-  return 0;
+  return endBlock;
 
   /*
   int ifnumber = labelcounter++;
