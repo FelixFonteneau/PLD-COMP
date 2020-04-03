@@ -204,6 +204,9 @@ antlrcpp::Any Visitor::visitIfNoElse(ifccParser::IfNoElseContext *ctx)
     currentBasicBlock->setExitTrueBlock(endBlock);
     currentBasicBlock->setExitFalseBlock(thenBlock);
   }
+  else {
+    cout << "error : mauvais opérateur" << endl;
+  }
 
   // il faut revenir à un bloc "général" à la fin du then
   thenBlock->setExitTrueBlock(endBlock);
@@ -240,6 +243,9 @@ antlrcpp::Any Visitor::visitIfWithElse(ifccParser::IfWithElseContext *ctx)
   else if (testSign == -1) {
     currentBasicBlock->setExitTrueBlock(elseBlock);
     currentBasicBlock->setExitFalseBlock(thenBlock);
+  }
+  else {
+    cout << "error : mauvais opérateur" << endl;
   }
 
   // il faut revenir à un bloc "général" à la fin des réalisations
@@ -285,6 +291,9 @@ antlrcpp::Any Visitor::visitIfElseIf(ifccParser::IfElseIfContext *ctx)
   else if (testSign == -1) {
     currentBasicBlock->setExitTrueBlock(elseBlock);
     currentBasicBlock->setExitFalseBlock(thenBlock);
+  }
+  else {
+    cout << "error : mauvais opérateur" << endl;
   }
 
   // il faut revenir à un bloc "général" à la fin des réalisations
@@ -680,6 +689,41 @@ antlrcpp::Any Visitor::visitLastDecl(ifccParser::LastDeclContext *ctx) {
       errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
   }
   currentCFG->addToSymbolTable(variableName, INT);
+
+  return 0;
+}
+
+antlrcpp::Any Visitor::visitWhileLoop(ifccParser::WhileLoopContext *ctx) {
+  BasicBlock* testBlock = currentCFG->createNewBB();
+  BasicBlock* whileBlock = currentCFG->createNewBB();
+  BasicBlock* endBlock = currentCFG->createNewBB();
+
+  currentBasicBlock->setExitTrueBlock(testBlock);
+  currentBasicBlock = testBlock;
+
+  int testSign = visit(ctx->testExpr());
+
+  // pour réaliser le bloc
+  if (testSign == 1) {
+    currentBasicBlock->setExitTrueBlock(whileBlock);
+    currentBasicBlock->setExitFalseBlock(endBlock);
+  }
+  else if (testSign == -1) {
+    currentBasicBlock->setExitTrueBlock(endBlock);
+    currentBasicBlock->setExitFalseBlock(whileBlock);
+  }
+  else {
+    cout << "error : mauvais opérateur" << endl;
+  }
+
+  // il faut revenir au test à la fin du bloc
+  whileBlock->setExitTrueBlock(testBlock);
+
+  //visite du bloc then (pour générer l'assembleur)
+  currentBasicBlock = whileBlock;
+  visit(ctx->bloc());
+
+  currentBasicBlock = endBlock;
 
   return 0;
 }

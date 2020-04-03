@@ -11,10 +11,11 @@ statements : statement
            | statement statements
            ;
 
-statement : dec ';' # statementDeclaration
-          | aff ';' # statementAffectation
-          | ret ';' # statementReturn
-          | ifLoop  # boucleIf
+statement : dec ';'   # statementDeclaration
+          | aff ';'   # statementAffectation
+          | ret ';'   # statementReturn
+          | ifLoop    # boucleIf
+          | whileLoop # boucleWhile
           ;
 
 expr    : expr op=('|' | '&' | '^') expr               #bitsExpr
@@ -54,6 +55,8 @@ ifLoop  : 'if' '(' testExpr ')' bloc                # ifNoElse
         | 'if' '(' testExpr ')' bloc 'else' bloc    # ifWithElse
         | 'if' '(' testExpr ')' bloc 'else' ifLoop  # ifElseIf
         ;
+
+whileLoop : 'while' '(' testExpr ')' bloc;
 
 ret   : RET VAR   # retVar
       | RET CONST # retConst

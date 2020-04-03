@@ -34,10 +34,10 @@ void BasicBlock::genAsm(ostream &o){ /**< x86 assembly code generation for this 
 
   if(exit_true == nullptr){
     genAsmEpilogue(o);
-  } else if(exit_false != nullptr && (*(instrs.end()--))->isComp() ){
+  } else if(exit_false != nullptr && instrs.back()->isComp() ){
     // deux branches conditionnelles sur la valeur de la dernière variable assignée
     string opTrue, opFalse;
-    IRInstr* lastInstr = *(instrs.end()--);
+    IRInstr* lastInstr = instrs.back();
 
     int compType = lastInstr->compType();
     if (compType == 1) {
