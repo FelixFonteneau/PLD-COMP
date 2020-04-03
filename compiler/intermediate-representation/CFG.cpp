@@ -64,7 +64,7 @@ void CFG::addToSymbolTable(string name, Type t){
 string CFG::createNewTempvar(Type t){return "";}
 
 bool CFG::isVarExist(string var){
-  for(vector<SymbolTable*>::reverse_iterator it = symbolTables.rbegin(); it != symbolTables.rend(); ++it ){
+  for(vector<SymbolTable*>::reverse_iterator it = symbolTableStack.rbegin(); it != symbolTableStack.rend(); ++it ){
     if((*it)->variableExiste(var)){
       return true;
     }
@@ -73,7 +73,7 @@ bool CFG::isVarExist(string var){
 }
 
 string CFG::varToAsm(string var){
-  for(vector<SymbolTable*>::reverse_iterator it = symbolTables.rbegin(); it != symbolTables.rend(); ++it ){
+  for(vector<SymbolTable*>::reverse_iterator it = symbolTableStack.rbegin(); it != symbolTableStack.rend(); ++it ){
     if((*it)->variableExiste(var)){
       return (*it)->varToAsm(var);
     }
@@ -82,7 +82,7 @@ string CFG::varToAsm(string var){
 }
 
 Variable* CFG::getVariable(string var){
-  for(vector<SymbolTable*>::reverse_iterator it = symbolTables.rbegin(); it != symbolTables.rend(); ++it ){
+  for(vector<SymbolTable*>::reverse_iterator it = symbolTableStack.rbegin(); it != symbolTableStack.rend(); ++it ){
     if((*it)->variableExiste(var)){
       return (*it)->getVariable(var);
     }
@@ -106,10 +106,10 @@ CFG::CFG(string name_)
   nextBBnumber = 0;
   current_bb = nullptr;
   if (SymbolTable::getGlobalVariablesST() != nullptr){
-    symbolTables.push_back(SymbolTable::getGlobalVariablesST());
+    symbolTableStack.push_back(SymbolTable::getGlobalVariablesST());
   }
   currentSymbolTable = new SymbolTable();
-  symbolTables.push_back(currentSymbolTable);
+  symbolTableStack.push_back(currentSymbolTable);
 } //----- Fin de CFG
 
 
