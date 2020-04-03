@@ -57,19 +57,6 @@ antlrcpp::Any Visitor::visitProg(ifccParser::ProgContext *ctx)
     return 0;
 }
 
-antlrcpp::Any Visitor::visitDec(ifccParser::DecContext *ctx)
-{
-    string variableName = ctx->VAR()->getText();
-    if (currentCFG->isVarExist(variableName))
-    {
-      // if the variable name already exists, we throw an error.
-        string message = "variable " + variableName + " is already defined";
-        errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
-    }
-    currentCFG->addToSymbolTable(variableName, INT);
-    return visitChildren(ctx);
-}
-
 antlrcpp::Any Visitor::visitAffDecConst(ifccParser::AffDecConstContext *ctx) // int a = 17;
 {
     int retval = stoi(ctx->CONST()->getText());
@@ -217,16 +204,22 @@ antlrcpp::Any Visitor::visitIfNoElse(ifccParser::IfNoElseContext *ctx)
     currentBasicBlock->setExitTrueBlock(endBlock);
     currentBasicBlock->setExitFalseBlock(thenBlock);
   }
+  else {
+    cout << "error : mauvais opérateur" << endl;
+  }
 
   // il faut revenir à un bloc "général" à la fin du then
   thenBlock->setExitTrueBlock(endBlock);
 
   //visite du bloc then
   currentBasicBlock = thenBlock;
+
+  currentCFG->enteringNewScope();
   visit(ctx->bloc());
+  currentCFG->exitScope();
 
   currentBasicBlock = endBlock;
-  return 0;
+  return endBlock;
 
   /*
   int ifnumber = labelcounter++;
@@ -254,6 +247,9 @@ antlrcpp::Any Visitor::visitIfWithElse(ifccParser::IfWithElseContext *ctx)
     currentBasicBlock->setExitTrueBlock(elseBlock);
     currentBasicBlock->setExitFalseBlock(thenBlock);
   }
+  else {
+    cout << "error : mauvais opérateur" << endl;
+  }
 
   // il faut revenir à un bloc "général" à la fin des réalisations
   thenBlock->setExitTrueBlock(endBlock);
@@ -261,14 +257,20 @@ antlrcpp::Any Visitor::visitIfWithElse(ifccParser::IfWithElseContext *ctx)
 
   //visite du bloc then
   currentBasicBlock = thenBlock;
+
+  currentCFG->enteringNewScope();
   visit(ctx->bloc()[0]);
+  currentCFG->exitScope();
 
   //visite du bloc else
   currentBasicBlock = elseBlock;
+
+  currentCFG->enteringNewScope();
   visit(ctx->bloc()[1]);
+  currentCFG->exitScope();
 
   currentBasicBlock = endBlock;
-  return 0;
+  return endBlock;
   /*
   int ifnumber = labelcounter++;
   cout << ".if" << ifnumber << ":" <<endl;
@@ -288,7 +290,6 @@ antlrcpp::Any Visitor::visitIfElseIf(ifccParser::IfElseIfContext *ctx)
   int testSign = visit(ctx->testExpr());
   BasicBlock* thenBlock = currentCFG->createNewBB();
   BasicBlock* elseBlock = currentCFG->createNewBB();
-  BasicBlock* endBlock = currentCFG->createNewBB();
 
   // pour réaliser les blocs du if/else
   if (testSign == 1) {
@@ -299,21 +300,30 @@ antlrcpp::Any Visitor::visitIfElseIf(ifccParser::IfElseIfContext *ctx)
     currentBasicBlock->setExitTrueBlock(elseBlock);
     currentBasicBlock->setExitFalseBlock(thenBlock);
   }
-
-  // il faut revenir à un bloc "général" à la fin des réalisations
-  thenBlock->setExitTrueBlock(endBlock);
-  elseBlock->setExitTrueBlock(endBlock);
+  else {
+    cout << "error : mauvais opérateur" << endl;
+  }
 
   //visite du bloc then
   currentBasicBlock = thenBlock;
+
+  currentCFG->enteringNewScope();
   visit(ctx->bloc());
+  currentCFG->exitScope();
 
   //visite du bloc else
   currentBasicBlock = elseBlock;
-  visit(ctx->ifLoop());
+
+  currentCFG->enteringNewScope();
+  BasicBlock* endBlock = visit(ctx->ifLoop());
+  currentCFG->exitScope();
+
+  // il faut revenir à un bloc "général" à la fin des réalisations
+  thenBlock->setExitTrueBlock(endBlock);
+  //elseBlock->setExitTrueBlock(endBlock);
 
   currentBasicBlock = endBlock;
-  return 0;
+  return endBlock;
 
   /*
   int ifnumber = labelcounter++;
@@ -667,4 +677,70 @@ antlrcpp::Any Visitor::visitAffChar(ifccParser::AffCharContext *ctx)
   */
   return visitChildren(ctx);
 
+}
+
+antlrcpp::Any Visitor::visitDeclMult(ifccParser::DeclMultContext *ctx) {
+  string variableName = ctx->VAR()->getText();
+
+  if (currentCFG->isVarExist(variableName))
+  {
+    // if the variable name already exists, we throw an error.
+      string message = "variable " + variableName + " is already defined";
+      errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+  }
+  currentCFG->addToSymbolTable(variableName, INT);
+
+  return visit(ctx->vars());
+}
+
+antlrcpp::Any Visitor::visitLastDecl(ifccParser::LastDeclContext *ctx) {
+  string variableName = ctx->VAR()->getText();
+
+  if (currentCFG->isVarExist(variableName))
+  {
+    // if the variable name already exists, we throw an error.
+      string message = "variable " + variableName + " is already defined";
+      errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+  }
+  currentCFG->addToSymbolTable(variableName, INT);
+
+  return 0;
+}
+
+antlrcpp::Any Visitor::visitWhileLoop(ifccParser::WhileLoopContext *ctx) {
+  BasicBlock* testBlock = currentCFG->createNewBB();
+  BasicBlock* whileBlock = currentCFG->createNewBB();
+  BasicBlock* endBlock = currentCFG->createNewBB();
+
+  currentBasicBlock->setExitTrueBlock(testBlock);
+  currentBasicBlock = testBlock;
+
+  int testSign = visit(ctx->testExpr());
+
+  // pour réaliser le bloc
+  if (testSign == 1) {
+    currentBasicBlock->setExitTrueBlock(whileBlock);
+    currentBasicBlock->setExitFalseBlock(endBlock);
+  }
+  else if (testSign == -1) {
+    currentBasicBlock->setExitTrueBlock(endBlock);
+    currentBasicBlock->setExitFalseBlock(whileBlock);
+  }
+  else {
+    cout << "error : mauvais opérateur" << endl;
+  }
+
+  // il faut revenir au test à la fin du bloc
+  whileBlock->setExitTrueBlock(testBlock);
+
+  //visite du bloc then (pour générer l'assembleur)
+  currentBasicBlock = whileBlock;
+
+  currentCFG->enteringNewScope();
+  visit(ctx->bloc());
+  currentCFG->exitScope();
+
+  currentBasicBlock = endBlock;
+
+  return 0;
 }

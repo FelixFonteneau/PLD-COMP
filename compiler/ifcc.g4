@@ -11,10 +11,11 @@ statements : statement
            | statement statements
            ;
 
-statement : dec ';' # statementDeclaration
-          | aff ';' # statementAffectation
-          | ret ';' # statementReturn
-          | ifLoop  # boucleIf
+statement : dec ';'   # statementDeclaration
+          | aff ';'   # statementAffectation
+          | ret ';'   # statementReturn
+          | ifLoop    # boucleIf
+          | whileLoop # boucleWhile
           ;
 
 expr    : expr op=('|' | '&' | '^') expr               #bitsExpr
@@ -34,23 +35,28 @@ testExpr  : expr op=('<=' | '>=' | '<' | '>') expr    #relationalTestExpr
           | '(' testExpr ')'                          #parTestExpr
           ;
 
-dec   : type VAR;
+vars  : VAR ',' vars  #declMult
+      | VAR           #lastDecl
+      ;
 
+dec   : type vars;
 
-aff   : type VAR '=' CONST                # affDecConst
-      | type VAR '=' VAR                  # affDecVar
-      | type VAR '=' expr                 # affDecExpr
-      | type VAR '=' CHAREXP              # affDecChar   
-      | VAR '=' VAR                       # affVar
-      | VAR '=' CONST                     # affConst
-      | VAR '=' CHAREXP                   # affChar
-      | VAR '=' expr                      # affExpr
+aff   : type VAR '=' CONST	 # affDecConst
+      | type VAR '=' VAR	 # affDecVar
+      | type VAR '=' CHAREXP     # affDecChar
+      | type VAR '=' expr        # affDecExpr
+      | VAR '=' VAR              # affVar
+      | VAR '=' CONST            # affConst
+      | VAR '=' CHAREXP          # affChar
+      | VAR '=' expr             # affExpr
       ;
 
 ifLoop  : 'if' '(' testExpr ')' bloc                # ifNoElse
         | 'if' '(' testExpr ')' bloc 'else' bloc    # ifWithElse
         | 'if' '(' testExpr ')' bloc 'else' ifLoop  # ifElseIf
         ;
+
+whileLoop : 'while' '(' testExpr ')' bloc;
 
 ret   : RET VAR   # retVar
       | RET CONST # retConst

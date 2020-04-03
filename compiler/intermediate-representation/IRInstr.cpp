@@ -61,13 +61,13 @@ void IRInstr::genAsm(ostream &o){ /**< x86 assembly code generation for this IR 
       operation = "call"; //à implementer
       break;
 		case cmp_eq:
-      operation = "cmp_eq"; //à implementer
+      operation = "cmpl"; //à implementer
       break;
 		case cmp_lt:
-      operation = "cmp_lt"; //à implementer
+      operation = "cmpl"; //à implementer
       break;
 		case cmp_le:
-      operation = "cmp_le"; //à implementer
+      operation = "cmpl"; //à implementer
       break;
     case and_bit :
       operation = "andl";
@@ -116,7 +116,6 @@ IRInstr::IRInstr (Operation op_, Type t_, vector<string> params_)
   t  = t_;
   params = params_;
 } //----- Fin de IRInstr
-
 
 //------------------------------------------------------------------ PRIVE
 
