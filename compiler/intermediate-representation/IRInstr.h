@@ -50,7 +50,7 @@ class IRInstr
      cmp_le,
      and_bit,
      or_bit,
-     xor_bit
+     xor_bit,
      activationRecord,
      desactivationRecord
     } Operation;

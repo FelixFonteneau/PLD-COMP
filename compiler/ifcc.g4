@@ -105,7 +105,7 @@ array_elt : VAR '[' CONST ']';
 INT : 'int' ;
 CHAR : 'char' ;
 RET : 'return' ;
-CHAREXP : '\'' .*? '\'' ; // prends tout ce qu'il y a entre les ' ' -> TODO verifier si c'est un char ou pas lors de l'affectation
+CHAREXP : '\'' .*? '\'' ; /* prends tout ce qu'il y a entre les ' ' -> TODO verifier si c'est un char ou pas lors de l'affectation */
 VAR : [a-z]+ ;
 CONST : [0-9]+ ;
 COMMENT : '/*' .*? '*/' -> skip ;
