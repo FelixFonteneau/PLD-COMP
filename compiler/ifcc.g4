@@ -17,7 +17,7 @@ statement : dec ';' # statementDeclaration
           | ifLoop  # boucleIf
           ;
 
-expr    : expr ('|' | '&' | '^') expr               #bitsExpr
+expr    : expr op=('|' | '&' | '^') expr               #bitsExpr
         | '-' expr                                  #minusExpr
         | '!' expr                                  #notExpr
         | expr op=('*' | '/' | '%') expr            #multiplicationExpr
