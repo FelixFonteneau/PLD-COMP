@@ -27,7 +27,7 @@ using namespace std;
 //{
 //} //----- Fin de Méthode
 BasicBlock* CFG::createNewBB(){
-  current_bb  = new BasicBlock( &symbolTable, newBBName());
+  current_bb  = new BasicBlock(newBBName());
   nextBBnumber++;
   bbs.push_back(current_bb);
   return current_bb;
@@ -57,22 +57,37 @@ void CFG::addToSymbolTable(string name, Type t){
 
   Variable var(name, t, nextFreeSymbolIndex);
   nextFreeSymbolIndex += 4;
-  symbolTable.addVariable(var);
+  currentSymbolTable->addVariable(var);
 }
 
 //TODO bellow
 string CFG::createNewTempvar(Type t){return "";}
 
 bool CFG::isVarExist(string var){
-  return symbolTable.variableExiste(var);
+  for(vector<SymbolTable*>::reverse_iterator it = symbolTables.rbegin(); it != symbolTables.rend(); ++it ){
+    if((*it)->variableExiste(var)){
+      return true;
+    }
+  }
+  return false;
 }
 
 string CFG::varToAsm(string var){
-  return symbolTable.varToAsm(var);
+  for(vector<SymbolTable*>::reverse_iterator it = symbolTables.rbegin(); it != symbolTables.rend(); ++it ){
+    if((*it)->variableExiste(var)){
+      return (*it)->varToAsm(var);
+    }
+  }
+  return "";
 }
 
 Variable* CFG::getVariable(string var){
-  return symbolTable.getVariable(var);
+  for(vector<SymbolTable*>::reverse_iterator it = symbolTables.rbegin(); it != symbolTables.rend(); ++it ){
+    if((*it)->variableExiste(var)){
+      return (*it)->getVariable(var);
+    }
+  }
+  return nullptr;
 }
 
 
@@ -83,13 +98,18 @@ CFG::CFG(string name_)
 // Algorithme :
 //
 {
+  #ifdef MAP
+      cout << "Appel au constructeur de <CFG>" << endl;
+  #endif
   name = name_;
   nextFreeSymbolIndex = 4;
   nextBBnumber = 0;
   current_bb = nullptr;
-#ifdef MAP
-    cout << "Appel au constructeur de <CFG>" << endl;
-#endif
+  if (SymbolTable::getGlobalVariablesST() != nullptr){
+    symbolTables.push_back(SymbolTable::getGlobalVariablesST());
+  }
+  currentSymbolTable = new SymbolTable();
+  symbolTables.push_back(currentSymbolTable);
 } //----- Fin de CFG
 
 

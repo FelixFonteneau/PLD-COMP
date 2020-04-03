@@ -56,13 +56,13 @@ class CFG {
 
 
 
-  SymbolTable symbolTable;
 
  protected:
   void genAsmPrologue(ostream& o);
   string newBBName();
 
-
+  vector<SymbolTable*> symbolTables;
+  SymbolTable* currentSymbolTable;
   string name;
 	int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
 	int nextBBnumber; /**< just for naming */
