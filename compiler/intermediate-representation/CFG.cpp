@@ -27,7 +27,7 @@ using namespace std;
 //{
 //} //----- Fin de Méthode
 BasicBlock* CFG::createNewBB(){
-  current_bb  = new BasicBlock( &symbolTable, newBBName());
+  current_bb  = new BasicBlock(newBBName());
   nextBBnumber++;
   bbs.push_back(current_bb);
   return current_bb;
@@ -49,15 +49,19 @@ void CFG::genAsm(ostream& o){
 
 }
 
-void CFG::genAsmPrologue(ostream& o){
-  o << "  #prologue" << endl;
-//  o << "  pushq %rbp" << endl;
-//  o << "  mov	%rbp, %rsp" << endl;
-//  o << "  sub	%rsp, " << symbolTable.bitesSize()<< endl;
-  o <<"  pushq %rbp\n"      //save %rbp on the stack
-      "  movq %rsp, %rbp\n"; //define %rbp for the current function
+void CFG::enteringNewScope(){
+  scopeNumber++;
+  currentSymbolTable = new SymbolTable();
+  symbolTableStack.push_back(currentSymbolTable);
 }
 
+void CFG::exitScope(){
+  if(scopeNumber > 1){
+    currentSymbolTable = (*symbolTableStack.rbegin() - 1);
+    symbolTableStack.pop_back();
+    scopeNumber--;
+  }
+}
 
 
 // symbol table methods
@@ -65,17 +69,40 @@ void CFG::addToSymbolTable(string name, Type t){
 
   Variable var(name, t, nextFreeSymbolIndex);
   nextFreeSymbolIndex += 4;
-  symbolTable.addVariable(var);
+  currentSymbolTable->addVariable(var);
 }
 
 //TODO bellow
 string CFG::createNewTempvar(Type t){return "";}
 
-
-// basic block management
-string CFG::newBBName(){
-  return name+to_string(nextBBnumber);
+bool CFG::isVarExist(string var){
+  for(vector<SymbolTable*>::reverse_iterator it = symbolTableStack.rbegin(); it != symbolTableStack.rend(); ++it ){
+    if((*it)->variableExiste(var)){
+      return true;
+    }
+  }
+  return false;
 }
+
+string CFG::varToAsm(string var){
+  for(vector<SymbolTable*>::reverse_iterator it = symbolTableStack.rbegin(); it != symbolTableStack.rend(); ++it ){
+    if((*it)->variableExiste(var)){
+      return (*it)->varToAsm(var);
+    }
+  }
+  return "";
+}
+
+Variable* CFG::getVariable(string var){
+  for(vector<SymbolTable*>::reverse_iterator it = symbolTableStack.rbegin(); it != symbolTableStack.rend(); ++it ){
+    if((*it)->variableExiste(var)){
+      return (*it)->getVariable(var);
+    }
+  }
+  return nullptr;
+}
+
+
 //------------------------------------------------- Surcharge d'opérateurs
 //-------------------------------------------- Constructeurs - destructeur
 
@@ -83,13 +110,19 @@ CFG::CFG(string name_)
 // Algorithme :
 //
 {
+  #ifdef MAP
+      cout << "Appel au constructeur de <CFG>" << endl;
+  #endif
   name = name_;
   nextFreeSymbolIndex = 4;
   nextBBnumber = 0;
   current_bb = nullptr;
-#ifdef MAP
-    cout << "Appel au constructeur de <CFG>" << endl;
-#endif
+  scopeNumber = 1;
+  if (SymbolTable::getGlobalVariablesST() != nullptr){
+    symbolTableStack.push_back(SymbolTable::getGlobalVariablesST());
+  }
+  currentSymbolTable = new SymbolTable();
+  symbolTableStack.push_back(currentSymbolTable);
 } //----- Fin de CFG
 
 
@@ -110,3 +143,16 @@ CFG::~CFG ( )
 //------------------------------------------------------------------ PRIVE
 
 //----------------------------------------------------- Méthodes protégées
+void CFG::genAsmPrologue(ostream& o){
+  o << "  #prologue" << endl;
+//  o << "  pushq %rbp" << endl;
+//  o << "  mov	%rbp, %rsp" << endl;
+//  o << "  sub	%rsp, " << symbolTable.bitesSize()<< endl;
+  o <<"  pushq %rbp\n"      //save %rbp on the stack
+      "  movq %rsp, %rbp\n"; //define %rbp for the current function
+}
+
+// basic block management
+string CFG::newBBName(){
+  return name+to_string(nextBBnumber);
+}

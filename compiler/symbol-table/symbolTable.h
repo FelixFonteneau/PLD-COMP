@@ -12,6 +12,7 @@
 
 //--------------------------------------------------- Interfaces utilisées
 #include <unordered_map>
+#include <vector>
 #include <string>
 #include "variable.h"
 
@@ -41,6 +42,9 @@ public:
 
     int bitesSize();
 
+    // variables globales
+    static void createGlobalVariablesST(vector<string> variables);
+    static SymbolTable* getGlobalVariablesST();
 //------------------------------------------------- Surcharge d'opérateurs
 
 //-------------------------------------------- Constructeurs - destructeur
@@ -59,8 +63,8 @@ protected:
 //----------------------------------------------------- Méthodes protégées
 
 //----------------------------------------------------- Attributs protégés
-
-unordered_map<string, Variable> variables; // <liste des variables dans le bloc principal>
+  static SymbolTable* globalVariables;
+  unordered_map<string, Variable> variables; // <liste des variables dans le bloc principal>
 
 };
 

@@ -108,11 +108,10 @@ int IRInstr::compType(){
 
 //------------------------------------------------- Surcharge d'opérateurs
 //-------------------------------------------- Constructeurs - destructeur
-IRInstr::IRInstr (SymbolTable * symbolTable_, Operation op_, Type t_, vector<string> params_)
+IRInstr::IRInstr (Operation op_, Type t_, vector<string> params_)
 // Algorithme :
 //
 {
-  symbolTable = symbolTable_;
   op = op_;
   t  = t_;
   params = params_;
