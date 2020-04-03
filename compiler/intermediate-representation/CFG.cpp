@@ -49,7 +49,19 @@ void CFG::genAsm(ostream& o){
 
 }
 
+void CFG::enteringNewScope(){
+  scopeNumber++;
+  currentSymbolTable = new SymbolTable();
+  symbolTableStack.push_back(currentSymbolTable);
+}
 
+void CFG::exitScope(){
+  if(scopeNumber > 1){
+    currentSymbolTable = (*symbolTableStack.rbegin() - 1);
+    symbolTableStack.pop_back();
+    scopeNumber--;
+  }
+}
 
 
 // symbol table methods
@@ -105,6 +117,7 @@ CFG::CFG(string name_)
   nextFreeSymbolIndex = 4;
   nextBBnumber = 0;
   current_bb = nullptr;
+  scopeNumber = 1;
   if (SymbolTable::getGlobalVariablesST() != nullptr){
     symbolTableStack.push_back(SymbolTable::getGlobalVariablesST());
   }
