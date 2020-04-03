@@ -1,6 +1,6 @@
 grammar ifcc;
 
-axiom : prog
+axiom : globalVariables functions prog
       ;
 
 globalVariables :
@@ -10,7 +10,18 @@ globalVariables :
 
 bloc : '{' statements '}';
 
-prog  : globalVariables 'int' 'main' '(' ')' bloc;
+prog  : 'int' 'main' '(' ')' bloc;
+
+functions : funcDec
+          | funcDec functions
+          | /*epsilon*/
+          ;
+
+funcDec : 'int' VAR '(' ')' bloc
+        ;
+
+funcCall : VAR '(' ')'
+         ;
 
 statements : statement
            | statement statements
@@ -21,6 +32,7 @@ statement : dec ';'   # statementDeclaration
           | ret ';'   # statementReturn
           | ifLoop    # boucleIf
           | whileLoop # boucleWhile
+          | funcCall ';' # callAFunction
           ;
 
 expr    : expr op=('|' | '&' | '^') expr            #bitsExpr
@@ -29,6 +41,7 @@ expr    : expr op=('|' | '&' | '^') expr            #bitsExpr
         | expr '*' expr                             #multiplicationExpr
         | expr op=('+' | '-') expr                  #additiveExpr
         | '(' expr ')'                              #parExpr
+        | funcCall                                  #funcCallExpr
         | CONST                                     #constExpr
         | VAR                                       #varExpr
         | CHAREXP                                   #charExpr

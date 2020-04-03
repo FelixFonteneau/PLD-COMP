@@ -11,6 +11,7 @@ Visitor::Visitor(vector<CFG*>* cfgs_, SemanticErrorListener* errorlistener_)
     cfgs = cfgs_;
     currentCFG = nullptr;
     currentBasicBlock = nullptr;
+    thereIsFunc = false;
     //labelcounter = 0;
     eax.name = "%eax";
     eax.used = false;
@@ -49,14 +50,63 @@ antlrcpp::Any Visitor::visitAxiom(ifccParser::AxiomContext *ctx)
     return visitChildren(ctx);
 }
 
-antlrcpp::Any Visitor::visitProg(ifccParser::ProgContext *ctx)
+antlrcpp::Any Visitor::visitMain(ifccParser::MainContext *ctx)
 {
     currentCFG = new CFG("main");
     (*cfgs).push_back(currentCFG);
     currentBasicBlock = currentCFG->createNewBB();
 
+    if(thereIsFunc) {
+      vector<string> params {"$32", "%rsp"};
+      currentBasicBlock->addIRInstr(IRInstr::activationRecord, INT, params);
+    }
+
+    visitChildren(ctx);
+
+    if(thereIsFunc) {
+      vector<string> params {"$32", "%rsp"};
+      currentBasicBlock->addIRInstr(IRInstr::desactivationRecord, INT, params);
+    }
+
+    return 0;
+}
+
+antlrcpp::Any Visitor::visitFunctions(ifccParser::FunctionsContext *ctx)
+{
+  return visitChildren(ctx);
+}
+
+antlrcpp::Any Visitor::visitFuncDec(ifccParser::FuncDecContext *ctx)
+{
+    thereIsFunc = true;
+    string functionName = ctx->VAR()->getText();
+    currentCFG = new CFG(functionName);
+    (*cfgs).push_back(currentCFG);
+    currentBasicBlock = currentCFG->createNewBB();
+
     visitChildren(ctx);
     return 0;
+}
+
+antlrcpp::Any Visitor::visitFuncCall(ifccParser::FuncCallContext *ctx)
+{
+    string functionName = ctx->VAR()[0].getText();
+    vector<string> params {functionName};
+    currentBasicBlock->addIRInstr(IRInstr::call, INT, params);
+    return 0;
+}
+
+antlrcpp::Any Visitor::visitDec(ifccParser::DecContext *ctx)
+{
+    string variableName = ctx->VAR()->getText();
+    if (currentCFG->isVarExist(variableName))
+    {
+      // if the variable name already exists, we throw an error.
+        string message = "variable " + variableName + " is already defined";
+        errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+    }
+    currentCFG->addToSymbolTable(variableName, INT);
+    return visitChildren(ctx);
 }
 
 antlrcpp::Any Visitor::visitAffDecConst(ifccParser::AffDecConstContext *ctx) // int a = 17;

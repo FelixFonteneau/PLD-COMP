@@ -1,7 +1,11 @@
-#include <inttypes.h>
+int f() {
+	return 444;
+}
+
 int main() {
-	int a = 100;
-	int c = 100;
-	int b = (a-10)+(32+c);
-	return b;
+	int x = 1;
+	int y = 2;
+	int z = 3;
+	int a = f();
+	return a;
 }

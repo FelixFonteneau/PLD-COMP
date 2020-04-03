@@ -51,6 +51,8 @@ class IRInstr
      and_bit,
      or_bit,
      xor_bit
+     activationRecord,
+     desactivationRecord
     } Operation;
 
     /**  constructor */
