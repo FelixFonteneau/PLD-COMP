@@ -49,6 +49,7 @@ class CFG {
 	string createNewTempvar(Type t);
   bool isVarExist(string var);
   string varToAsm(string var);
+  Variable* getVariable(string var);
 
 	// basic block management
 	BasicBlock* current_bb;

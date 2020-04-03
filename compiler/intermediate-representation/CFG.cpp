@@ -71,6 +71,11 @@ string CFG::varToAsm(string var){
   return symbolTable.varToAsm(var);
 }
 
+Variable* CFG::getVariable(string var){
+  return symbolTable.getVariable(var);
+}
+
+
 //------------------------------------------------- Surcharge d'opérateurs
 //-------------------------------------------- Constructeurs - destructeur
 
