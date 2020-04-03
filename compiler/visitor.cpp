@@ -630,10 +630,13 @@ antlrcpp::Any Visitor::visitBitsExpr(ifccParser::BitsExprContext *ctx) {
 
 antlrcpp::Any Visitor::visitAffDecChar(ifccParser::AffDecCharContext *ctx)
 {
-  /*
-  int retval = stoi(ctx->CONST()->getText());
+  string charExp = ctx->CHAREXP()->getText();
+  charExp = charExp.substr(1, charExp.length()-1);
+  char character = charExp[0]; //tester avec \n, \0
+  int retval = (int)character;
+
   string variableName = ctx->VAR()->getText();
-  if (currentCFG->symbolTable.variableExiste(variableName))
+  if (currentCFG->isVarExist(variableName))
   {
     string message = "variable " + variableName + " is already defined";
     errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
@@ -641,10 +644,9 @@ antlrcpp::Any Visitor::visitAffDecChar(ifccParser::AffDecCharContext *ctx)
   }
   currentCFG->addToSymbolTable(variableName, INT);
   string constant = "$"+ to_string(retval);
-  vector<string> params {constant, currentCFG->symbolTable.varToAsm(variableName)};
+  vector<string> params {constant, currentCFG->varToAsm(variableName)};
   currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
 
-  */
   return visitChildren(ctx);
 }
 

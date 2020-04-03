@@ -40,10 +40,10 @@ dec   : type VAR;
 aff   : type VAR '=' CONST                # affDecConst
       | type VAR '=' VAR                  # affDecVar
       | type VAR '=' expr                 # affDecExpr
-      | type VAR '=' CHAREXP                 # affDecChar   
+      | type VAR '=' CHAREXP              # affDecChar   
       | VAR '=' VAR                       # affVar
       | VAR '=' CONST                     # affConst
-      | VAR '=' CHAREXP                      # affChar
+      | VAR '=' CHAREXP                   # affChar
       | VAR '=' expr                      # affExpr
       ;
 
