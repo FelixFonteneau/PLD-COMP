@@ -447,11 +447,11 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
 
 /*
     if(currentCFG->isVarExist(exprLeft)) {
-      memoryAddressLeft = currentCFG->symbolTable.getVariable(exprLeft)->getAddress();
+      memoryAddressLeft = currentCFG->getVariable(exprLeft)->getAddress();
     }
 */
     if(currentCFG->isVarExist(exprRight)) {
-      memoryAddressRight = currentCFG->symbolTable.getVariable(exprRight)->getAddress();
+      memoryAddressRight = currentCFG->getVariable(exprRight)->getAddress();
     }
 
     if(exprRight.find("(") != string::npos || exprRight.find("*") != string::npos) {
@@ -547,11 +547,11 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
   int memoryAddressRight = 0;
 
   if(currentCFG->isVarExist(exprLeft)) {
-    memoryAddressLeft = currentCFG->symbolTable.getVariable(exprLeft)->getAddress();
+    memoryAddressLeft = currentCFG->getVariable(exprLeft)->getAddress();
   }
 
   if(currentCFG->isVarExist(exprRight)) {
-    memoryAddressRight = currentCFG->symbolTable.getVariable(exprRight)->getAddress();
+    memoryAddressRight = currentCFG->getVariable(exprRight)->getAddress();
   }
 
   if(exprRight.find("(") != string::npos) {
