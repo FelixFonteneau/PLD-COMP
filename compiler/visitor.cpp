@@ -57,19 +57,6 @@ antlrcpp::Any Visitor::visitProg(ifccParser::ProgContext *ctx)
     return 0;
 }
 
-antlrcpp::Any Visitor::visitDec(ifccParser::DecContext *ctx)
-{
-    string variableName = ctx->VAR()->getText();
-    if (currentCFG->isVarExist(variableName))
-    {
-      // if the variable name already exists, we throw an error.
-        string message = "variable " + variableName + " is already defined";
-        errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
-    }
-    currentCFG->addToSymbolTable(variableName, INT);
-    return visitChildren(ctx);
-}
-
 antlrcpp::Any Visitor::visitAffDecConst(ifccParser::AffDecConstContext *ctx) // int a = 17;
 {
     int retval = stoi(ctx->CONST()->getText());
@@ -667,4 +654,32 @@ antlrcpp::Any Visitor::visitAffChar(ifccParser::AffCharContext *ctx)
   */
   return visitChildren(ctx);
 
+}
+
+antlrcpp::Any Visitor::visitDeclMult(ifccParser::DeclMultContext *ctx) {
+  string variableName = ctx->VAR()->getText();
+
+  if (currentCFG->symbolTable.variableExiste(variableName))
+  {
+    // if the variable name already exists, we throw an error.
+      string message = "variable " + variableName + " is already defined";
+      errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+  }
+  currentCFG->addToSymbolTable(variableName, INT);
+
+  return visit(ctx->vars());
+}
+
+antlrcpp::Any Visitor::visitLastDecl(ifccParser::LastDeclContext *ctx) {
+  string variableName = ctx->VAR()->getText();
+
+  if (currentCFG->symbolTable.variableExiste(variableName))
+  {
+    // if the variable name already exists, we throw an error.
+      string message = "variable " + variableName + " is already defined";
+      errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+  }
+  currentCFG->addToSymbolTable(variableName, INT);
+
+  return 0;
 }
