@@ -43,7 +43,7 @@ dec   : type vars;
 
 aff   : type VAR '=' CONST	 # affDecConst
       | type VAR '=' VAR	 # affDecVar
-      | type VAR '=' CHAREXP     # affDecChar   
+      | type VAR '=' CHAREXP     # affDecChar
       | type VAR '=' expr        # affDecExpr
       | VAR '=' VAR              # affVar
       | VAR '=' CONST            # affConst
