@@ -76,7 +76,19 @@ antlrcpp::Any Visitor::visitFunctions(ifccParser::FunctionsContext *ctx)
   return visitChildren(ctx);
 }
 
-antlrcpp::Any Visitor::visitFuncDec(ifccParser::FuncDecContext *ctx)
+antlrcpp::Any Visitor::visitFuncDecStrict(ifccParser::FuncDecStrictContext *ctx)
+{
+    thereIsFunc = true;
+    //string functionName = ctx->VAR()->getText();
+    //currentCFG = new CFG(functionName);
+    //(*cfgs).push_back(currentCFG);
+    //currentBasicBlock = currentCFG->createNewBB();
+
+    //visitChildren(ctx);
+    return 0;
+}
+
+antlrcpp::Any Visitor::visitFuncDecDef(ifccParser::FuncDecDefContext *ctx)
 {
     thereIsFunc = true;
     string functionName = ctx->VAR()->getText();

@@ -1,12 +1,11 @@
 grammar ifcc;
 
-axiom : globalVariables functions prog
+axiom : globalVariables functions prog functions
       ;
 
 globalVariables :
                 | decGlobal ';' globalVariables
                 ;
-
 
 bloc : '{' statements '}';
 
@@ -17,7 +16,8 @@ functions : funcDec
           | /*epsilon*/
           ;
 
-funcDec : 'int' VAR '(' ')' bloc
+funcDec : INT VAR '(' ')' ';'   #funcDecStrict
+        | INT VAR '(' ')' bloc  #funcDecDef
         ;
 
 funcCall : VAR '(' ')'
