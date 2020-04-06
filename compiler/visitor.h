@@ -45,14 +45,19 @@ class  Visitor : public ifccBaseVisitor {
 
     virtual antlrcpp::Any visitAffDecVar(ifccParser::AffDecVarContext *ctx) override ;
 
+    virtual antlrcpp::Any visitAffDecArray(ifccParser::AffDecArrayContext *ctx) override;
+
     virtual antlrcpp::Any visitAffDecExpr(ifccParser::AffDecExprContext *ctx) override ;
 
     virtual antlrcpp::Any visitAffVar(ifccParser::AffVarContext *ctx) override ;
 
     virtual antlrcpp::Any visitAffConst(ifccParser::AffConstContext *ctx) override ;
 
+    virtual antlrcpp::Any visitAffArray(ifccParser::AffArrayContext *ctx) override;
+
     virtual antlrcpp::Any visitAffExpr(ifccParser::AffExprContext *ctx) override ;
 
+<<<<<<< HEAD
     virtual antlrcpp::Any visitDecGMult(ifccParser::DecGMultContext *ctx) override ;
 
     virtual antlrcpp::Any visitLastDecG(ifccParser::LastDecGContext *ctx) override ;
@@ -60,6 +65,13 @@ class  Visitor : public ifccBaseVisitor {
     virtual antlrcpp::Any visitDecGAffConst(ifccParser::DecGAffConstContext *ctx) override ;
 
     virtual antlrcpp::Any visitDecGAffChar(ifccParser::DecGAffCharContext *ctx) override ;
+=======
+    virtual antlrcpp::Any visitAffEltVar(ifccParser::AffEltVarContext *ctx) override;
+
+    virtual antlrcpp::Any visitAffEltConst(ifccParser::AffEltConstContext *ctx) override;
+
+    virtual antlrcpp::Any visitAffEltExpr(ifccParser::AffEltExprContext *ctx) override;
+>>>>>>> Clean + début des tableaux 1D (attente de fin des char)
 
     virtual antlrcpp::Any visitIfNoElse(ifccParser::IfNoElseContext *ctx) override;
 

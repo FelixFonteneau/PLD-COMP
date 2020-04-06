@@ -843,3 +843,23 @@ antlrcpp::Any Visitor::visitWhileLoop(ifccParser::WhileLoopContext *ctx) {
 
   return 0;
 }
+
+antlrcpp::Any Visitor::visitAffDecArray(ifccParser::AffDecArrayContext *ctx) {
+  return 0;
+}
+
+antlrcpp::Any Visitor::visitAffArray(ifccParser::AffArrayContext *ctx) {
+  return 0;
+}
+
+antlrcpp::Any Visitor::visitAffEltVar(ifccParser::AffEltVarContext *ctx) {
+  return 0;
+}
+
+antlrcpp::Any Visitor::visitAffEltConst(ifccParser::AffEltConstContext *ctx) {
+  return 0;
+}
+
+antlrcpp::Any Visitor::visitAffEltExpr(ifccParser::AffEltExprContext *ctx) {
+  return 0;
+}
