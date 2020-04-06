@@ -2,8 +2,9 @@
 #define TYPE_H
 
 typedef enum {
-  INT, 
-  CHAR
+  INT,
+  CHAR,
+  INT_ARRAY
 } Type;
 
 #endif // TYPE_H

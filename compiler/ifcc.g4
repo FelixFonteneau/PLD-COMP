@@ -26,6 +26,7 @@ expr    : expr op=('|' | '&' | '^') expr               #bitsExpr
         | '(' expr ')'                              #parExpr
         | CONST                                     #constExpr
         | VAR                                       #varExpr
+        | array_elt                                 #arrayExpr
         ;
 
 testExpr  : expr op=('<=' | '>=' | '<' | '>') expr    #relationalTestExpr
@@ -41,14 +42,19 @@ vars  : VAR ',' vars  #declMult
 
 dec   : type vars;
 
-aff   : type VAR '=' CONST	 # affDecConst
-      | type VAR '=' VAR	 # affDecVar
+aff   : type VAR '=' CONST	     # affDecConst
+      | type VAR '=' VAR	       # affDecVar
       | type VAR '=' CHAREXP     # affDecChar
+      | type VAR '=' arraydec    # affDecArray
       | type VAR '=' expr        # affDecExpr
       | VAR '=' VAR              # affVar
       | VAR '=' CONST            # affConst
       | VAR '=' CHAREXP          # affChar
+      | VAR '=' arraydec         # affArray
       | VAR '=' expr             # affExpr
+      | array_elt '=' VAR        # affEltVar
+      | array_elt '=' CONST      # affEltConst
+      | array_elt '=' expr       # affEltExpr
       ;
 
 ifLoop  : 'if' '(' testExpr ')' bloc                # ifNoElse
@@ -64,10 +70,15 @@ ret   : RET VAR   # retVar
 
 type : INT
       | CHAR
+      | INT_ARRAY
       ;
+
+arraydec : 'new' eltType=(INT | CHAR) '[' + CONST + ']';
+array_elt : VAR '[' CONST ']';
 
 INT : 'int' ;
 CHAR : 'char' ;
+INT_ARRAY : 'int[]';
 RET : 'return' ;
 CHAREXP : '\'' .*? '\'' ; // prends tout ce qu'il y a entre les ' ' -> TODO verifier si c'est un char ou pas lors de l'affectation
 VAR : [a-z]+ ;
