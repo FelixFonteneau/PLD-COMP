@@ -62,11 +62,10 @@ int main(int argn, const char **argv) {
   // pass CFG to x86 back-end
 
   // global var
-  cout << ".text" << endl;
+  cout << " .text" << endl;
   SymbolTable::generateAScodeGlobalVariable(cout);
 
-  cout << ".text \n" //"# declaration of ’text’ section (which means ’program’)" // entry point to the ELF linker or loader.
-          ".global main \n";
+  cout << " .global main \n";
   for(vector<CFG*>::iterator it = cfgs.begin(); it != cfgs.end(); it++){
     (*it)->genAsm(cout);
   }

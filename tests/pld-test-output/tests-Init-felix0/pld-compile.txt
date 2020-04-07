@@ -1,8 +1,12 @@
 Error in input.c.
-Error variable d does not exist. On position 9:2
-   "  d = 0;"
-      ^
+Error variable d is already defined. On position 2:4
+   "int d = 5;"
+        ^
 
-1 error generated.
+Error variable i is already defined. On position 3:4
+   "int i = 3;"
+        ^
+
+2 errors generated.
 
 return code: 1

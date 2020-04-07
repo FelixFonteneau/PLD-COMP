@@ -64,7 +64,7 @@ int SymbolTable::bitesSize(){
 void SymbolTable::addDeclaredVarToGlobalVariables(string name, Type t){
   Variable var(name, t, name);
   globalVariables->variables.insert({var.getName(),var});
-  string asCode = ".comm " + name +",4,4+\n";
+  string asCode = " .comm " + name +",4,4\n";
   asCodeGlobalVar.push_back(asCode);
 
 }
@@ -93,7 +93,7 @@ void SymbolTable::generateAScodeGlobalVariable(ostream& o){
     return;
   }
   for (vector<string>::iterator it = asCodeGlobalVar.begin(); it != asCodeGlobalVar.end(); ++it){
-    o << (*it) << endl;
+    o << (*it);
   }
 }
 

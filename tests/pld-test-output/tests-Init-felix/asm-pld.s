@@ -1,10 +1,7 @@
-.text
-.comm a,4,4+
-
-.comm d,4,4+
-
-.text 
-.global main 
+ .text
+ .comm a,4,4
+ .comm d,4,4
+ .global main 
 main:
 .main0:
   #prologue

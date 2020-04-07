@@ -1,6 +1,5 @@
-.text
-.text 
-.global main 
+ .text
+ .global main 
 main:
 .main0:
   #prologue
