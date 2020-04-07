@@ -164,11 +164,14 @@ if args.debug:
 ######################################################################################
 ## TEST step: actually compile all test-cases with both compilers
 jobs.sort()
+total = 0
+passe = 0
 for jobname in jobs:
     os.chdir(orig_cwd)
 
     print('TEST-CASE: '+jobname)
     os.chdir(jobname)
+    total = total + 1
 
     ## JEDI compiler, aka GCC
     gccstatus=command("gcc -S -o asm-gcc.s input.c", "gcc-compile.txt")
@@ -187,6 +190,7 @@ for jobname in jobs:
 
     if gccstatus != 0 and pldstatus != 0:
         ## padawan correctly rejects invalid program -> test-case ok
+        passe = passe + 1
         sys.stdout.write("\033[32m")
         print("TEST OK")
         sys.stdout.write("\033[0m")
@@ -232,6 +236,9 @@ for jobname in jobs:
         continue
 
     ## last but not least
+    passe = passe + 1
     sys.stdout.write("\033[32m")
     print("TEST OK")
     sys.stdout.write("\033[0m")
+
+print("Resume : ", passe, "/", total, " tests pass. ", (passe/total)*100,"% success.")
