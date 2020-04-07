@@ -125,9 +125,6 @@ CFG::CFG(string name_)
   current_bb = nullptr;
   scopeNumber = 1;
   if (SymbolTable::getGlobalVariablesST() != nullptr){
-    cout << "SymbolTable globale" << endl;
-    cout << " a -> " << SymbolTable::getGlobalVariablesST()->variableExiste("a") << endl;
-    cout << " b -> " << SymbolTable::getGlobalVariablesST()->variableExiste("b") << endl;
     symbolTableStack.push_back(SymbolTable::getGlobalVariablesST());
   }
   currentSymbolTable = new SymbolTable();

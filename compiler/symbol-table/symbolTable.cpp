@@ -33,7 +33,6 @@ Variable* SymbolTable::getVariable(string nom){
 }
 
 void SymbolTable::addVariable(string name, Type t){
-  cout << "ajout de var :" << name << endl;
   Variable var(name, t, nextFreeSymbolIndex);
   nextFreeSymbolIndex += 4;
   variables.insert({var.getName(),var});
