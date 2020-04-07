@@ -219,7 +219,7 @@ antlrcpp::Any Visitor::visitLastDecG(ifccParser::LastDecGContext *ctx)  {
 
 
 antlrcpp::Any Visitor::visitDecGAffConst(ifccParser::DecGAffConstContext *ctx){
-  /*int retval = stoi(ctx->CONST()->getText());
+  int retval = stoi(ctx->CONST()->getText());
   string variableName = ctx->VAR()->getText();
   if (!SymbolTable::getGlobalVariablesST()->variableExiste(variableName))
   {
@@ -227,10 +227,7 @@ antlrcpp::Any Visitor::visitDecGAffConst(ifccParser::DecGAffConstContext *ctx){
       string message = "variable " + variableName + " is already defined";
       errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
   }
-  string constant = "$"+ to_string(retval);
-  vector<string> params {constant, currentCFG->varToAsm(variableName)};
-  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
-  return visitChildren(ctx); */
+  SymbolTable::addDefinedVarToGlobalVariables(variableName, INT, retval);
   return visitChildren(ctx);
 
 }

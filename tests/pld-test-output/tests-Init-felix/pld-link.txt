@@ -1,7 +1,4 @@
-asm-pld.s: Assembler messages:
-asm-pld.s:2: Warning: missing operand; zero assumed
-asm-pld.s:4: Warning: missing operand; zero assumed
-/usr/bin/ld: /tmp/ccahTZ8N.o: relocation R_X86_64_32S against symbol `a' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: /tmp/ccuzJqzq.o: relocation R_X86_64_32S against symbol `a' can not be used when making a PIE object; recompile with -fPIC
 /usr/bin/ld: final link failed: nonrepresentable section on output
 collect2: error: ld returned 1 exit status
 
