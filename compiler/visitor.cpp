@@ -59,72 +59,80 @@ antlrcpp::Any Visitor::visitProg(ifccParser::ProgContext *ctx)
 
 antlrcpp::Any Visitor::visitAffDecConst(ifccParser::AffDecConstContext *ctx) // int a = 17;
 {
-    int retval = stoi(ctx->CONST()->getText());
-    string variableName = ctx->VAR()->getText();
-    if (currentCFG->isVarExist(variableName))
-    {
-      string message = "variable " + variableName + " is already defined";
-      errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
-        // if the variable name already exists, we throw an error.
-    }
-    currentCFG->addToSymbolTable(variableName, INT);
-    string constant = "$"+ to_string(retval);
-    vector<string> params {constant, currentCFG->varToAsm(variableName)};
-    currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+  int retval = stoi(ctx->CONST()->getText());
+  string variableName = ctx->VAR()->getText();
+  if (currentCFG->isVarExist(variableName))
+  {
+    string message = "variable " + variableName + " already exists";
+    errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+      // if the variable name already exists, we throw an error.
+  }
+  currentCFG->addToSymbolTable(variableName, INT);
+  string constant = "$"+ to_string(retval);
+  vector<string> params {constant, currentCFG->varToAsm(variableName)};
+  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
 
+  currentCFG->setDefined(variableName);
 
-    return visitChildren(ctx);
+  return visitChildren(ctx);
 }
 
 antlrcpp::Any Visitor::visitAffDecVar(ifccParser::AffDecVarContext *ctx)
 // int b;
 // int a = b;
 {
-    string newVariableName = ctx->VAR()[0]->getText();
-    if (currentCFG->isVarExist(newVariableName))    {
-      string message = "variable " + newVariableName + " is already defined";
-      errorlistener->addSemanticError(ctx->VAR()[0]->getSymbol(), message);
-        // if the variable name already exists, we throw an error.
-    }
-    string existingVariableName = ctx->VAR()[1]->getText();
-    if (!currentCFG->isVarExist(existingVariableName)){
-      string message = "variable " + existingVariableName + " does not exist";
-      errorlistener->addSemanticError(ctx->VAR()[1]->getSymbol(), message);
-        // if the variable name does not exist, we throw an error.
-        currentCFG->addToSymbolTable(newVariableName, INT);
+  string newVariableName = ctx->VAR()[0]->getText();
+  //check if the left variable doesn't exist
+  if (currentCFG->isVarExist(newVariableName))    {
+    string message = "variable " + newVariableName + " already exists";
+    errorlistener->addSemanticError(ctx->VAR()[0]->getSymbol(), message);
+    // if the variable name already exists, we throw an error.
+  }
 
-        return 0;
+  string existingVariableName = ctx->VAR()[1]->getText();
+  //check if the right variable exist
+  if (!currentCFG->isVarExist(existingVariableName)){
+    string message = "variable " + existingVariableName + " does not exist";
+    errorlistener->addSemanticError(ctx->VAR()[1]->getSymbol(), message);
+    // if the variable name does not exist, we throw an error.
+    currentCFG->addToSymbolTable(newVariableName, INT); //on declare quand meme la variable de gauche
+    return 0;
+  }
+  
+  //check if the right variable is defined
+  if (!currentCFG->isDefined(existingVariableName)){
+    // if the variable name is not defined, we throw an error.
+    string message = "variable " + existingVariableName + " is not defined";
+    errorlistener->addSemanticError(ctx->VAR()[1]->getSymbol(), message);
+    return 0;
+  }
 
-    }
-    currentCFG->addToSymbolTable(newVariableName, INT);
-    vector<string> params {currentCFG->varToAsm(existingVariableName), currentCFG->varToAsm(newVariableName)};
-    currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+  currentCFG->addToSymbolTable(newVariableName, INT);
+  vector<string> params {currentCFG->varToAsm(existingVariableName), currentCFG->varToAsm(newVariableName)};
+  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
 
-    return visitChildren(ctx);
+  currentCFG->setDefined(newVariableName);
+  return visitChildren(ctx);
 }
 
 antlrcpp::Any Visitor::visitAffDecExpr(ifccParser::AffDecExprContext *ctx)
 {
-    string variableName = ctx->VAR()->getText();
-    visitChildren(ctx);
-    if(currentCFG->isVarExist(variableName)) {
-      string message = "variable " + variableName + " is already defined";
-      errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
-      // if the variable name already exists, we throw an error.
+  string variableName = ctx->VAR()->getText();
+  visitChildren(ctx);
+  if(currentCFG->isVarExist(variableName)) {
+    string message = "variable " + variableName + " already exists";
+    errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+    // if the variable name already exists, we throw an error.
 
-    }
+  }
 
-    //int memoryAddress = addressIterator;
-    //addressIterator += 4;
+  currentCFG->addToSymbolTable(variableName, INT);
+  vector<string> params {(*currentRegister).name, currentCFG->varToAsm(variableName)};
+  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+  
+  currentCFG->setDefined(variableName);
 
-    currentCFG->addToSymbolTable(variableName, INT);
-    vector<string> params {(*currentRegister).name, currentCFG->varToAsm(variableName)};
-    currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
-
-    //cout << "  movl % " << (*currentRegister).name << ", -" << memoryAddress << "(%rbp)" << endl;
-    //Variable* variable = new Variable(variableName, "int", memoryAddress);
-    //blocPrincipal.AjouterVariable(*variable);
-    return 0;
+  return 0;
 }
 
 antlrcpp::Any Visitor::visitAffVar(ifccParser::AffVarContext *ctx)
@@ -144,50 +152,59 @@ antlrcpp::Any Visitor::visitAffVar(ifccParser::AffVarContext *ctx)
     errorlistener->addSemanticError(ctx->VAR()[1]->getSymbol(), message);
     return 0;
   }
-  vector<string> params {currentCFG->varToAsm(rightValName), "%eax"};
-  vector<string> params2 {"%eax", currentCFG->varToAsm(leftValName)};
 
+  //check if the right variable is defined
+  if (!currentCFG->isDefined(rightValName)){
+    // if the variable name is not defined, we throw an error.
+    string message = "variable " + rightValName + " is not defined";
+    errorlistener->addSemanticError(ctx->VAR()[1]->getSymbol(), message);
+    return 0;
+  }
+
+  vector<string> params {currentCFG->varToAsm(rightValName), currentCFG->varToAsm(leftValName)};
   currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
-  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params2);
-
+  
+  currentCFG->setDefined(leftValName);
   return 0;
 }
 
 antlrcpp::Any Visitor::visitAffConst(ifccParser::AffConstContext *ctx) // a = 2
 {
+  int retval = stoi(ctx->CONST()->getText());
+  string variableName = ctx->VAR()->getText();
+  if (!currentCFG->isVarExist(variableName))
+  {
+    // if the variable name doesn't exist, we throw an error.
+    string message = "variable " + variableName + " does not exist";
+    errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+  }
 
-    int retval = stoi(ctx->CONST()->getText());
-    string variableName = ctx->VAR()->getText();
-    if (!currentCFG->isVarExist(variableName))
-    {
-      // if the variable name doesn't exist, we throw an error.
-      string message = "variable " + variableName + " does not exist";
-      errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
-    }
-    string constant = "$"+ to_string(retval);
-    vector<string> params {constant, currentCFG->varToAsm(variableName)};
-    currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
-    return visitChildren(ctx);
-    //cout << "Coucou dans le visitAffConst" << endl;
+  string constant = "$"+ to_string(retval);
+  vector<string> params {constant, currentCFG->varToAsm(variableName)};
+  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
 
+  currentCFG->setDefined(variableName);
+  return visitChildren(ctx);
 }
 
 antlrcpp::Any Visitor::visitAffExpr(ifccParser::AffExprContext *ctx)
 {
-    string leftValName = ctx->VAR()->getText();
-    if (!currentCFG->isVarExist(leftValName)) {
-      // if the variable name doesn't exist, we throw an error.
-      string message = "variable " + leftValName + " does not exist";
-      errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
-      return 0;
-    }
-
-    visitChildren(ctx);
-
-    vector<string> params { "%eax", currentCFG->varToAsm(leftValName)}; //TODO eax par current register
-    currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
-
+  string leftValName = ctx->VAR()->getText();
+  if (!currentCFG->isVarExist(leftValName)) {
+    // if the variable name doesn't exist, we throw an error.
+    string message = "variable " + leftValName + " does not exist";
+    errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
     return 0;
+  }
+
+  visitChildren(ctx);
+
+  vector<string> params { "%eax", currentCFG->varToAsm(leftValName)}; //TODO eax par current register
+  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+
+  currentCFG->setDefined(leftValName);
+
+  return 0;
 }
 
 antlrcpp::Any Visitor::visitIfNoElse(ifccParser::IfNoElseContext *ctx)
@@ -437,11 +454,28 @@ antlrcpp::Any Visitor::visitConstExpr(ifccParser::ConstExprContext *ctx)
 
 antlrcpp::Any Visitor::visitVarExpr(ifccParser::VarExprContext *ctx)
 {
-    string var = ctx->VAR()->getText();
-    vector<string> params {currentCFG->varToAsm(var), (*currentRegister).name};
-    currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
-    //cout << "  movl -" << blocPrincipal.getVariable(var)->getAddress() << "(%rbp), %" << (*currentRegister).name << endl;
+  string var = ctx->VAR()->getText();
+
+  //check if the right variable exist
+  if (!currentCFG->isVarExist(var)){
+    string message = "variable " + var + " does not exist";
+    errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+    // if the variable name does not exist, we throw an error.
     return 0;
+  }
+  
+  //check if the right variable is defined
+  if (!currentCFG->isDefined(var)){
+    // if the variable name is not defined, we throw an error.
+    string message = "variable " + var + " is not defined";
+    errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+    return 0;
+  }
+
+  vector<string> params {currentCFG->varToAsm(var), (*currentRegister).name};
+  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+  //cout << "  movl -" << blocPrincipal.getVariable(var)->getAddress() << "(%rbp), %" << (*currentRegister).name << endl;
+  return 0;
 }
 
 antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
@@ -456,11 +490,6 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
     int memoryAddressRight = 0;
 
 
-/*
-    if(currentCFG->isVarExist(exprLeft)) {
-      memoryAddressLeft = currentCFG->getVariable(exprLeft)->getAddress();
-    }
-*/
     if(currentCFG->isVarExist(exprRight)) {
       memoryAddressRight = currentCFG->getVariable(exprRight)->getAddress();
     }
@@ -649,7 +678,7 @@ antlrcpp::Any Visitor::visitAffDecChar(ifccParser::AffDecCharContext *ctx)
   string variableName = ctx->VAR()->getText();
   if (currentCFG->isVarExist(variableName))
   {
-    string message = "variable " + variableName + " is already defined";
+    string message = "variable " + variableName + " already exists";
     errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
       // if the variable name already exists, we throw an error.
   }
@@ -657,6 +686,8 @@ antlrcpp::Any Visitor::visitAffDecChar(ifccParser::AffDecCharContext *ctx)
   string constant = "$"+ to_string(retval);
   vector<string> params {constant, currentCFG->varToAsm(variableName)};
   currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+
+  currentCFG->setDefined(variableName);
 
   return visitChildren(ctx);
 }
@@ -679,8 +710,9 @@ antlrcpp::Any Visitor::visitAffChar(ifccParser::AffCharContext *ctx)
   vector<string> params {constant, currentCFG->varToAsm(variableName)};
   currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
   
-  return visitChildren(ctx);
+  currentCFG->setDefined(variableName);
 
+  return visitChildren(ctx);
 }
 
 antlrcpp::Any Visitor::visitDeclMult(ifccParser::DeclMultContext *ctx) {
@@ -689,7 +721,7 @@ antlrcpp::Any Visitor::visitDeclMult(ifccParser::DeclMultContext *ctx) {
   if (currentCFG->isVarExist(variableName))
   {
     // if the variable name already exists, we throw an error.
-      string message = "variable " + variableName + " is already defined";
+      string message = "variable " + variableName + " already exists";
       errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
   }
   currentCFG->addToSymbolTable(variableName, INT);
@@ -703,7 +735,7 @@ antlrcpp::Any Visitor::visitLastDecl(ifccParser::LastDeclContext *ctx) {
   if (currentCFG->isVarExist(variableName))
   {
     // if the variable name already exists, we throw an error.
-      string message = "variable " + variableName + " is already defined";
+      string message = "variable " + variableName + " already exists";
       errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
   }
   currentCFG->addToSymbolTable(variableName, INT);
