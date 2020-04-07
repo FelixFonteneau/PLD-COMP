@@ -239,7 +239,7 @@ antlrcpp::Any Visitor::visitLastDecG(ifccParser::LastDecGContext *ctx)  {
 antlrcpp::Any Visitor::visitDecGAffConst(ifccParser::DecGAffConstContext *ctx){
   int retval = stoi(ctx->CONST()->getText());
   string variableName = ctx->VAR()->getText();
-  if (!SymbolTable::getGlobalVariablesST()->variableExiste(variableName))
+  if (SymbolTable::getGlobalVariablesST()->variableExiste(variableName))
   {
       // if the variable name already exists, we throw an error.
       string message = "variable " + variableName + " is already defined";
