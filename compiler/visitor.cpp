@@ -207,6 +207,55 @@ antlrcpp::Any Visitor::visitAffExpr(ifccParser::AffExprContext *ctx)
   return 0;
 }
 
+antlrcpp::Any Visitor::visitDecGMult(ifccParser::DecGMultContext *ctx)  {
+  string variableName = ctx->VAR()->getText();
+
+  if (SymbolTable::getGlobalVariablesST()->variableExiste(variableName))
+  {
+    // if the variable name already exists, we throw an error.
+      string message = "variable " + variableName + " is already defined";
+      errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+  }
+  SymbolTable::addDeclaredVarToGlobalVariables(variableName, INT);
+
+  return visit(ctx->vars());
+}
+
+antlrcpp::Any Visitor::visitLastDecG(ifccParser::LastDecGContext *ctx)  {
+  string variableName = ctx->VAR()->getText();
+
+  if (SymbolTable::getGlobalVariablesST()->variableExiste(variableName))
+  {
+    // if the variable name already exists, we throw an error.
+      string message = "variable " + variableName + " is already defined";
+      errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+  }
+  SymbolTable::addDeclaredVarToGlobalVariables(variableName, INT);
+  return 0;
+}
+
+
+
+antlrcpp::Any Visitor::visitDecGAffConst(ifccParser::DecGAffConstContext *ctx){
+  int retval = stoi(ctx->CONST()->getText());
+  string variableName = ctx->VAR()->getText();
+  if (SymbolTable::getGlobalVariablesST()->variableExiste(variableName))
+  {
+      // if the variable name already exists, we throw an error.
+      string message = "variable " + variableName + " is already defined";
+      errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+  }
+  SymbolTable::addDefinedVarToGlobalVariables(variableName, INT, retval);
+  return visitChildren(ctx);
+
+}
+
+antlrcpp::Any Visitor::visitDecGAffChar(ifccParser::DecGAffCharContext *ctx){
+  return visitChildren(ctx);
+}
+
+
+
 antlrcpp::Any Visitor::visitIfNoElse(ifccParser::IfNoElseContext *ctx)
 {
   int testSign = visit(ctx->testExpr());
@@ -486,8 +535,7 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
     string exprLeft = ctx->expr()[0]->getText();
     string exprRight = ctx->expr()[1]->getText();
 
-    int memoryAddressLeft = 0;
-    int memoryAddressRight = 0;
+    string memoryAddressRight = "";
 
 
     if(currentCFG->isVarExist(exprRight)) {
@@ -497,7 +545,7 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
     if(exprRight.find("(") != string::npos || exprRight.find("*") != string::npos) {
       isExpr = true;
     }
-    if(memoryAddressRight != 0) {
+    if(memoryAddressRight != "") {
       isVar = true;
     }
 
@@ -600,11 +648,9 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
   string exprLeft = ctx->expr()[0]->getText();
   string exprRight = ctx->expr()[1]->getText();
 
-  int memoryAddressLeft = 0;
-  int memoryAddressRight = 0;
+  string memoryAddressRight = "";
 
   if(currentCFG->isVarExist(exprLeft)) {
-    memoryAddressLeft = currentCFG->getVariable(exprLeft)->getAddress();
   }
 
   if(currentCFG->isVarExist(exprRight)) {
@@ -614,7 +660,7 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
   if(exprRight.find("(") != string::npos) {
     isExpr = true;
   }
-  if(memoryAddressRight != 0) {
+  if(memoryAddressRight != "") {
     isVar = true;
   }
 

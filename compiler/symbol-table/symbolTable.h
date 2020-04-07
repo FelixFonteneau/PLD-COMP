@@ -36,15 +36,17 @@ public:
 
     bool variableExiste(string nom);
     Variable* getVariable(string nom);
-    void addVariable(Variable &var);
+    void addVariable(string name, Type t);
 
     string varToAsm(string reg);
 
     int bitesSize();
 
     // variables globales
-    static void createGlobalVariablesST(vector<string> variables);
+    static void addDeclaredVarToGlobalVariables(string var, Type t);
+    static void addDefinedVarToGlobalVariables(string var, Type t, int value);
     static SymbolTable* getGlobalVariablesST();
+    static void generateAScodeGlobalVariable(ostream& o);
 //------------------------------------------------- Surcharge d'opérateurs
 
 //-------------------------------------------- Constructeurs - destructeur
@@ -63,9 +65,11 @@ protected:
 //----------------------------------------------------- Méthodes protégées
 
 //----------------------------------------------------- Attributs protégés
-  static SymbolTable* globalVariables;
+  static int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
   unordered_map<string, Variable> variables; // <liste des variables dans le bloc principal>
 
+  static SymbolTable* globalVariables;
+  static vector<string> asCodeGlobalVar;
 };
 
 //-------------------------------- Autres définitions dépendantes de <SymbolTable>

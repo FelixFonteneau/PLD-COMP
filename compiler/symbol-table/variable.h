@@ -43,7 +43,7 @@ public:
     return this->type;
   }
 
-  int getAddress()
+  string getAddress()
   {
     return this->address;
   }
@@ -71,7 +71,7 @@ public:
     // Contrat :
     //
 
-    Variable (string name, Type type, int address) : name(name), type(type), address(address), defined(false){}
+    Variable (string name, Type type, string address) : name(name), type(type), address(address), defined(false){}
     // Mode d'emploi :
     //
     // Contrat :
@@ -87,7 +87,7 @@ protected:
 //----------------------------------------------------- Attributs protégés
   string name;
   Type type;
-  int address;
+  string address;
   bool defined;
 
 

@@ -3,9 +3,14 @@ grammar ifcc;
 axiom : prog
       ;
 
+globalVariables :                               
+                | decGlobal ';' globalVariables
+                ;
+
+
 bloc : '{' statements '}';
 
-prog  : 'int' 'main' '(' ')' bloc;
+prog  : globalVariables 'int' 'main' '(' ')' bloc;
 
 statements : statement
            | statement statements
@@ -18,7 +23,7 @@ statement : dec ';'   # statementDeclaration
           | whileLoop # boucleWhile
           ;
 
-expr    : expr op=('|' | '&' | '^') expr               #bitsExpr
+expr    : expr op=('|' | '&' | '^') expr            #bitsExpr
         | '-' expr                                  #minusExpr
         | '!' expr                                  #notExpr
         | expr op=('*' | '/' | '%') expr            #multiplicationExpr
@@ -41,8 +46,8 @@ vars  : VAR ',' vars  #declMult
 
 dec   : type vars;
 
-aff   : type VAR '=' CONST	 # affDecConst
-      | type VAR '=' VAR	 # affDecVar
+aff   : type VAR '=' CONST	     # affDecConst
+      | type VAR '=' VAR	       # affDecVar
       | type VAR '=' CHAREXP     # affDecChar
       | type VAR '=' expr        # affDecExpr
       | VAR '=' VAR              # affVar
@@ -50,6 +55,15 @@ aff   : type VAR '=' CONST	 # affDecConst
       | VAR '=' CHAREXP          # affChar
       | VAR '=' expr             # affExpr
       ;
+
+varsG  : VAR ',' vars  #decGMult
+       | VAR           #lastDecG
+       ;
+
+decGlobal   : type varsG               # decG
+            | type VAR '=' CONST	     # decGAffConst
+            | type VAR '=' CHAREXP     # decGAffChar
+            ;
 
 ifLoop  : 'if' '(' testExpr ')' bloc                # ifNoElse
         | 'if' '(' testExpr ')' bloc 'else' bloc    # ifWithElse

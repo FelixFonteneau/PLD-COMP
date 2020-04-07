@@ -20,8 +20,9 @@ using namespace std;
 //------------------------------------------------------------- Constantes
 
 //----------------------------------------------------------------- PUBLIC
-SymbolTable* SymbolTable::globalVariables;
-
+SymbolTable* SymbolTable::globalVariables = new SymbolTable();
+int SymbolTable::nextFreeSymbolIndex = -4;
+vector<string> SymbolTable::asCodeGlobalVar;
 //----------------------------------------------------- Méthodes publiques
 bool SymbolTable::variableExiste(string nom){
   return variables.find(nom)!=variables.end();
@@ -31,7 +32,9 @@ Variable* SymbolTable::getVariable(string nom){
   return &variables.find(nom)->second;
 }
 
-void SymbolTable::addVariable(Variable &var){
+void SymbolTable::addVariable(string name, Type t){
+  Variable var(name, t, to_string(nextFreeSymbolIndex));
+  nextFreeSymbolIndex -= 4;
   variables.insert({var.getName(),var});
 }
 
@@ -39,7 +42,11 @@ void SymbolTable::addVariable(Variable &var){
 string SymbolTable::varToAsm(string reg){ /**< helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24 */
   Variable* var = this->getVariable(reg);
   if(var != nullptr){
-    return "-" + to_string(var->getAddress()) + "(%rbp)";
+    string suffixe = "(%rbp)";
+    if(this == globalVariables){
+      suffixe = "(%rip)";
+    }
+    return var->getAddress() + suffixe;
   }
   return "";
 }
@@ -57,14 +64,43 @@ int SymbolTable::bitesSize(){
 
 }
 
-
-void SymbolTable::createGlobalVariablesST(vector<string> variables){
+//global variables;
+void SymbolTable::addDeclaredVarToGlobalVariables(string name, Type t){
+  Variable var(name, t, name);
+  globalVariables->variables.insert({var.getName(),var});
+  string asCode = " .comm " + name +",4,4\n";
+  asCodeGlobalVar.push_back(asCode);
 
 }
+
+void SymbolTable::addDefinedVarToGlobalVariables(string name, Type t, int value){
+  Variable var(name, t, name);
+  globalVariables->variables.insert({var.getName(),var});
+  string asCode = " .global " + name + "\n";
+  asCode += " .data \n";
+  asCode += " .align 4\n";
+  asCode += " .type " + name + ", @object\n";
+  asCode += " .size "+ name + ", 4\n";
+  asCode += name + ":\n";
+  asCode += " .long "+ to_string(value) + "\n";
+  asCodeGlobalVar.push_back(asCode);
+}
+
 
 SymbolTable* SymbolTable::getGlobalVariablesST(){
   return globalVariables;
 }
+
+
+void SymbolTable::generateAScodeGlobalVariable(ostream& o){
+  if(globalVariables == nullptr || asCodeGlobalVar.size() < 1){
+    return;
+  }
+  for (vector<string>::iterator it = asCodeGlobalVar.begin(); it != asCodeGlobalVar.end(); ++it){
+    o << (*it);
+  }
+}
+
 //------------------------------------------------- Surcharge d'opérateurs
 
 
@@ -72,7 +108,7 @@ SymbolTable* SymbolTable::getGlobalVariablesST(){
 SymbolTable::SymbolTable()
 
 {
-  globalVariables = nullptr;
+
 }
 
 

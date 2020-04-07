@@ -71,7 +71,6 @@ class CFG {
   vector<SymbolTable*> symbolTableStack; // stack of symbol table. Access the last in first.
   SymbolTable* currentSymbolTable;
   string name;
-	int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
 	int nextBBnumber; /**< just for naming */
 
   int scopeNumber;
