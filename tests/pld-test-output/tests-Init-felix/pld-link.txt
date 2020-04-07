@@ -1,2 +1,5 @@
+/usr/bin/ld: /tmp/ccvBo0N7.o: relocation R_X86_64_32S against undefined symbol `a' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: final link failed: nonrepresentable section on output
+collect2: error: ld returned 1 exit status
 
-return code: 0
+return code: 1
