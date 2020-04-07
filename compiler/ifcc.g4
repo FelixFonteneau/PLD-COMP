@@ -50,7 +50,7 @@ dec   : type vars;
 aff   : type VAR '=' CONST	     # affDecConst
       | type VAR '=' VAR	       # affDecVar
       | type VAR '=' CHAREXP     # affDecChar
-      | type VAR '=' 'new' eltType=(INT | CHAR) '[' + CONST + ']'    # affDecArray
+      | type VAR '[' CONST ']'   # affDecArray
       | type VAR '=' expr        # affDecExpr
       | VAR '=' VAR              # affVar
       | VAR '=' CONST            # affConst
@@ -83,14 +83,12 @@ ret   : RET VAR   # retVar
 
 type : INT
       | CHAR
-      | INT_ARRAY
       ;
 
 array_elt : VAR '[' CONST ']';
 
 INT : 'int' ;
 CHAR : 'char' ;
-INT_ARRAY : 'int[]';
 RET : 'return' ;
 CHAREXP : '\'' .*? '\'' ; // prends tout ce qu'il y a entre les ' ' -> TODO verifier si c'est un char ou pas lors de l'affectation
 VAR : [a-z]+ ;
