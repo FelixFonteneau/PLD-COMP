@@ -1,8 +1,0 @@
-Error in input.c.
-Error no viable alternative at input 'char a = 'A'\n\treturn'. On position 4:1
-   "	return a;"
-     ^
-
-1 error generated.
-
-return code: 1

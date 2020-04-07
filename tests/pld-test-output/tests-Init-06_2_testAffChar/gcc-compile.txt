@@ -1,6 +1,0 @@
-input.c: In function ‘main’:
-input.c:4:2: error: expected ‘,’ or ‘;’ before ‘return’
-  return a;
-  ^~~~~~
-
-return code: 1
