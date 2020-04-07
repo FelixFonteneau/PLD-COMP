@@ -1,0 +1,8 @@
+Error in input.c.
+Error variable d does not exist. On position 9:2
+   "  d = 0;"
+      ^
+
+1 error generated.
+
+return code: 1
