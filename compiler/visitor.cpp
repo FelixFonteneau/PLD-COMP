@@ -848,6 +848,17 @@ antlrcpp::Any Visitor::visitAffDecArray(ifccParser::AffDecArrayContext *ctx) {
   return 0;
 }
 
+antlrcpp::Any Visitor::visitArrayExpr(ifccParser::ArrayExprContext *ctx) {
+  int address = visit(ctx->array_elt());
+
+  if (address != -1) {
+    vector<string> params {address, (*currentRegister).name};
+    currentBasicBlock->addIRInstr(IRInstr::rmem, INT, params);
+  }
+
+  return 0;
+}
+
 antlrcpp::Any Visitor::visitAffArray(ifccParser::AffArrayContext *ctx) {
   return 0;
 }
@@ -862,4 +873,26 @@ antlrcpp::Any Visitor::visitAffEltConst(ifccParser::AffEltConstContext *ctx) {
 
 antlrcpp::Any Visitor::visitAffEltExpr(ifccParser::AffEltExprContext *ctx) {
   return 0;
+}
+
+antlrcpp::Any Visitor::visitArray_elt(ifccParser::Array_eltContext *ctx) {
+  string arrayName = ctx->VAR()->getText();
+
+  if (!currentCFG->isVarExist(arrayName)){
+    string message = "variable " + arrayName + " does not exist";
+    errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+    // if the variable name does not exist, we throw an error.
+
+    return -1;
+  }
+
+  Array a = (Array)(currentCFG->getVariable(arrayName));
+  int index = visit(ctx->CONST());
+  int address;
+
+  if ((address = a.getAddress(index)) != -1) {
+    return address;
+  }
+
+  return -1;
 }

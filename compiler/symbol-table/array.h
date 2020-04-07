@@ -11,7 +11,6 @@
 #define ARRAY_H
 
 //--------------------------------------------------- Interfaces utilisées
-#include <string>
 #include "variable.h"
 //------------------------------------------------------------- Constantes
 
@@ -32,12 +31,20 @@ class Array : public Variable
 
 public:
 //----------------------------------------------------- Méthodes publiques
-  int size()
+  int getSize()
   {
     return this->size;
   }
 
-
+  int getAddress(int index)
+  {
+    if (index >= 0 && index < this->size) {
+      return this->address + 4*index;
+    }
+    else {
+      return -1;
+    }
+  }
 
 
 //------------------------------------------------- Surcharge d'opérateurs
