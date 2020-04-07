@@ -12,7 +12,8 @@ Visitor::Visitor(vector<CFG*>* cfgs_, SemanticErrorListener* errorlistener_)
     currentCFG = nullptr;
     currentBasicBlock = nullptr;
     thereIsFunc = false;
-    //labelcounter = 0;
+    numberTempVar = -1;
+    thereIsTempVar = false;
     eax.name = "%eax";
     eax.used = false;
     registers[0] = eax;
@@ -22,25 +23,44 @@ Visitor::Visitor(vector<CFG*>* cfgs_, SemanticErrorListener* errorlistener_)
     ecx.name = "%ecx";
     ecx.used = false;
     registers[2] = ecx;
-    edx.name = "%edx";
-    edx.used = false;
-    registers[3] = edx;
-    edi.name = "%edi";
-    edi.used = false;
-    registers[4] = edi;
-    esi.name = "%esi";
-    esi.used = false;
-    registers[5] = esi;
-    ebp.name = "%ebp";
-    ebp.used = false;
-    registers[6] = ebp;
-    esp.name = "%esp";
-    esp.used = false;
-    registers[7] = esp;
-    eip.name = "%eip";
-    eip.used = false;
-    registers[8] = eip;
+    r10.name = "%r10";
+    r10.used = false;
+    registers[3] = r10;
+    r11.name = "%r11";
+    r11.used = false;
+    registers[4] = r11;
+    r12.name = "%r12";
+    r12.used = false;
+    registers[5] = r12;
+    r13.name = "%r13";
+    r13.used = false;
+    registers[6] = r13;
+    r14.name = "%r14";
+    r14.used = false;
+    registers[7] = r14;
+    r15.name = "%r15";
+    r15.used = false;
+    registers[8] = r15;
     currentRegister = registers;
+    rdi.name = "%rdi";
+    rdi.used = false;
+    registersFunc[0] = rdi;
+    rsi.name = "%rsi";
+    rsi.used = false;
+    registersFunc[1] = rsi;
+    rdx.name = "%rdx";
+    rdx.used = false;
+    registersFunc[2] = rdx;
+    rcx.name = "%rcx";
+    rcx.used = false;
+    registersFunc[3] = rcx;
+    r8.name = "%r8";
+    r8.used = false;
+    registersFunc[4] = r8;
+    r9.name = "%r9";
+    r9.used = false;
+    registersFunc[5] = r9;
+    currentRegFunc = registersFunc;
 }
 
 //TODO : verifier les returns en cas d'erreur
@@ -552,8 +572,9 @@ antlrcpp::Any Visitor::visitParTestExpr(ifccParser::ParTestExprContext *ctx)
 antlrcpp::Any Visitor::visitConstExpr(ifccParser::ConstExprContext *ctx)
 {
     string constant = "$" + ctx->CONST()->getText();
-    vector<string> params {constant, (*currentRegister).name}; //TODO : verifier registres
+    vector<string> params {constant, currentRegister->name};
     currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+    currentRegister->used = true;
     //cout << "  movl $" << val << ", %" << (*currentRegister).name << endl;
     return 0;
 }
@@ -585,16 +606,17 @@ antlrcpp::Any Visitor::visitVarExpr(ifccParser::VarExprContext *ctx)
     return 0;
   }
 
-  //check if the right variable is defined
-  if (!currentCFG->isDefined(var)){
+  //check if the variable is defined
+  if (!currentCFG->isDefined(variable)){
     // if the variable name is not defined, we throw an error.
-    string message = "variable " + var + " is not defined";
+    string message = "variable " + variable + " is not defined";
     errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
     return 0;
   }
 
-  vector<string> params {currentCFG->varToAsm(var), (*currentRegister).name}; //TODO : verifier registres
-  currentBasicBlock->addIRInstr(IRInstr::rmem, INT, params);
+  vector<string> params {currentCFG->varToAsm(var), currentRegister->name};
+  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+  currentRegister->used = true;
   //cout << "  movl -" << blocPrincipal.getVariable(var)->getAddress() << "(%rbp), %" << (*currentRegister).name << endl;
   return 0;
 }
@@ -604,50 +626,110 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
     bool isVar = false;
     bool isExpr = false;
 
+    bool noRegLeft = false;
+    int tempVarCreated = 0;
+
     string exprLeft = ctx->expr()[0]->getText();
     string exprRight = ctx->expr()[1]->getText();
 
     string memoryAddressRight = "";
 
+/*
+    cout << "exprRight :"<< endl;
+    cout << exprRight << endl;
+    cout << "exprLeft :" << endl;
+    cout << exprLeft << endl;
+*/
+
+    if(exprRight.find("(") != string::npos || exprRight.find("*") != string::npos) {
+      isExpr = true;
+    }
+
+    visit(ctx->expr()[0]);
+/*
+    cout << "isExpr : " << endl;
+    cout << isExpr << endl;
+    cout << "Curr :";
+    cout << currentRegister->name <<  "  -  " << currentRegister->used << endl;
+*/
+
+    if(isExpr) {
+      if(currentRegister->name == "%ebx" && currentRegister->used == true) {
+        currentRegister = registers + 1; //à mettre à 8
+
+        noRegLeft = true;
+        vector<string> params {currentRegister->name, currentCFG->varToAsm(currentCFG->createNewTempvar(INT))};
+        currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+        numberTempVar++;
+        currentRegister->used = false;
+        tempVarCreated = 1;
+/*
+        cout << "salut" << endl;
+
+        cout << "exprRight :"<< endl;
+        cout << exprRight << endl;
+        cout << "exprLeft :" << endl;
+        cout << exprLeft << endl;
+*/
+      } else if(currentRegister->name != "%ebx") {
+        currentRegister++;
+        currentRegister->used = true;
+      }
+
+      if(tempVarCreated == 1) {
+        visit(ctx->expr()[1]);
+      } else {
+        tempVarCreated = visit(ctx->expr()[1]);
+      }
+
+      if(tempVarCreated) {
+        cout << "you motherfucker i'm in" << endl;
+        string tempVarName = "!" + to_string(numberTempVar);
+        exprLeft = exprRight;
+        exprRight = tempVarName;
+        numberTempVar--;
+        cout << "ouesh :" << numberTempVar << endl;
+      }
+
+      if(currentRegister->name != "%eax" && !noRegLeft) {
+        cout << "hi there" << endl;
+        currentRegister--;
+      }
+    }
 
     if(currentCFG->isVarExist(exprRight)) {
       memoryAddressRight = currentCFG->getVariable(exprRight)->getAddress();
     }
 
-    if(exprRight.find("(") != string::npos || exprRight.find("*") != string::npos) {
-      isExpr = true;
-    }
     if(memoryAddressRight != "") {
       isVar = true;
     }
 
-    visit(ctx->expr()[0]);
-    if(isExpr) {
-      (*currentRegister).used = true;
-      while((*currentRegister).used) {
-        currentRegister++;
-      }
-      visit(ctx->expr()[1]);
-      if((*currentRegister).name != "%eax") {
-        currentRegister--;
-      }
-    }
+    cout << "curre :" << endl;
+    cout << currentRegister->name << endl;
+
+    cout << "prout :" << endl;
+    cout << exprRight << endl;
 
     if(ctx->op->getText() == "+") {
         if(!isVar) {
           if(!isExpr) {
             string rightVal = "$" + exprRight;
-            vector<string> params {rightVal, (*currentRegister).name};
+            vector<string> params {rightVal, currentRegister->name};
             currentBasicBlock->addIRInstr(IRInstr::add, INT, params);
             //cout << "  addl $" << rightVal << ", %" << (*currentRegister).name << endl;
           } else {
-            vector<string> params {(*(currentRegister + 1)).name, (*currentRegister).name};
+            vector<string> params {(currentRegister + 1)->name, currentRegister->name};
             currentBasicBlock->addIRInstr(IRInstr::add, INT, params);
+            (currentRegister + 1)->used = false;
             //cout << "  addl %" << (*(currentRegister + 1)).name << ", %" << (*currentRegister).name << endl;
           }
         } else if(isVar) {
-          vector<string> params {currentCFG->varToAsm(exprRight), (*currentRegister).name};
+          vector<string> params {currentCFG->varToAsm(exprRight), currentRegister->name};
           currentBasicBlock->addIRInstr(IRInstr::add, INT, params);
+          if(exprRight.find("!") != string::npos) {
+            currentCFG->deleteLastTempvar(INT);
+          }
           //cout << "  addl -" << memoryAddressRight << "(%rbp), %" << (*currentRegister).name << endl;
         }
       } else {
@@ -655,27 +737,31 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
           if(!isExpr) {
             //int rightVal = stoi(exprRight);
             string rightVal = "$" + exprRight;
-            vector<string> params {rightVal, (*currentRegister).name};
+            vector<string> params {rightVal, currentRegister->name};
             currentBasicBlock->addIRInstr(IRInstr::sub, INT, params);
             //cout << "  subl $" << rightVal << ", %" << (*currentRegister).name << endl;
           } else {
-            vector<string> params {(*(currentRegister + 1)).name, (*currentRegister).name};
+            vector<string> params {(currentRegister + 1)->name, currentRegister->name};
             currentBasicBlock->addIRInstr(IRInstr::sub, INT, params);
+            (currentRegister + 1)->used = false;
             //cout << "  subl %" << (*(currentRegister + 1)).name << ", %" << (*currentRegister).name << endl;
           }
         } else if(isVar) {
-          vector<string> params {currentCFG->varToAsm(exprRight), (*currentRegister).name};
+          vector<string> params {currentCFG->varToAsm(exprRight), currentRegister->name};
           currentBasicBlock->addIRInstr(IRInstr::sub, INT, params);
+          if(exprRight.find("!") != string::npos) {
+            currentCFG->deleteLastTempvar(INT);
+          }
           //cout << "  subl -" << memoryAddressRight << "(%rbp), %" << (*currentRegister).name << endl;
         }
     }
-    return 0;
+    return tempVarCreated;
   }
 
 antlrcpp::Any Visitor::visitParExpr(ifccParser::ParExprContext *ctx)
 {
   visitChildren(ctx);
-  (*currentRegister).used = true;
+  currentRegister->used = true;
   return 0;
 }
 
@@ -699,7 +785,7 @@ antlrcpp::Any Visitor::visitRetVar(ifccParser::RetVarContext *ctx)
     return 0;
   }
 
-  vector<string> params {currentCFG->varToAsm(variable), "%eax"};
+  vector<string> params {currentCFG->varToAsm(variable), "%rax"};
   currentBasicBlock->addIRInstr(IRInstr::rmem, INT, params);
   return 0;
 }
@@ -707,8 +793,8 @@ antlrcpp::Any Visitor::visitRetVar(ifccParser::RetVarContext *ctx)
 antlrcpp::Any Visitor::visitRetConst(ifccParser::RetConstContext *ctx)
 {
     string retval = ctx->CONST()->getText();
-    vector<string> params {"$"+retval, "%eax"};
-    currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+    vector<string> params {"$"+retval, "%rax"};
+    currentBasicBlock->addIRInstr(IRInstr::wmemq, INT, params);
     return 0;
 }
 
@@ -720,57 +806,105 @@ antlrcpp::Any Visitor::visitRetExpr(ifccParser::RetExprContext *ctx) {
 
 antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprContext *ctx)
 {
+
+  cout << "start of exprMult" << endl;
+  cout << "Curr : "<< endl;
+  cout << currentRegister-> name << " - " << currentRegister->used << endl;
+
   bool isVar = false;
   bool isExpr = false;
+
+  bool noRegLeft = false;
+  int tempVarCreated = 0;
 
   string exprLeft = ctx->expr()[0]->getText();
   string exprRight = ctx->expr()[1]->getText();
 
   string memoryAddressRight = "";
-  string memoryAddressLeft = "";
 
-  if(currentCFG->isVarExist(exprLeft)) {
-    memoryAddressLeft = currentCFG->getVariable(exprLeft)->getAddress();
+  if(exprRight.find("(") != string::npos) {
+    isExpr = true;
+  }
+
+  cout << "exprRight :"<< endl;
+  cout << exprRight << endl;
+  cout << "exprLeft :" << endl;
+  cout << exprLeft << endl;
+
+  visit(ctx->expr()[0]);
+
+
+
+  if(isExpr) {
+    if(currentRegister->name == "%ebx" && currentRegister->used == true) {
+      currentRegister = registers + 1; //à mettre à 8
+
+      noRegLeft = true;
+      vector<string> params {currentRegister->name, currentCFG->varToAsm(currentCFG->createNewTempvar(INT))};
+      currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+      numberTempVar++;
+      currentRegister->used = false;
+      tempVarCreated = 1;
+
+      cout << "salut" << endl;
+
+      cout << "exprRight :"<< endl;
+      cout << exprRight << endl;
+      cout << "exprLeft :" << endl;
+      cout << exprLeft << endl;
+
+    } else if(currentRegister->name != "%ebx") {
+      currentRegister->used = true;
+      currentRegister++;
+    }
+
+    if(tempVarCreated == 1) {
+      visit(ctx->expr()[1]);
+    } else {
+      tempVarCreated = visit(ctx->expr()[1]);
+    }
+
+    if(tempVarCreated) {
+      cout << "you motherfucker i'm in" << endl;
+      string tempVarName = "!" + to_string(numberTempVar);
+      exprLeft = exprRight;
+      exprRight = tempVarName;
+      numberTempVar--;
+      cout << "ouesh :" << numberTempVar << endl;
+    }
+
+    if(currentRegister->name != "%eax" && !noRegLeft) {
+      cout << "hi there" << endl;
+      currentRegister--;
+    }
   }
 
   if(currentCFG->isVarExist(exprRight)) {
     memoryAddressRight = currentCFG->getVariable(exprRight)->getAddress();
   }
 
-  if(exprRight.find("(") != string::npos) {
-    isExpr = true;
-  }
   if(memoryAddressRight != "") {
     isVar = true;
   }
 
-  visit(ctx->expr()[0]);
-  if(isExpr) {
-    (*currentRegister).used = true;
-    while((*currentRegister).used) {
-      currentRegister++;
-    }
-    visit(ctx->expr()[1]);
-    if((*currentRegister).name != "%eax") {
-      currentRegister--;
-    }
-  }
-
-  //if(ctx->op->getText() == "*") {
+  if(ctx->op->getText() == "*") {
     if(!isVar) {
       if(!isExpr) {
         string rightVal = "$" + exprRight;
-        vector<string> params {rightVal, (*currentRegister).name};
+        vector<string> params {rightVal, currentRegister->name};
         currentBasicBlock->addIRInstr(IRInstr::mul, INT, params);
       } else {
-        vector<string> params {(*(currentRegister + 1)).name, (*currentRegister).name};
+        vector<string> params {(currentRegister + 1)->name, currentRegister->name};
         currentBasicBlock->addIRInstr(IRInstr::mul, INT, params);
       }
     } else if(isVar) {
-      vector<string> params {currentCFG->varToAsm(exprRight), (*currentRegister).name};
+      vector<string> params {currentCFG->varToAsm(exprRight), currentRegister->name};
       currentBasicBlock->addIRInstr(IRInstr::mul, INT, params);
+      if(exprRight.find("!") != string::npos) {
+        currentCFG->deleteLastTempvar(INT);
+      }
     }
-  //}
+  }
   return 0;
 }
 

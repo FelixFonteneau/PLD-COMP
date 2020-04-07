@@ -27,12 +27,16 @@ class  Visitor : public ifccBaseVisitor {
     CFG* currentCFG;
     BasicBlock* currentBasicBlock;
     bool thereIsFunc;
+    int numberTempVar;
+    bool thereIsTempVar;
     struct reg {
       string name;
       bool used;
-    } eax, ebx, ecx, edx, edi, esi, ebp, esp, eip;
+    } eax, ebx, ecx, r10, r11, r12, r13, r14, r15, rdi, rsi, rdx, rcx, r8, r9; //edi, esi, ebp, esp;
     reg registers[9];
     reg* currentRegister;
+    reg registersFunc[6];
+    reg* currentRegFunc;
 
   public:
 

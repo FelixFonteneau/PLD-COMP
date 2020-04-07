@@ -57,6 +57,9 @@ void IRInstr::genAsm(ostream &o){ /**< x86 assembly code generation for this IR 
 		case wmem:
       operation = "movl";
       break;
+    case wmemq:
+      operation = "movq";
+      break;
 		case call:
       operation = "callq"; //à implementer
       break;

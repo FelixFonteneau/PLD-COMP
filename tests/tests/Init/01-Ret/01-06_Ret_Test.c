@@ -1,11 +1,4 @@
-int f() {
-	return 444;
-}
-
 int main() {
-	int x = 1;
-	int y = 2;
-	int z = 3;
-	int a = f();
+	int a = ((1+2*3)+(3+4))+(((5+6)+(7+8))+((10+11)+(12+13*2)));
 	return a;
 }

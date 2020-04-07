@@ -74,8 +74,27 @@ void CFG::addArrayToSymbolTable(string name, Type t, int size){
   currentSymbolTable->addArray(name, t, size);
 }
 
-//TODO bellow
-string CFG::createNewTempvar(Type t){return "";}
+string CFG::createNewTempvar(Type t){
+  string name = "!" + to_string(numberTempVar);
+
+  Variable var(name, t, nextFreeSymbolIndex);
+  nextFreeSymbolIndex += 4;
+  currentSymbolTable->addVariable(var);
+
+  numberTempVar++;
+  return name;
+}
+
+string CFG::deleteLastTempvar(Type t){
+  numberTempVar--;
+  string name = "!" + to_string(numberTempVar);
+
+  Variable var(name, t, nextFreeSymbolIndex);
+  nextFreeSymbolIndex -= 4;
+  currentSymbolTable->removeVariable(var);
+
+  return name;
+}
 
 bool CFG::isVarExist(string var){
   for(vector<SymbolTable*>::reverse_iterator it = symbolTableStack.rbegin(); it != symbolTableStack.rend(); ++it ){
@@ -135,6 +154,7 @@ CFG::CFG(string name_)
       cout << "Appel au constructeur de <CFG>" << endl;
   #endif
   name = name_;
+  numberTempVar = 0;
   nextBBnumber = 0;
   current_bb = nullptr;
   scopeNumber = 1;
@@ -142,7 +162,7 @@ CFG::CFG(string name_)
   if (SymbolTable::getGlobalVariablesST() != nullptr){
     symbolTableStack.push_back(SymbolTable::getGlobalVariablesST());
   }
-  
+
   currentSymbolTable = new SymbolTable();
   symbolTableStack.push_back(currentSymbolTable);
 } //----- Fin de CFG

@@ -44,6 +44,7 @@ class IRInstr
      not_op,
      rmem,
      wmem,
+     wmemq,
      call,
      cmp_eq,
      cmp_lt,

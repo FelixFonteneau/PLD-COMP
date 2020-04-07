@@ -9,7 +9,10 @@ globalVariables :
 
 bloc : '{' statements '}';
 
-prog  : 'int' 'main' '(' ')' bloc;
+blocRet : '{' statements ret '}'
+        ;
+
+prog  : 'int' 'main' '(' ')' blocRet;
 
 functions : funcDec
           | funcDec functions
@@ -17,7 +20,7 @@ functions : funcDec
           ;
 
 funcDec : INT VAR '(' ')' ';'   #funcDecStrict
-        | INT VAR '(' ')' bloc  #funcDecDef
+        | INT VAR '(' ')' blocRet  #funcDecDef
         ;
 
 funcCall : VAR '(' ')'
