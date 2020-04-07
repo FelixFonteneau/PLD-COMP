@@ -3,7 +3,7 @@
 
 typedef enum {
   INT, 
-  CHAR
+  CHAR //Dans un premier temps, on ne différentie pas int et char
 } Type;
 
 #endif // TYPE_H
