@@ -1,14 +1,15 @@
 #include <inttypes.h>
 int main()
 {
-	int a;
-	int b;
+	char a;
+	char b;
 	a=17;
 	b=42;
-	if (a > b) {
-		a = b;
-	} else {
-		b = a;
+	if (a < b) {
+		a = 69;
 	}
-	return b;
+	if (a > b) {
+		a = 12;
+	}
+	return a;
 }

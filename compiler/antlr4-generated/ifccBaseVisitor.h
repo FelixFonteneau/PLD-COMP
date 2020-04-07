@@ -47,11 +47,19 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitBoucleWhile(ifccParser::BoucleWhileContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitParExpr(ifccParser::ParExprContext *ctx) override {
     return visitChildren(ctx);
   }
 
   virtual antlrcpp::Any visitVarExpr(ifccParser::VarExprContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitBitsExpr(ifccParser::BitsExprContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -64,10 +72,6 @@ public:
   }
 
   virtual antlrcpp::Any visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitPowExpr(ifccParser::PowExprContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -99,6 +103,14 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitDeclMult(ifccParser::DeclMultContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitLastDecl(ifccParser::LastDeclContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitDec(ifccParser::DecContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -111,6 +123,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitAffDecChar(ifccParser::AffDecCharContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitAffDecExpr(ifccParser::AffDecExprContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -120,6 +136,10 @@ public:
   }
 
   virtual antlrcpp::Any visitAffConst(ifccParser::AffConstContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitAffChar(ifccParser::AffCharContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -139,11 +159,19 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitWhileLoop(ifccParser::WhileLoopContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitRetVar(ifccParser::RetVarContext *ctx) override {
     return visitChildren(ctx);
   }
 
   virtual antlrcpp::Any visitRetConst(ifccParser::RetConstContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitType(ifccParser::TypeContext *ctx) override {
     return visitChildren(ctx);
   }
 

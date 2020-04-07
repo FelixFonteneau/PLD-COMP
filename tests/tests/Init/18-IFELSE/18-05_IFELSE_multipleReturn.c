@@ -7,8 +7,9 @@ int main()
 	b=42;
 	if (a > b) {
 		a = b;
+		return a;
 	} else {
 		b = a;
+		return b;
 	}
-	return b;
 }
