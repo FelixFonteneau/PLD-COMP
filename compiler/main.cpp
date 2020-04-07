@@ -61,10 +61,11 @@ int main(int argn, const char **argv) {
 
   // pass CFG to x86 back-end
 
-  // global var
+  // global variables
   cout << " .text" << endl;
   SymbolTable::generateAScodeGlobalVariable(cout);
 
+  //functions
   cout << " .global main \n";
   for(vector<CFG*>::iterator it = cfgs.begin(); it != cfgs.end(); it++){
     (*it)->genAsm(cout);
