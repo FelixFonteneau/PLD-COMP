@@ -754,8 +754,7 @@ antlrcpp::Any Visitor::visitAffDecArray(ifccParser::AffDecArrayContext *ctx) {
     // if the variable name already exists, we throw an error.
   }
 
-  string eltType = ctx->eltType->getText();
-  int size = visit(ctx->CONST()[0]);//1;//stoi(ctx->CONST()->getText());
+  int size = stoi(ctx->CONST()->getText());
 
   currentCFG->addArrayToSymbolTable(variableName, INT_ARRAY, size);
 

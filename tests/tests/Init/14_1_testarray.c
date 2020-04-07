@@ -1,7 +1,7 @@
 #include <inttypes.h>
 int main()
 {
-	int[] array = new int[3];
+	int array[3];
 	int a;
 	a = 2;
 
