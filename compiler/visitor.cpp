@@ -217,7 +217,6 @@ antlrcpp::Any Visitor::visitLastDecG(ifccParser::LastDecGContext *ctx)  {
 }
 
 antlrcpp::Any Visitor::visitDecGAbstract(ifccParser::DecGAbstractContext *ctx)  {
-  SymbolTable::createGlobalVariablesST();
   return visitChildren(ctx);
 }
 

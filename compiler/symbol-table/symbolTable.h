@@ -43,7 +43,6 @@ public:
     int bitesSize();
 
     // variables globales
-    static void createGlobalVariablesST();
     static SymbolTable* getGlobalVariablesST();
 //------------------------------------------------- Surcharge d'opérateurs
 
