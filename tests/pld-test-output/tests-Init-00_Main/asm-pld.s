@@ -1,3 +1,4 @@
+.text
 .text 
 .global main 
 main:

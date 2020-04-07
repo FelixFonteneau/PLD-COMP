@@ -1,4 +1,4 @@
 asm-pld.s: Assembler messages:
-asm-pld.s:12: Error: invalid operands (*UND* and *ABS* sections) for `/'
+asm-pld.s:13: Error: invalid operands (*UND* and *ABS* sections) for `/'
 
 return code: 1

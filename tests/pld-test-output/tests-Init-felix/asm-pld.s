@@ -1,3 +1,8 @@
+.text
+.comm a,4,4+
+
+.comm d,4,4+
+
 .text 
 .global main 
 main:
