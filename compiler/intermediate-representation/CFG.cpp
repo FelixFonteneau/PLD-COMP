@@ -72,6 +72,14 @@ void CFG::addToSymbolTable(string name, Type t){
   currentSymbolTable->addVariable(var);
 }
 
+// symbol table methods
+void CFG::addArrayToSymbolTable(string name, Type t, int size){
+
+  Array arr(name, t, nextFreeSymbolIndex, size);
+  nextFreeSymbolIndex += (4*size);
+  currentSymbolTable->addVariable(arr);
+}
+
 //TODO bellow
 string CFG::createNewTempvar(Type t){return "";}
 
