@@ -13,6 +13,7 @@
 //--------------------------------------------------- Interfaces utilisées
 #include <string>
 
+#include "error.h"
 #include "antlr4-runtime.h"
 
 //------------------------------------------------------------- Constantes
@@ -26,7 +27,7 @@ using namespace antlr4;
 //
 //------------------------------------------------------------------------
 
-class SyntaxError
+class SyntaxError : Error
 {
 //----------------------------------------------------------------- PUBLIC
 
@@ -37,10 +38,13 @@ public:
     //
     // Contrat :
     //
+    void showError(ostream & os) const
+    {
+      Error::showError(os);
+    }
 
 
 //------------------------------------------------- Surcharge d'opérateurs
-  friend ostream & operator << (ostream & os, const SyntaxError & error);
 
 
 
@@ -58,12 +62,6 @@ public:
     // Contrat :
     //
 
-    virtual ~SyntaxError ( );
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
-
 //------------------------------------------------------------------ PRIVE
 
 protected:
@@ -72,11 +70,7 @@ protected:
 //----------------------------------------------------- Attributs protégés
   Recognizer *recognizer;
   Token * offendingSymbol;
-  size_t lineNumber;
-  size_t charPositionInLine;
-  string message;
   exception_ptr e;
-  string line;
 };
 
 //-------------------------------- Autres définitions dépendantes de <SyntaxError>

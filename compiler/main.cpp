@@ -10,6 +10,7 @@
 #include "antlr4-generated/ifccBaseVisitor.h"
 #include "visitor.h"
 #include "error/syntaxErrorListener.h"
+#include "error/semanticErrorListener.h"
 #include "intermediate-representation/CFG.h"
 
 
@@ -46,9 +47,17 @@ int main(int argn, const char **argv) {
   }
 
   vector<CFG*> cfgs;
+  SemanticErrorListener semanticErrorListener(in.str());
 
-  Visitor visitor(&cfgs);
+  Visitor visitor(&cfgs, &semanticErrorListener);
   visitor.visit(tree);
+
+  if (semanticErrorListener.Error()){
+    cerr << "Error in " << argv[1] << "." << endl;
+    cerr << semanticErrorListener;
+    return 1;
+  }
+
 
   // pass CFG to x86 back-end
 

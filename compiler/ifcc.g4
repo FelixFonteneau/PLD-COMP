@@ -11,13 +11,14 @@ statements : statement
            | statement statements
            ;
 
-statement : dec ';' # statementDeclaration
-          | aff ';' # statementAffectation
-          | ret ';' # statementReturn
-          | ifLoop  # boucleIf
+statement : dec ';'   # statementDeclaration
+          | aff ';'   # statementAffectation
+          | ret ';'   # statementReturn
+          | ifLoop    # boucleIf
+          | whileLoop # boucleWhile
           ;
 
-expr    : expr '^' expr                             #powExpr
+expr    : expr op=('|' | '&' | '^') expr               #bitsExpr
         | '-' expr                                  #minusExpr
         | '!' expr                                  #notExpr
         | expr op=('*' | '/' | '%') expr            #multiplicationExpr
@@ -34,14 +35,20 @@ testExpr  : expr op=('<=' | '>=' | '<' | '>') expr    #relationalTestExpr
           | '(' testExpr ')'                          #parTestExpr
           ;
 
-dec   : 'int' VAR;
+vars  : VAR ',' vars  #declMult
+      | VAR           #lastDecl
+      ;
 
-aff   : 'int' VAR '=' CONST # affDecConst
-      | 'int' VAR '=' VAR   # affDecVar
-      | 'int' VAR '=' expr  # affDecExpr
-      | VAR '=' VAR         # affVar
-      | VAR '=' CONST       # affConst
-      | VAR '=' expr        # affExpr
+dec   : type vars;
+
+aff   : type VAR '=' CONST	 # affDecConst
+      | type VAR '=' VAR	 # affDecVar
+      | type VAR '=' CHAREXP     # affDecChar
+      | type VAR '=' expr        # affDecExpr
+      | VAR '=' VAR              # affVar
+      | VAR '=' CONST            # affConst
+      | VAR '=' CHAREXP          # affChar
+      | VAR '=' expr             # affExpr
       ;
 
 ifLoop  : 'if' '(' testExpr ')' bloc                # ifNoElse
@@ -49,11 +56,20 @@ ifLoop  : 'if' '(' testExpr ')' bloc                # ifNoElse
         | 'if' '(' testExpr ')' bloc 'else' ifLoop  # ifElseIf
         ;
 
+whileLoop : 'while' '(' testExpr ')' bloc;
+
 ret   : RET VAR   # retVar
       | RET CONST # retConst
       ;
 
+type : INT
+      | CHAR
+      ;
+
+INT : 'int' ;
+CHAR : 'char' ;
 RET : 'return' ;
+CHAREXP : '\'' .*? '\'' ; // prends tout ce qu'il y a entre les ' ' -> TODO verifier si c'est un char ou pas lors de l'affectation
 VAR : [a-z]+ ;
 CONST : [0-9]+ ;
 COMMENT : '/*' .*? '*/' -> skip ;

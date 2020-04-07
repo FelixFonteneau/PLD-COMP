@@ -44,25 +44,35 @@ class CFG {
 	// x86 code generation: could be encapsulated in a processor class in a retargetable compiler
 	void genAsm(ostream& o);
 
+  // scope variable management
+  void enteringNewScope();
+  void exitScope();
+
+
 	// symbol table methods
 	void addToSymbolTable(string name, Type t);
 	string createNewTempvar(Type t);
+  bool isVarExist(string var);
+  string varToAsm(string var);
+  Variable* getVariable(string var);
 
 	// basic block management
 	BasicBlock* current_bb;
 
-  SymbolTable symbolTable;
 
-  
+
+
  protected:
   void genAsmPrologue(ostream& o);
   string newBBName();
 
-
+  vector<SymbolTable*> symbolTableStack; // stack of symbol table. Access the last in first.
+  SymbolTable* currentSymbolTable;
   string name;
 	int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
 	int nextBBnumber; /**< just for naming */
 
+  int scopeNumber;
 	vector <BasicBlock*> bbs; /**< all the basic blocks of this CFG*/
 };
 

@@ -11,6 +11,7 @@
 #include "intermediate-representation/IRInstr.h"
 #include "intermediate-representation/BasicBlock.h"
 #include "intermediate-representation/CFG.h"
+#include "error/semanticErrorListener.h"
 
 using namespace std;
 
@@ -21,6 +22,7 @@ using namespace std;
 class  Visitor : public ifccBaseVisitor {
 
   private:
+    SemanticErrorListener* errorlistener;
     vector<CFG*>* cfgs;
     CFG* currentCFG;
     BasicBlock* currentBasicBlock;
@@ -33,13 +35,11 @@ class  Visitor : public ifccBaseVisitor {
 
   public:
 
-    Visitor(vector<CFG*>* cfgs);
+    Visitor(vector<CFG*>* cfgs, SemanticErrorListener* errorlistener);
 
     virtual antlrcpp::Any visitAxiom(ifccParser::AxiomContext *ctx) override;
 
     virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override ;
-
-    virtual antlrcpp::Any visitDec(ifccParser::DecContext *ctx) override ;
 
     virtual antlrcpp::Any visitAffDecConst(ifccParser::AffDecConstContext *ctx) override ;
 
@@ -79,8 +79,20 @@ class  Visitor : public ifccBaseVisitor {
 
     virtual antlrcpp::Any visitMultiplicationExpr(ifccParser::MultiplicationExprContext *ctx) override ;
 
-  virtual antlrcpp::Any visitNotExpr(ifccParser::NotExprContext *ctx) override;
+    virtual antlrcpp::Any visitNotExpr(ifccParser::NotExprContext *ctx) override;
 
-  virtual antlrcpp::Any visitMinusExpr(ifccParser::MinusExprContext *ctx) override;
+    virtual antlrcpp::Any visitMinusExpr(ifccParser::MinusExprContext *ctx) override;
+
+    virtual antlrcpp::Any visitBitsExpr(ifccParser::BitsExprContext *ctx) override;
+
+    virtual antlrcpp::Any visitAffDecChar(ifccParser::AffDecCharContext *ctx) override;
+
+    virtual antlrcpp::Any visitAffChar(ifccParser::AffCharContext *ctx) override;
+
+    virtual antlrcpp::Any visitDeclMult(ifccParser::DeclMultContext *ctx) override;
+
+    virtual antlrcpp::Any visitLastDecl(ifccParser::LastDeclContext *ctx) override;
+
+    virtual antlrcpp::Any visitWhileLoop(ifccParser::WhileLoopContext *ctx) override;
 
 };

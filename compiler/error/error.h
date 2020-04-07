@@ -1,61 +1,58 @@
 /*************************************************************************
-                           SymbolTable  -  description
+                           Error  -  description
                              -------------------
     début                : $DATE$
     copyright            : (C) $YEAR$ par $AUTHOR$
     e-mail               : $EMAIL$
 *************************************************************************/
 
-//---------- Interface de la classe <SymbolTable> (fichier SymbolTable.h) ----------------
-#if ! defined ( SYMBOLTABLE_H )
-#define SYMBOLTABLE_H
+//---------- Interface de la classe <Error> (fichier Error.h) ----------------
+#if ! defined ( ERROR_H )
+#define ERROR_H
 
 //--------------------------------------------------- Interfaces utilisées
-#include <unordered_map>
-#include <vector>
 #include <string>
-#include "variable.h"
+#include <iostream>
+using namespace std;
 
 //------------------------------------------------------------- Constantes
 
 //------------------------------------------------------------------ Types
+
 //------------------------------------------------------------------------
-// Rôle de la classe <SymbolTable>
+// Rôle de la classe <Error>
 //
-// Cette classe correspond a l'objet represetant toues les informations d'un
-// SymbolTable. Elle contient toutes les donnees nécessaires pour la gestion des blocs
-// pendant la compilation.
 //
 //------------------------------------------------------------------------
-class SymbolTable
+
+class Error
 {
 //----------------------------------------------------------------- PUBLIC
 
 public:
 //----------------------------------------------------- Méthodes publiques
+    // type Méthode ( liste des paramètres );
+    // Mode d'emploi :
+    //
+    // Contrat :
+    //
+    virtual void showError(ostream & os) const;
 
-    bool variableExiste(string nom);
-    Variable* getVariable(string nom);
-    void addVariable(Variable &var);
 
-    string varToAsm(string reg);
-
-    int bitesSize();
-
-    // variables globales
-    static void createGlobalVariablesST(vector<string> variables);
-    static SymbolTable* getGlobalVariablesST();
 //------------------------------------------------- Surcharge d'opérateurs
 
+
 //-------------------------------------------- Constructeurs - destructeur
-    // SymbolTable (const SymbolTable & unSymbolTable);
-    SymbolTable ();
+
+    Error (string message, int lineNb, int charPos, string line ) : message(message),
+                                                                    lineNumber(lineNb),
+                                                                    charPositionInLine(charPos),
+                                                                    line(line){}
     // Mode d'emploi :
     //
     // Contrat :
     //
 
-    virtual ~SymbolTable ( );
 
 //------------------------------------------------------------------ PRIVE
 
@@ -63,11 +60,12 @@ protected:
 //----------------------------------------------------- Méthodes protégées
 
 //----------------------------------------------------- Attributs protégés
-  static SymbolTable* globalVariables;
-  unordered_map<string, Variable> variables; // <liste des variables dans le bloc principal>
-
+  string message;
+  size_t lineNumber;
+  size_t charPositionInLine;
+  string line;
 };
 
-//-------------------------------- Autres définitions dépendantes de <SymbolTable>
+//-------------------------------- Autres définitions dépendantes de <Error>
 
-#endif // SYMBOLTABLE_H
+#endif // ERROR_H

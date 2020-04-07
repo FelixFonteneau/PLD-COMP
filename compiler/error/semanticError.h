@@ -1,61 +1,60 @@
 /*************************************************************************
-                           SymbolTable  -  description
+                           SemanticError  -  description
                              -------------------
     début                : $DATE$
     copyright            : (C) $YEAR$ par $AUTHOR$
     e-mail               : $EMAIL$
 *************************************************************************/
 
-//---------- Interface de la classe <SymbolTable> (fichier SymbolTable.h) ----------------
-#if ! defined ( SYMBOLTABLE_H )
-#define SYMBOLTABLE_H
+//---------- Interface de la classe <SemanticError> (fichier SemanticError.h) ----------------
+#if ! defined ( SEMANTICERROR_H )
+#define SEMANTICERROR_H
 
 //--------------------------------------------------- Interfaces utilisées
-#include <unordered_map>
-#include <vector>
 #include <string>
-#include "variable.h"
+#include <iostream>
+#include "error.h"
 
 //------------------------------------------------------------- Constantes
 
 //------------------------------------------------------------------ Types
+
 //------------------------------------------------------------------------
-// Rôle de la classe <SymbolTable>
+// Rôle de la classe <SemanticError>
 //
-// Cette classe correspond a l'objet represetant toues les informations d'un
-// SymbolTable. Elle contient toutes les donnees nécessaires pour la gestion des blocs
-// pendant la compilation.
 //
 //------------------------------------------------------------------------
-class SymbolTable
+
+class SemanticError : public Error
 {
 //----------------------------------------------------------------- PUBLIC
 
 public:
 //----------------------------------------------------- Méthodes publiques
-
-    bool variableExiste(string nom);
-    Variable* getVariable(string nom);
-    void addVariable(Variable &var);
-
-    string varToAsm(string reg);
-
-    int bitesSize();
-
-    // variables globales
-    static void createGlobalVariablesST(vector<string> variables);
-    static SymbolTable* getGlobalVariablesST();
-//------------------------------------------------- Surcharge d'opérateurs
-
-//-------------------------------------------- Constructeurs - destructeur
-    // SymbolTable (const SymbolTable & unSymbolTable);
-    SymbolTable ();
+    // type Méthode ( liste des paramètres );
     // Mode d'emploi :
     //
     // Contrat :
     //
 
-    virtual ~SymbolTable ( );
+    void showError(ostream & os) const
+    {
+      Error::showError(os);
+    }
+
+
+//------------------------------------------------- Surcharge d'opérateurs
+
+
+//-------------------------------------------- Constructeurs - destructeur
+
+  SemanticError (size_t lineNumberA, size_t charPositionInLineA,
+   const std::string &msgA, string &lineA) :
+                  Error(msgA, lineNumberA, charPositionInLineA, lineA){}
+    // Mode d'emploi :
+    //
+    // Contrat :
+    //
 
 //------------------------------------------------------------------ PRIVE
 
@@ -63,11 +62,9 @@ protected:
 //----------------------------------------------------- Méthodes protégées
 
 //----------------------------------------------------- Attributs protégés
-  static SymbolTable* globalVariables;
-  unordered_map<string, Variable> variables; // <liste des variables dans le bloc principal>
 
 };
 
-//-------------------------------- Autres définitions dépendantes de <SymbolTable>
+//-------------------------------- Autres définitions dépendantes de <SemanticError>
 
-#endif // SYMBOLTABLE_H
+#endif // SEMANTICERROR_H

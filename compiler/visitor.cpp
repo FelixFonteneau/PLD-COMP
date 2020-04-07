@@ -5,8 +5,9 @@
 #include "intermediate-representation/BasicBlock.h"
 #include "intermediate-representation/CFG.h"
 
-Visitor::Visitor(vector<CFG*>* cfgs_)
+Visitor::Visitor(vector<CFG*>* cfgs_, SemanticErrorListener* errorlistener_)
 {
+    errorlistener = errorlistener_;
     cfgs = cfgs_;
     currentCFG = nullptr;
     currentBasicBlock = nullptr;
@@ -56,45 +57,47 @@ antlrcpp::Any Visitor::visitProg(ifccParser::ProgContext *ctx)
     return 0;
 }
 
-antlrcpp::Any Visitor::visitDec(ifccParser::DecContext *ctx)
-{
-    string variableName = ctx->VAR()->getText();
-    if (currentCFG->symbolTable.variableExiste(variableName))
-    {
-        // if the variable name already exists, we throw an error.
-    }
-    currentCFG->addToSymbolTable(variableName, INT);
-    return visitChildren(ctx);
-}
-
-antlrcpp::Any Visitor::visitAffDecConst(ifccParser::AffDecConstContext *ctx)
+antlrcpp::Any Visitor::visitAffDecConst(ifccParser::AffDecConstContext *ctx) // int a = 17;
 {
     int retval = stoi(ctx->CONST()->getText());
     string variableName = ctx->VAR()->getText();
-    if (currentCFG->symbolTable.variableExiste(variableName))
+    if (currentCFG->isVarExist(variableName))
     {
+      string message = "variable " + variableName + " is already defined";
+      errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
         // if the variable name already exists, we throw an error.
     }
     currentCFG->addToSymbolTable(variableName, INT);
     string constant = "$"+ to_string(retval);
-    vector<string> params {constant, currentCFG->symbolTable.varToAsm(variableName)};
+    vector<string> params {constant, currentCFG->varToAsm(variableName)};
     currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+
 
     return visitChildren(ctx);
 }
 
 antlrcpp::Any Visitor::visitAffDecVar(ifccParser::AffDecVarContext *ctx)
+// int b;
+// int a = b;
 {
     string newVariableName = ctx->VAR()[0]->getText();
-    if (currentCFG->symbolTable.variableExiste(newVariableName))    {
+    if (currentCFG->isVarExist(newVariableName))    {
+      string message = "variable " + newVariableName + " is already defined";
+      errorlistener->addSemanticError(ctx->VAR()[0]->getSymbol(), message);
         // if the variable name already exists, we throw an error.
     }
     string existingVariableName = ctx->VAR()[1]->getText();
-    if (!currentCFG->symbolTable.variableExiste(existingVariableName)){
+    if (!currentCFG->isVarExist(existingVariableName)){
+      string message = "variable " + existingVariableName + " does not exist";
+      errorlistener->addSemanticError(ctx->VAR()[1]->getSymbol(), message);
         // if the variable name does not exist, we throw an error.
+        currentCFG->addToSymbolTable(newVariableName, INT);
+
+        return 0;
+
     }
     currentCFG->addToSymbolTable(newVariableName, INT);
-    vector<string> params {currentCFG->symbolTable.varToAsm(existingVariableName), currentCFG->symbolTable.varToAsm(newVariableName)};
+    vector<string> params {currentCFG->varToAsm(existingVariableName), currentCFG->varToAsm(newVariableName)};
     currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
 
     return visitChildren(ctx);
@@ -104,15 +107,18 @@ antlrcpp::Any Visitor::visitAffDecExpr(ifccParser::AffDecExprContext *ctx)
 {
     string variableName = ctx->VAR()->getText();
     visitChildren(ctx);
-    if(currentCFG->symbolTable.variableExiste(variableName)) {
+    if(currentCFG->isVarExist(variableName)) {
+      string message = "variable " + variableName + " is already defined";
+      errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
       // if the variable name already exists, we throw an error.
+
     }
 
     //int memoryAddress = addressIterator;
     //addressIterator += 4;
 
     currentCFG->addToSymbolTable(variableName, INT);
-    vector<string> params {(*currentRegister).name, currentCFG->symbolTable.varToAsm(variableName)};
+    vector<string> params {(*currentRegister).name, currentCFG->varToAsm(variableName)};
     currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
 
     //cout << "  movl % " << (*currentRegister).name << ", -" << memoryAddress << "(%rbp)" << endl;
@@ -124,16 +130,21 @@ antlrcpp::Any Visitor::visitAffDecExpr(ifccParser::AffDecExprContext *ctx)
 antlrcpp::Any Visitor::visitAffVar(ifccParser::AffVarContext *ctx)
 {
   string leftValName = ctx->VAR()[0]->getText();
-  if (!currentCFG->symbolTable.variableExiste(leftValName)) {
-    // if the variable name doesn't exist, we throw an error.
+  if (!currentCFG->isVarExist(leftValName)) {
+    // if the variable name already exist, we throw an error.
+    string message = "variable " + leftValName + " already defined";
+    errorlistener->addSemanticError(ctx->VAR()[0]->getSymbol(), message);
   }
 
   string rightValName = ctx->VAR()[1]->getText();
-  if (!currentCFG->symbolTable.variableExiste(rightValName)) {
+  if (!currentCFG->isVarExist(rightValName)) {
     // if the variable name doesn't exist, we throw an error.
+    string message = "variable " + rightValName + " does not exist";
+    errorlistener->addSemanticError(ctx->VAR()[1]->getSymbol(), message);
+    return 0;
   }
-  vector<string> params {currentCFG->symbolTable.varToAsm(rightValName), "%eax"};
-  vector<string> params2 {"%eax", currentCFG->symbolTable.varToAsm(leftValName)};
+  vector<string> params {currentCFG->varToAsm(rightValName), "%eax"};
+  vector<string> params2 {"%eax", currentCFG->varToAsm(leftValName)};
 
   currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
   currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params2);
@@ -146,12 +157,14 @@ antlrcpp::Any Visitor::visitAffConst(ifccParser::AffConstContext *ctx) // a = 2
 
     int retval = stoi(ctx->CONST()->getText());
     string variableName = ctx->VAR()->getText();
-    if (!currentCFG->symbolTable.variableExiste(variableName))
+    if (!currentCFG->isVarExist(variableName))
     {
         // if the variable name already exists, we throw an error.
+        string message = "variable " + variableName + " is already defined";
+        errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
     }
     string constant = "$"+ to_string(retval);
-    vector<string> params {constant, currentCFG->symbolTable.varToAsm(variableName)};
+    vector<string> params {constant, currentCFG->varToAsm(variableName)};
     currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
     return visitChildren(ctx);
     //cout << "Coucou dans le visitAffConst" << endl;
@@ -161,13 +174,16 @@ antlrcpp::Any Visitor::visitAffConst(ifccParser::AffConstContext *ctx) // a = 2
 antlrcpp::Any Visitor::visitAffExpr(ifccParser::AffExprContext *ctx)
 {
     string leftValName = ctx->VAR()->getText();
-    if (!currentCFG->symbolTable.variableExiste(leftValName)) {
+    if (!currentCFG->isVarExist(leftValName)) {
       // if the variable name doesn't exist, we throw an error.
+      string message = "variable " + leftValName + " does not exist";
+      errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+      return 0;
     }
 
     visitChildren(ctx);
 
-    vector<string> params { "%eax", currentCFG->symbolTable.varToAsm(leftValName)}; //TODO eax par current register
+    vector<string> params { "%eax", currentCFG->varToAsm(leftValName)}; //TODO eax par current register
     currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
 
     return 0;
@@ -188,16 +204,22 @@ antlrcpp::Any Visitor::visitIfNoElse(ifccParser::IfNoElseContext *ctx)
     currentBasicBlock->setExitTrueBlock(endBlock);
     currentBasicBlock->setExitFalseBlock(thenBlock);
   }
+  else {
+    cout << "error : mauvais opérateur" << endl;
+  }
 
   // il faut revenir à un bloc "général" à la fin du then
   thenBlock->setExitTrueBlock(endBlock);
 
   //visite du bloc then
   currentBasicBlock = thenBlock;
+
+  currentCFG->enteringNewScope();
   visit(ctx->bloc());
+  currentCFG->exitScope();
 
   currentBasicBlock = endBlock;
-  return 0;
+  return endBlock;
 
   /*
   int ifnumber = labelcounter++;
@@ -225,6 +247,9 @@ antlrcpp::Any Visitor::visitIfWithElse(ifccParser::IfWithElseContext *ctx)
     currentBasicBlock->setExitTrueBlock(elseBlock);
     currentBasicBlock->setExitFalseBlock(thenBlock);
   }
+  else {
+    cout << "error : mauvais opérateur" << endl;
+  }
 
   // il faut revenir à un bloc "général" à la fin des réalisations
   thenBlock->setExitTrueBlock(endBlock);
@@ -232,14 +257,20 @@ antlrcpp::Any Visitor::visitIfWithElse(ifccParser::IfWithElseContext *ctx)
 
   //visite du bloc then
   currentBasicBlock = thenBlock;
+
+  currentCFG->enteringNewScope();
   visit(ctx->bloc()[0]);
+  currentCFG->exitScope();
 
   //visite du bloc else
   currentBasicBlock = elseBlock;
+
+  currentCFG->enteringNewScope();
   visit(ctx->bloc()[1]);
+  currentCFG->exitScope();
 
   currentBasicBlock = endBlock;
-  return 0;
+  return endBlock;
   /*
   int ifnumber = labelcounter++;
   cout << ".if" << ifnumber << ":" <<endl;
@@ -259,7 +290,6 @@ antlrcpp::Any Visitor::visitIfElseIf(ifccParser::IfElseIfContext *ctx)
   int testSign = visit(ctx->testExpr());
   BasicBlock* thenBlock = currentCFG->createNewBB();
   BasicBlock* elseBlock = currentCFG->createNewBB();
-  BasicBlock* endBlock = currentCFG->createNewBB();
 
   // pour réaliser les blocs du if/else
   if (testSign == 1) {
@@ -270,21 +300,30 @@ antlrcpp::Any Visitor::visitIfElseIf(ifccParser::IfElseIfContext *ctx)
     currentBasicBlock->setExitTrueBlock(elseBlock);
     currentBasicBlock->setExitFalseBlock(thenBlock);
   }
-
-  // il faut revenir à un bloc "général" à la fin des réalisations
-  thenBlock->setExitTrueBlock(endBlock);
-  elseBlock->setExitTrueBlock(endBlock);
+  else {
+    cout << "error : mauvais opérateur" << endl;
+  }
 
   //visite du bloc then
   currentBasicBlock = thenBlock;
+
+  currentCFG->enteringNewScope();
   visit(ctx->bloc());
+  currentCFG->exitScope();
 
   //visite du bloc else
   currentBasicBlock = elseBlock;
-  visit(ctx->ifLoop());
+
+  currentCFG->enteringNewScope();
+  BasicBlock* endBlock = visit(ctx->ifLoop());
+  currentCFG->exitScope();
+
+  // il faut revenir à un bloc "général" à la fin des réalisations
+  thenBlock->setExitTrueBlock(endBlock);
+  //elseBlock->setExitTrueBlock(endBlock);
 
   currentBasicBlock = endBlock;
-  return 0;
+  return endBlock;
 
   /*
   int ifnumber = labelcounter++;
@@ -398,7 +437,7 @@ antlrcpp::Any Visitor::visitConstExpr(ifccParser::ConstExprContext *ctx)
 antlrcpp::Any Visitor::visitVarExpr(ifccParser::VarExprContext *ctx)
 {
     string var = ctx->VAR()->getText();
-    vector<string> params {currentCFG->symbolTable.varToAsm(var), (*currentRegister).name};
+    vector<string> params {currentCFG->varToAsm(var), (*currentRegister).name};
     currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
     //cout << "  movl -" << blocPrincipal.getVariable(var)->getAddress() << "(%rbp), %" << (*currentRegister).name << endl;
     return 0;
@@ -417,12 +456,12 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
 
 
 /*
-    if(currentCFG->symbolTable.variableExiste(exprLeft)) {
-      memoryAddressLeft = currentCFG->symbolTable.getVariable(exprLeft)->getAddress();
+    if(currentCFG->isVarExist(exprLeft)) {
+      memoryAddressLeft = currentCFG->getVariable(exprLeft)->getAddress();
     }
 */
-    if(currentCFG->symbolTable.variableExiste(exprRight)) {
-      memoryAddressRight = currentCFG->symbolTable.getVariable(exprRight)->getAddress();
+    if(currentCFG->isVarExist(exprRight)) {
+      memoryAddressRight = currentCFG->getVariable(exprRight)->getAddress();
     }
 
     if(exprRight.find("(") != string::npos || exprRight.find("*") != string::npos) {
@@ -457,7 +496,7 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
             //cout << "  addl %" << (*(currentRegister + 1)).name << ", %" << (*currentRegister).name << endl;
           }
         } else if(isVar) {
-          vector<string> params {currentCFG->symbolTable.varToAsm(exprRight), (*currentRegister).name};
+          vector<string> params {currentCFG->varToAsm(exprRight), (*currentRegister).name};
           currentBasicBlock->addIRInstr(IRInstr::add, INT, params);
           //cout << "  addl -" << memoryAddressRight << "(%rbp), %" << (*currentRegister).name << endl;
         }
@@ -475,7 +514,7 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
             //cout << "  subl %" << (*(currentRegister + 1)).name << ", %" << (*currentRegister).name << endl;
           }
         } else if(isVar) {
-          vector<string> params {currentCFG->symbolTable.varToAsm(exprRight), (*currentRegister).name};
+          vector<string> params {currentCFG->varToAsm(exprRight), (*currentRegister).name};
           currentBasicBlock->addIRInstr(IRInstr::sub, INT, params);
           //cout << "  subl -" << memoryAddressRight << "(%rbp), %" << (*currentRegister).name << endl;
         }
@@ -493,7 +532,7 @@ antlrcpp::Any Visitor::visitParExpr(ifccParser::ParExprContext *ctx)
 antlrcpp::Any Visitor::visitRetVar(ifccParser::RetVarContext *ctx)
 {
   string variable = ctx->VAR()->getText();
-  vector<string> params {currentCFG->symbolTable.varToAsm(variable), "%eax"};
+  vector<string> params {currentCFG->varToAsm(variable), "%eax"};
   currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
   return 0;
 }
@@ -517,12 +556,12 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
   int memoryAddressLeft = 0;
   int memoryAddressRight = 0;
 
-  if(currentCFG->symbolTable.variableExiste(exprLeft)) {
-    memoryAddressLeft = currentCFG->symbolTable.getVariable(exprLeft)->getAddress();
+  if(currentCFG->isVarExist(exprLeft)) {
+    memoryAddressLeft = currentCFG->getVariable(exprLeft)->getAddress();
   }
 
-  if(currentCFG->symbolTable.variableExiste(exprRight)) {
-    memoryAddressRight = currentCFG->symbolTable.getVariable(exprRight)->getAddress();
+  if(currentCFG->isVarExist(exprRight)) {
+    memoryAddressRight = currentCFG->getVariable(exprRight)->getAddress();
   }
 
   if(exprRight.find("(") != string::npos) {
@@ -555,7 +594,7 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
         currentBasicBlock->addIRInstr(IRInstr::mul, INT, params);
       }
     } else if(isVar) {
-      vector<string> params {currentCFG->symbolTable.varToAsm(exprRight), (*currentRegister).name};
+      vector<string> params {currentCFG->varToAsm(exprRight), (*currentRegister).name};
       currentBasicBlock->addIRInstr(IRInstr::mul, INT, params);
     }
   }
@@ -574,6 +613,134 @@ antlrcpp::Any Visitor::visitMinusExpr(ifccParser::MinusExprContext *ctx) {
   visit(ctx->expr());
   vector<string> params {"%eax"};
   currentBasicBlock->addIRInstr(IRInstr::neg, INT, params);
+
+  return 0;
+}
+
+antlrcpp::Any Visitor::visitBitsExpr(ifccParser::BitsExprContext *ctx) {
+  visit(ctx->expr()[1]);
+
+  vector<string> params = {"%eax", "%ebx"};
+  currentBasicBlock->addIRInstr(IRInstr::rmem, INT, params);
+
+  visit(ctx->expr()[0]);
+
+  vector<string> params_op = {"%ebx", "%eax"};
+
+  if (ctx->op->getText() == "&") {
+    currentBasicBlock->addIRInstr(IRInstr::and_bit, INT, params_op);
+  } else if (ctx->op->getText() == "|") {
+    currentBasicBlock->addIRInstr(IRInstr::or_bit, INT, params_op);
+  } else if (ctx->op->getText() == "^") {
+    currentBasicBlock->addIRInstr(IRInstr::xor_bit, INT, params_op);
+  }
+
+  return 0;
+}
+
+antlrcpp::Any Visitor::visitAffDecChar(ifccParser::AffDecCharContext *ctx)
+{
+  string charExp = ctx->CHAREXP()->getText();
+  charExp = charExp.substr(1, charExp.length()-1);
+  char character = charExp[0]; //tester avec \n, \0
+  int retval = (int)character;
+
+  string variableName = ctx->VAR()->getText();
+  if (currentCFG->isVarExist(variableName))
+  {
+    string message = "variable " + variableName + " is already defined";
+    errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+      // if the variable name already exists, we throw an error.
+  }
+  currentCFG->addToSymbolTable(variableName, INT);
+  string constant = "$"+ to_string(retval);
+  vector<string> params {constant, currentCFG->varToAsm(variableName)};
+  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+
+  return visitChildren(ctx);
+}
+
+antlrcpp::Any Visitor::visitAffChar(ifccParser::AffCharContext *ctx)
+{
+  /*
+  int retval = stoi(ctx->CONST()->getText());
+  string variableName = ctx->VAR()->getText();
+  if (!currentCFG->symbolTable.variableExiste(variableName))
+  {
+      // if the variable name already exists, we throw an error.
+      string message = "variable " + variableName + " is already defined";
+      errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+  }
+  string constant = "$"+ to_string(retval);
+  vector<string> params {constant, currentCFG->symbolTable.varToAsm(variableName)};
+  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+  */
+  return visitChildren(ctx);
+
+}
+
+antlrcpp::Any Visitor::visitDeclMult(ifccParser::DeclMultContext *ctx) {
+  string variableName = ctx->VAR()->getText();
+
+  if (currentCFG->isVarExist(variableName))
+  {
+    // if the variable name already exists, we throw an error.
+      string message = "variable " + variableName + " is already defined";
+      errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+  }
+  currentCFG->addToSymbolTable(variableName, INT);
+
+  return visit(ctx->vars());
+}
+
+antlrcpp::Any Visitor::visitLastDecl(ifccParser::LastDeclContext *ctx) {
+  string variableName = ctx->VAR()->getText();
+
+  if (currentCFG->isVarExist(variableName))
+  {
+    // if the variable name already exists, we throw an error.
+      string message = "variable " + variableName + " is already defined";
+      errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+  }
+  currentCFG->addToSymbolTable(variableName, INT);
+
+  return 0;
+}
+
+antlrcpp::Any Visitor::visitWhileLoop(ifccParser::WhileLoopContext *ctx) {
+  BasicBlock* testBlock = currentCFG->createNewBB();
+  BasicBlock* whileBlock = currentCFG->createNewBB();
+  BasicBlock* endBlock = currentCFG->createNewBB();
+
+  currentBasicBlock->setExitTrueBlock(testBlock);
+  currentBasicBlock = testBlock;
+
+  int testSign = visit(ctx->testExpr());
+
+  // pour réaliser le bloc
+  if (testSign == 1) {
+    currentBasicBlock->setExitTrueBlock(whileBlock);
+    currentBasicBlock->setExitFalseBlock(endBlock);
+  }
+  else if (testSign == -1) {
+    currentBasicBlock->setExitTrueBlock(endBlock);
+    currentBasicBlock->setExitFalseBlock(whileBlock);
+  }
+  else {
+    cout << "error : mauvais opérateur" << endl;
+  }
+
+  // il faut revenir au test à la fin du bloc
+  whileBlock->setExitTrueBlock(testBlock);
+
+  //visite du bloc then (pour générer l'assembleur)
+  currentBasicBlock = whileBlock;
+
+  currentCFG->enteringNewScope();
+  visit(ctx->bloc());
+  currentCFG->exitScope();
+
+  currentBasicBlock = endBlock;
 
   return 0;
 }

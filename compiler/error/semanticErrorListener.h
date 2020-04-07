@@ -1,61 +1,61 @@
 /*************************************************************************
-                           SymbolTable  -  description
+                           SemanticErrorListener  -  description
                              -------------------
     début                : $DATE$
     copyright            : (C) $YEAR$ par $AUTHOR$
     e-mail               : $EMAIL$
 *************************************************************************/
 
-//---------- Interface de la classe <SymbolTable> (fichier SymbolTable.h) ----------------
-#if ! defined ( SYMBOLTABLE_H )
-#define SYMBOLTABLE_H
+//---------- Interface de la classe <SemanticErrorListener> (fichier SemanticErrorListener.h) ----------------
+#if ! defined ( SEMANTICERRORLISTENER_H )
+#define SEMANTICERRORLISTENER_H
 
 //--------------------------------------------------- Interfaces utilisées
-#include <unordered_map>
-#include <vector>
 #include <string>
-#include "variable.h"
+#include <vector>
+#include <iostream>
+#include <sstream>
 
+#include "antlr4-runtime.h"
+#include "semanticError.h"
 //------------------------------------------------------------- Constantes
 
 //------------------------------------------------------------------ Types
+using namespace std;
+
 //------------------------------------------------------------------------
-// Rôle de la classe <SymbolTable>
+// Rôle de la classe <SemanticErrorListener>
 //
-// Cette classe correspond a l'objet represetant toues les informations d'un
-// SymbolTable. Elle contient toutes les donnees nécessaires pour la gestion des blocs
-// pendant la compilation.
+//
+//
 //
 //------------------------------------------------------------------------
-class SymbolTable
+class SemanticErrorListener
 {
 //----------------------------------------------------------------- PUBLIC
 
 public:
 //----------------------------------------------------- Méthodes publiques
+  bool Error() { return etatErreur; }
 
-    bool variableExiste(string nom);
-    Variable* getVariable(string nom);
-    void addVariable(Variable &var);
+  void addSemanticError(antlr4::Token* symbol, string message);
 
-    string varToAsm(string reg);
 
-    int bitesSize();
 
-    // variables globales
-    static void createGlobalVariablesST(vector<string> variables);
-    static SymbolTable* getGlobalVariablesST();
+
 //------------------------------------------------- Surcharge d'opérateurs
+  friend ostream & operator << (ostream & os, const SemanticErrorListener & errorlistener);
+    // Mode d'emploi :
 
 //-------------------------------------------- Constructeurs - destructeur
-    // SymbolTable (const SymbolTable & unSymbolTable);
-    SymbolTable ();
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
+    // SemanticErrorListener (const SemanticErrorListener & unSemanticErrorListener);
+    SemanticErrorListener (string inputFile){
+      file = inputFile;
+      etatErreur = false;
+    };
 
-    virtual ~SymbolTable ( );
+
+
 
 //------------------------------------------------------------------ PRIVE
 
@@ -63,11 +63,12 @@ protected:
 //----------------------------------------------------- Méthodes protégées
 
 //----------------------------------------------------- Attributs protégés
-  static SymbolTable* globalVariables;
-  unordered_map<string, Variable> variables; // <liste des variables dans le bloc principal>
+  bool etatErreur;
+  vector<SemanticError> errors;
+  string file;
 
 };
 
-//-------------------------------- Autres définitions dépendantes de <SymbolTable>
+//-------------------------------- Autres définitions dépendantes de <SemanticErrorListener>
 
-#endif // SYMBOLTABLE_H
+#endif // SEMANTICERRORLISTENER_H
