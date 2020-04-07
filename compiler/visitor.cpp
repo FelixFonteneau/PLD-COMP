@@ -92,9 +92,9 @@ antlrcpp::Any Visitor::visitAffDecVar(ifccParser::AffDecVarContext *ctx)
   string existingVariableName = ctx->VAR()[1]->getText();
   //check if the right variable exist
   if (!currentCFG->isVarExist(existingVariableName)){
-    string message = "variable " + existingVariableName + " does not exist";
+    string message = "variable " + existingVariableName + " undeclared";
     errorlistener->addSemanticError(ctx->VAR()[1]->getSymbol(), message);
-    // if the variable name does not exist, we throw an error.
+    // if the variable name doesn't exist, we throw an error.
     currentCFG->addToSymbolTable(newVariableName, INT); //on declare quand meme la variable de gauche
     return 0;
   }
@@ -140,7 +140,7 @@ antlrcpp::Any Visitor::visitAffVar(ifccParser::AffVarContext *ctx)
   string leftValName = ctx->VAR()[0]->getText();
   if (!currentCFG->isVarExist(leftValName)) {
     // if the variable name doesn't exist, we throw an error.
-    string message = "variable " + leftValName + " does not exist";
+    string message = "variable " + leftValName + " undeclared";
     errorlistener->addSemanticError(ctx->VAR()[0]->getSymbol(), message);
     return 0;
   }
@@ -148,7 +148,7 @@ antlrcpp::Any Visitor::visitAffVar(ifccParser::AffVarContext *ctx)
   string rightValName = ctx->VAR()[1]->getText();
   if (!currentCFG->isVarExist(rightValName)) {
     // if the variable name doesn't exist, we throw an error.
-    string message = "variable " + rightValName + " does not exist";
+    string message = "variable " + rightValName + " undeclared";
     errorlistener->addSemanticError(ctx->VAR()[1]->getSymbol(), message);
     return 0;
   }
@@ -175,7 +175,7 @@ antlrcpp::Any Visitor::visitAffConst(ifccParser::AffConstContext *ctx) // a = 2
   if (!currentCFG->isVarExist(variableName))
   {
     // if the variable name doesn't exist, we throw an error.
-    string message = "variable " + variableName + " does not exist";
+    string message = "variable " + variableName + " undeclared";
     errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
   }
 
@@ -192,7 +192,7 @@ antlrcpp::Any Visitor::visitAffExpr(ifccParser::AffExprContext *ctx)
   string leftValName = ctx->VAR()->getText();
   if (!currentCFG->isVarExist(leftValName)) {
     // if the variable name doesn't exist, we throw an error.
-    string message = "variable " + leftValName + " does not exist";
+    string message = "variable " + leftValName + " undeclared";
     errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
     return 0;
   }
@@ -458,9 +458,9 @@ antlrcpp::Any Visitor::visitVarExpr(ifccParser::VarExprContext *ctx)
 
   //check if the right variable exist
   if (!currentCFG->isVarExist(var)){
-    string message = "variable " + var + " does not exist";
+    string message = "variable " + var + " undeclared";
     errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
-    // if the variable name does not exist, we throw an error.
+    // if the variable name doesn't exist, we throw an error.
     return 0;
   }
   
@@ -562,6 +562,23 @@ antlrcpp::Any Visitor::visitParExpr(ifccParser::ParExprContext *ctx)
 antlrcpp::Any Visitor::visitRetVar(ifccParser::RetVarContext *ctx)
 {
   string variable = ctx->VAR()->getText();
+
+  //check if the variable exist
+  if (!currentCFG->isVarExist(variable)){
+    string message = "variable " + variable + " undeclared";
+    errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+    // if the variable name doesn't exist, we throw an error.
+    return 0;
+  }
+
+  //check if the variable is defined
+  if (!currentCFG->isDefined(variable)){
+    // if the variable name is not defined, we throw an error.
+    string message = "variable " + variable + " is not defined";
+    errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+    return 0;
+  }
+
   vector<string> params {currentCFG->varToAsm(variable), "%eax"};
   currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
   return 0;
@@ -703,7 +720,7 @@ antlrcpp::Any Visitor::visitAffChar(ifccParser::AffCharContext *ctx)
   if (!currentCFG->isVarExist(variableName))
   {
     // if the variable name doesn't exist, we throw an error.
-    string message = "variable " + variableName + " does not exist";
+    string message = "variable " + variableName + " undeclared";
     errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
   }
   string constant = "$"+ to_string(retval);
