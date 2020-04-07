@@ -42,7 +42,11 @@ void SymbolTable::addVariable(string name, Type t){
 string SymbolTable::varToAsm(string reg){ /**< helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24 */
   Variable* var = this->getVariable(reg);
   if(var != nullptr){
-    return var->getAddress() + "(%rbp)";
+    string suffixe = "(%rbp)";
+    if(this == globalVariables){
+      suffixe = "(%rip)";
+    }
+    return var->getAddress() + suffixe;
   }
   return "";
 }
