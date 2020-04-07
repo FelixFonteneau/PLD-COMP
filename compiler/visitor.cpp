@@ -234,9 +234,7 @@ antlrcpp::Any Visitor::visitLastDecG(ifccParser::LastDecGContext *ctx)  {
   return 0;
 }
 
-antlrcpp::Any Visitor::visitDecGAbstract(ifccParser::DecGAbstractContext *ctx)  {
-  return visitChildren(ctx);
-}
+
 
 antlrcpp::Any Visitor::visitDecGAffConst(ifccParser::DecGAffConstContext *ctx){
   /*int retval = stoi(ctx->CONST()->getText());

@@ -3,8 +3,8 @@ grammar ifcc;
 axiom : prog
       ;
 
-globalVariables :                               # nothing
-                | decGlobal ';' globalVariables #decGAbstract
+globalVariables :                               
+                | decGlobal ';' globalVariables
                 ;
 
 

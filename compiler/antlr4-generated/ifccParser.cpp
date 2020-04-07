@@ -81,43 +81,26 @@ ifccParser::GlobalVariablesContext::GlobalVariablesContext(ParserRuleContext *pa
   : ParserRuleContext(parent, invokingState) {
 }
 
+ifccParser::DecGlobalContext* ifccParser::GlobalVariablesContext::decGlobal() {
+  return getRuleContext<ifccParser::DecGlobalContext>(0);
+}
+
+ifccParser::GlobalVariablesContext* ifccParser::GlobalVariablesContext::globalVariables() {
+  return getRuleContext<ifccParser::GlobalVariablesContext>(0);
+}
+
 
 size_t ifccParser::GlobalVariablesContext::getRuleIndex() const {
   return ifccParser::RuleGlobalVariables;
 }
 
-void ifccParser::GlobalVariablesContext::copyFrom(GlobalVariablesContext *ctx) {
-  ParserRuleContext::copyFrom(ctx);
-}
-
-//----------------- DecGAbstractContext ------------------------------------------------------------------
-
-ifccParser::DecGlobalContext* ifccParser::DecGAbstractContext::decGlobal() {
-  return getRuleContext<ifccParser::DecGlobalContext>(0);
-}
-
-ifccParser::GlobalVariablesContext* ifccParser::DecGAbstractContext::globalVariables() {
-  return getRuleContext<ifccParser::GlobalVariablesContext>(0);
-}
-
-ifccParser::DecGAbstractContext::DecGAbstractContext(GlobalVariablesContext *ctx) { copyFrom(ctx); }
-
-antlrcpp::Any ifccParser::DecGAbstractContext::accept(tree::ParseTreeVisitor *visitor) {
+antlrcpp::Any ifccParser::GlobalVariablesContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ifccVisitor*>(visitor))
-    return parserVisitor->visitDecGAbstract(this);
+    return parserVisitor->visitGlobalVariables(this);
   else
     return visitor->visitChildren(this);
 }
-//----------------- NothingContext ------------------------------------------------------------------
 
-ifccParser::NothingContext::NothingContext(GlobalVariablesContext *ctx) { copyFrom(ctx); }
-
-antlrcpp::Any ifccParser::NothingContext::accept(tree::ParseTreeVisitor *visitor) {
-  if (auto parserVisitor = dynamic_cast<ifccVisitor*>(visitor))
-    return parserVisitor->visitNothing(this);
-  else
-    return visitor->visitChildren(this);
-}
 ifccParser::GlobalVariablesContext* ifccParser::globalVariables() {
   GlobalVariablesContext *_localctx = _tracker.createInstance<GlobalVariablesContext>(_ctx, getState());
   enterRule(_localctx, 2, ifccParser::RuleGlobalVariables);
@@ -130,14 +113,12 @@ ifccParser::GlobalVariablesContext* ifccParser::globalVariables() {
     _errHandler->sync(this);
     switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 0, _ctx)) {
     case 1: {
-      _localctx = dynamic_cast<GlobalVariablesContext *>(_tracker.createInstance<ifccParser::NothingContext>(_localctx));
       enterOuterAlt(_localctx, 1);
 
       break;
     }
 
     case 2: {
-      _localctx = dynamic_cast<GlobalVariablesContext *>(_tracker.createInstance<ifccParser::DecGAbstractContext>(_localctx));
       enterOuterAlt(_localctx, 2);
       setState(37);
       decGlobal();
