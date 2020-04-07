@@ -198,7 +198,7 @@ antlrcpp::Any Visitor::visitDecGMult(ifccParser::DecGMultContext *ctx)  {
       string message = "variable " + variableName + " is already defined";
       errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
   }
-  SymbolTable::getGlobalVariablesST()->addVariable(variableName, INT);
+  SymbolTable::addDeclaredVarToGlobalVariables(variableName, INT);
 
   return visit(ctx->vars());
 }
@@ -212,7 +212,7 @@ antlrcpp::Any Visitor::visitLastDecG(ifccParser::LastDecGContext *ctx)  {
       string message = "variable " + variableName + " is already defined";
       errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
   }
-  SymbolTable::getGlobalVariablesST()->addVariable(variableName, INT);
+  SymbolTable::addDeclaredVarToGlobalVariables(variableName, INT);
   return 0;
 }
 

@@ -43,10 +43,10 @@ public:
     int bitesSize();
 
     // variables globales
-    static void addDeclaredVarToGlobalVariables(string var);
-    static void addDefinedVarToGlobalVariables(string var, int value);
+    static void addDeclaredVarToGlobalVariables(string var, Type t);
+    static void addDefinedVarToGlobalVariables(string var, Type t, int value);
     static SymbolTable* getGlobalVariablesST();
-    static string generateAScodeGlobalVariable();
+    static void generateAScodeGlobalVariable(ostream& o);
 //------------------------------------------------- Surcharge d'opérateurs
 
 //-------------------------------------------- Constructeurs - destructeur
@@ -69,7 +69,7 @@ protected:
   unordered_map<string, Variable> variables; // <liste des variables dans le bloc principal>
 
   static SymbolTable* globalVariables;
-  static string asCodeGlobalVar;
+  static vector<string> asCodeGlobalVar;
 };
 
 //-------------------------------- Autres définitions dépendantes de <SymbolTable>

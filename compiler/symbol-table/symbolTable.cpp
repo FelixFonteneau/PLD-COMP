@@ -61,23 +61,21 @@ int SymbolTable::bitesSize(){
 }
 
 //global variables;
-void SymbolTable::addDeclaredVarToGlobalVariables(string name){
+void SymbolTable::addDeclaredVarToGlobalVariables(string name, Type t){
   Variable var(name, t, name);
-  variables.insert({var.getName(),var});}
+  globalVariables->variables.insert({var.getName(),var});}
 
-void SymbolTable::addDefinedVarToGlobalVariables(string name, int value){
+void SymbolTable::addDefinedVarToGlobalVariables(string name, Type t, int value){
   Variable var(name, t, name));
-  variables.insert({var.getName(),var});
-  // complete the asCodeGlobalVar
-  /*
-  .globl	d
-  .data
-  .align 4
-  .type	d, @object
-  .size	d, 4
-d:
-  .long	5
-  */
+  globalVariables->variables.insert({var.getName(),var});
+  string asCode = " .global " + name + "\n";
+  asCode += " .data " + "\n";
+  asCode += " .align 4" + "\n";
+  asCode += " .type " + name + ", @object\n";
+  asCode += " .size "+ name + ", 4" + "\n";
+  asCode += name + ":\n";
+  asCode += " .long "+ to_string(value) + "\n";
+
 }
 
 
@@ -86,16 +84,12 @@ SymbolTable* SymbolTable::getGlobalVariablesST(){
 }
 
 
-string SymbolTable::generateAScodeGlobalVariable(){
+void SymbolTable::generateAScodeGlobalVariable(ostream& o){
   if(globalVariables == nullptr){
     return "";
   }
   for (unordered_map<string,Variable>::iterator it = globalVariables->variables.begin(); it != globalVariables->variables.end(); ++it){
-    if(it->second.getType() == INT  ){
-      bitesNumber += 4;
-    } else if(it->second.getType() == CHAR) {
-      bitesNumber += 1;
-    }
+
   }
 }
 
