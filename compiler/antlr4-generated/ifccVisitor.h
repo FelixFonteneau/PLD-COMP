@@ -21,6 +21,8 @@ public:
    */
     virtual antlrcpp::Any visitAxiom(ifccParser::AxiomContext *context) = 0;
 
+    virtual antlrcpp::Any visitGlobalVariables(ifccParser::GlobalVariablesContext *context) = 0;
+
     virtual antlrcpp::Any visitBloc(ifccParser::BlocContext *context) = 0;
 
     virtual antlrcpp::Any visitProg(ifccParser::ProgContext *context) = 0;
@@ -35,17 +37,19 @@ public:
 
     virtual antlrcpp::Any visitBoucleIf(ifccParser::BoucleIfContext *context) = 0;
 
+    virtual antlrcpp::Any visitBoucleWhile(ifccParser::BoucleWhileContext *context) = 0;
+
     virtual antlrcpp::Any visitParExpr(ifccParser::ParExprContext *context) = 0;
 
     virtual antlrcpp::Any visitVarExpr(ifccParser::VarExprContext *context) = 0;
+
+    virtual antlrcpp::Any visitBitsExpr(ifccParser::BitsExprContext *context) = 0;
 
     virtual antlrcpp::Any visitNotExpr(ifccParser::NotExprContext *context) = 0;
 
     virtual antlrcpp::Any visitMultiplicationExpr(ifccParser::MultiplicationExprContext *context) = 0;
 
     virtual antlrcpp::Any visitAdditiveExpr(ifccParser::AdditiveExprContext *context) = 0;
-
-    virtual antlrcpp::Any visitPowExpr(ifccParser::PowExprContext *context) = 0;
 
     virtual antlrcpp::Any visitMinusExpr(ifccParser::MinusExprContext *context) = 0;
 
@@ -61,11 +65,17 @@ public:
 
     virtual antlrcpp::Any visitParTestExpr(ifccParser::ParTestExprContext *context) = 0;
 
+    virtual antlrcpp::Any visitDeclMult(ifccParser::DeclMultContext *context) = 0;
+
+    virtual antlrcpp::Any visitLastDecl(ifccParser::LastDeclContext *context) = 0;
+
     virtual antlrcpp::Any visitDec(ifccParser::DecContext *context) = 0;
 
     virtual antlrcpp::Any visitAffDecConst(ifccParser::AffDecConstContext *context) = 0;
 
     virtual antlrcpp::Any visitAffDecVar(ifccParser::AffDecVarContext *context) = 0;
+
+    virtual antlrcpp::Any visitAffDecChar(ifccParser::AffDecCharContext *context) = 0;
 
     virtual antlrcpp::Any visitAffDecExpr(ifccParser::AffDecExprContext *context) = 0;
 
@@ -73,7 +83,19 @@ public:
 
     virtual antlrcpp::Any visitAffConst(ifccParser::AffConstContext *context) = 0;
 
+    virtual antlrcpp::Any visitAffChar(ifccParser::AffCharContext *context) = 0;
+
     virtual antlrcpp::Any visitAffExpr(ifccParser::AffExprContext *context) = 0;
+
+    virtual antlrcpp::Any visitDecGMult(ifccParser::DecGMultContext *context) = 0;
+
+    virtual antlrcpp::Any visitLastDecG(ifccParser::LastDecGContext *context) = 0;
+
+    virtual antlrcpp::Any visitDecG(ifccParser::DecGContext *context) = 0;
+
+    virtual antlrcpp::Any visitDecGAffConst(ifccParser::DecGAffConstContext *context) = 0;
+
+    virtual antlrcpp::Any visitDecGAffChar(ifccParser::DecGAffCharContext *context) = 0;
 
     virtual antlrcpp::Any visitIfNoElse(ifccParser::IfNoElseContext *context) = 0;
 
@@ -81,9 +103,13 @@ public:
 
     virtual antlrcpp::Any visitIfElseIf(ifccParser::IfElseIfContext *context) = 0;
 
+    virtual antlrcpp::Any visitWhileLoop(ifccParser::WhileLoopContext *context) = 0;
+
     virtual antlrcpp::Any visitRetVar(ifccParser::RetVarContext *context) = 0;
 
     virtual antlrcpp::Any visitRetConst(ifccParser::RetConstContext *context) = 0;
+
+    virtual antlrcpp::Any visitType(ifccParser::TypeContext *context) = 0;
 
 
 };
