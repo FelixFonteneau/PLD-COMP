@@ -189,6 +189,61 @@ antlrcpp::Any Visitor::visitAffExpr(ifccParser::AffExprContext *ctx)
     return 0;
 }
 
+antlrcpp::Any Visitor::visitDecGMult(ifccParser::DecGMultContext *ctx)  {
+  string variableName = ctx->VAR()->getText();
+
+  if (SymbolTable::getGlobalVariablesST()->variableExiste(variableName))
+  {
+    // if the variable name already exists, we throw an error.
+      string message = "variable " + variableName + " is already defined";
+      errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+  }
+  SymbolTable::getGlobalVariablesST()->addVariable(variableName, INT);
+
+  return visit(ctx->vars());
+}
+
+antlrcpp::Any Visitor::visitLastDecG(ifccParser::LastDecGContext *ctx)  {
+  string variableName = ctx->VAR()->getText();
+
+  if (SymbolTable::getGlobalVariablesST()->variableExiste(variableName))
+  {
+    // if the variable name already exists, we throw an error.
+      string message = "variable " + variableName + " is already defined";
+      errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+  }
+  SymbolTable::getGlobalVariablesST()->addVariable(variableName, INT);
+  return 0;
+}
+
+antlrcpp::Any Visitor::visitDecGAbstract(ifccParser::DecGAbstractContext *ctx)  {
+  SymbolTable::createGlobalVariablesST();
+  return visitChildren(ctx);
+}
+
+antlrcpp::Any Visitor::visitDecGAffConst(ifccParser::DecGAffConstContext *ctx){
+  /*int retval = stoi(ctx->CONST()->getText());
+  string variableName = ctx->VAR()->getText();
+  if (!SymbolTable::getGlobalVariablesST()->variableExiste(variableName))
+  {
+      // if the variable name already exists, we throw an error.
+      string message = "variable " + variableName + " is already defined";
+      errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+  }
+  string constant = "$"+ to_string(retval);
+  vector<string> params {constant, currentCFG->varToAsm(variableName)};
+  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+  return visitChildren(ctx); */
+  return visitChildren(ctx);
+
+}
+
+antlrcpp::Any Visitor::visitDecGAffChar(ifccParser::DecGAffCharContext *ctx){
+  return visitChildren(ctx);
+}
+
+
+
 antlrcpp::Any Visitor::visitIfNoElse(ifccParser::IfNoElseContext *ctx)
 {
   int testSign = visit(ctx->testExpr());

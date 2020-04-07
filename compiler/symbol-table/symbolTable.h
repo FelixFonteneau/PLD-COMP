@@ -36,14 +36,14 @@ public:
 
     bool variableExiste(string nom);
     Variable* getVariable(string nom);
-    void addVariable(Variable &var);
+    void addVariable(string name, Type t);
 
     string varToAsm(string reg);
 
     int bitesSize();
 
     // variables globales
-    static void createGlobalVariablesST(vector<string> variables);
+    static void createGlobalVariablesST();
     static SymbolTable* getGlobalVariablesST();
 //------------------------------------------------- Surcharge d'opérateurs
 
@@ -63,6 +63,7 @@ protected:
 //----------------------------------------------------- Méthodes protégées
 
 //----------------------------------------------------- Attributs protégés
+  static int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
   static SymbolTable* globalVariables;
   unordered_map<string, Variable> variables; // <liste des variables dans le bloc principal>
 

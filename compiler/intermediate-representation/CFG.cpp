@@ -66,10 +66,7 @@ void CFG::exitScope(){
 
 // symbol table methods
 void CFG::addToSymbolTable(string name, Type t){
-
-  Variable var(name, t, nextFreeSymbolIndex);
-  nextFreeSymbolIndex += 4;
-  currentSymbolTable->addVariable(var);
+  currentSymbolTable->addVariable(name, t);
 }
 
 //TODO bellow
@@ -114,7 +111,6 @@ CFG::CFG(string name_)
       cout << "Appel au constructeur de <CFG>" << endl;
   #endif
   name = name_;
-  nextFreeSymbolIndex = 4;
   nextBBnumber = 0;
   current_bb = nullptr;
   scopeNumber = 1;

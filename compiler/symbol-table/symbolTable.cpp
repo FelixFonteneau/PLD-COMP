@@ -21,6 +21,7 @@ using namespace std;
 
 //----------------------------------------------------------------- PUBLIC
 SymbolTable* SymbolTable::globalVariables;
+int SymbolTable::nextFreeSymbolIndex = 4;
 
 //----------------------------------------------------- Méthodes publiques
 bool SymbolTable::variableExiste(string nom){
@@ -31,7 +32,9 @@ Variable* SymbolTable::getVariable(string nom){
   return &variables.find(nom)->second;
 }
 
-void SymbolTable::addVariable(Variable &var){
+void SymbolTable::addVariable(string name, Type t){
+  Variable var(name, t, nextFreeSymbolIndex);
+  nextFreeSymbolIndex += 4;
   variables.insert({var.getName(),var});
 }
 
@@ -58,8 +61,9 @@ int SymbolTable::bitesSize(){
 }
 
 
-void SymbolTable::createGlobalVariablesST(vector<string> variables){
-
+void SymbolTable::createGlobalVariablesST(){
+  globalVariables = new SymbolTable();
+  nextFreeSymbolIndex = 4;
 }
 
 SymbolTable* SymbolTable::getGlobalVariablesST(){
@@ -72,7 +76,7 @@ SymbolTable* SymbolTable::getGlobalVariablesST(){
 SymbolTable::SymbolTable()
 
 {
-  globalVariables = nullptr;
+
 }
 
 
