@@ -22,7 +22,7 @@ using namespace std;
 //----------------------------------------------------------------- PUBLIC
 SymbolTable* SymbolTable::globalVariables = new SymbolTable();
 int SymbolTable::nextFreeSymbolIndex = -4;
-string SymbolTable::asGlobalVar = "";
+vector<string> SymbolTable::asCodeGlobalVar;
 //----------------------------------------------------- Méthodes publiques
 bool SymbolTable::variableExiste(string nom){
   return variables.find(nom)!=variables.end();
@@ -66,13 +66,13 @@ void SymbolTable::addDeclaredVarToGlobalVariables(string name, Type t){
   globalVariables->variables.insert({var.getName(),var});}
 
 void SymbolTable::addDefinedVarToGlobalVariables(string name, Type t, int value){
-  Variable var(name, t, name));
+  Variable var(name, t, name);
   globalVariables->variables.insert({var.getName(),var});
   string asCode = " .global " + name + "\n";
-  asCode += " .data " + "\n";
-  asCode += " .align 4" + "\n";
+  asCode += " .data \n";
+  asCode += " .align 4\n";
   asCode += " .type " + name + ", @object\n";
-  asCode += " .size "+ name + ", 4" + "\n";
+  asCode += " .size "+ name + ", 4\n";
   asCode += name + ":\n";
   asCode += " .long "+ to_string(value) + "\n";
 
@@ -86,7 +86,7 @@ SymbolTable* SymbolTable::getGlobalVariablesST(){
 
 void SymbolTable::generateAScodeGlobalVariable(ostream& o){
   if(globalVariables == nullptr){
-    return "";
+    return;
   }
   for (unordered_map<string,Variable>::iterator it = globalVariables->variables.begin(); it != globalVariables->variables.end(); ++it){
 
