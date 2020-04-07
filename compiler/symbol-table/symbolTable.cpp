@@ -20,7 +20,7 @@ using namespace std;
 //------------------------------------------------------------- Constantes
 
 //----------------------------------------------------------------- PUBLIC
-SymbolTable* SymbolTable::globalVariables;
+SymbolTable* SymbolTable::globalVariables = new SymbolTable();
 int SymbolTable::nextFreeSymbolIndex = 4;
 
 //----------------------------------------------------- Méthodes publiques
@@ -33,6 +33,7 @@ Variable* SymbolTable::getVariable(string nom){
 }
 
 void SymbolTable::addVariable(string name, Type t){
+  cout << "ajout de var :" << name << endl;
   Variable var(name, t, nextFreeSymbolIndex);
   nextFreeSymbolIndex += 4;
   variables.insert({var.getName(),var});
