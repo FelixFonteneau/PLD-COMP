@@ -89,11 +89,11 @@ SymbolTable* SymbolTable::getGlobalVariablesST(){
 
 
 void SymbolTable::generateAScodeGlobalVariable(ostream& o){
-  if(globalVariables == nullptr){
+  if(globalVariables == nullptr || asCodeGlobalVar.size() < 1){
     return;
   }
-  for (unordered_map<string,Variable>::iterator it = globalVariables->variables.begin(); it != globalVariables->variables.end(); ++it){
-
+  for (vector<string>::iterator it = asCodeGlobalVar.begin(); it != asCodeGlobalVar.end(); ++it){
+    o << (*it) << endl;
   }
 }
 
