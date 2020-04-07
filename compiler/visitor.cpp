@@ -145,6 +145,7 @@ antlrcpp::Any Visitor::visitAffVar(ifccParser::AffVarContext *ctx)
     return 0;
   }
 
+
   string rightValName = ctx->VAR()[1]->getText();
   if (!currentCFG->isVarExist(rightValName)) {
     // if the variable name doesn't exist, we throw an error.

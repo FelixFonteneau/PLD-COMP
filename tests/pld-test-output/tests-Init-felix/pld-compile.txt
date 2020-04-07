@@ -1,0 +1,12 @@
+Error in input.c.
+Error variable a is already defined. On position 5:1
+   "	a = 7;"
+     ^
+
+Error variable a does not exist. On position 8:1
+   "	a = a+b+c+d;"
+     ^
+
+2 errors generated.
+
+return code: 1
