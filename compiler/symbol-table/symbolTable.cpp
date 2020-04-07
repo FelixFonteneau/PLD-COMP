@@ -31,6 +31,10 @@ Variable* SymbolTable::getVariable(string nom){
   return &variables.find(nom)->second;
 }
 
+bool SymbolTable::isArray(string nom) {
+  return variables.find(nom)->second.isArray();
+}
+
 void SymbolTable::addVariable(Variable &var){
   variables.insert({var.getName(),var});
 }
@@ -40,6 +44,18 @@ string SymbolTable::varToAsm(string reg){ /**< helper method: inputs a IR reg or
   Variable* var = this->getVariable(reg);
   if(var != nullptr){
     return "-" + to_string(var->getAddress()) + "(%rbp)";
+  }
+  return "";
+}
+
+string SymbolTable::arrayToAsm(string reg, int index) {
+  Variable* var = this->getVariable(reg);
+  if(var != nullptr){
+    int addr = ((Array*)var)->getAddress(index);
+
+    if (addr != -1) {
+      return "-" + to_string(addr) + "(%rbp)";
+    }
   }
   return "";
 }

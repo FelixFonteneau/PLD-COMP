@@ -48,7 +48,10 @@ public:
     return this->address;
   }
 
-
+  bool isArray()
+  {
+    return (this->type == INT_ARRAY);
+  }
 
 
 //------------------------------------------------- Surcharge d'opérateurs

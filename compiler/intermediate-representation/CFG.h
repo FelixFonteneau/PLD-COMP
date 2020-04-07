@@ -56,6 +56,7 @@ class CFG {
 	string createNewTempvar(Type t);
   bool isVarExist(string var);
   string varToAsm(string var);
+  string arrayToAsm(string arrayName, int index);
   Variable* getVariable(string var);
 
 	// basic block management

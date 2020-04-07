@@ -14,7 +14,7 @@
 #include <unordered_map>
 #include <vector>
 #include <string>
-#include "variable.h"
+#include "array.h"
 
 //------------------------------------------------------------- Constantes
 
@@ -36,9 +36,11 @@ public:
 
     bool variableExiste(string nom);
     Variable* getVariable(string nom);
+    bool isArray(string nom);
     void addVariable(Variable &var);
 
     string varToAsm(string reg);
+    string arrayToAsm(string reg, int index);
 
     int bitesSize();
 
