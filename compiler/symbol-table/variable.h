@@ -43,7 +43,7 @@ public:
     return this->type;
   }
 
-  int getAddress()
+  string getAddress()
   {
     return this->address;
   }
