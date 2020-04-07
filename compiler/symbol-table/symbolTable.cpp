@@ -63,8 +63,8 @@ int SymbolTable::bitesSize(){
 
 
 void SymbolTable::createGlobalVariablesST(){
-  globalVariables = new SymbolTable();
-  nextFreeSymbolIndex = 4;
+  //globalVariables = new SymbolTable();
+  //nextFreeSymbolIndex = 4;
 }
 
 SymbolTable* SymbolTable::getGlobalVariablesST(){
