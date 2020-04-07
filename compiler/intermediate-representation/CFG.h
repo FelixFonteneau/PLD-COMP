@@ -53,6 +53,8 @@ class CFG {
 	void addToSymbolTable(string name, Type t);
 	string createNewTempvar(Type t);
   bool isVarExist(string var);
+  bool isDefined(string var);
+  void setDefined(string var);
   string varToAsm(string var);
   Variable* getVariable(string var);
 

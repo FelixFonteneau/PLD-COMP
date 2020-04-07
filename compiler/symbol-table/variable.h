@@ -48,6 +48,16 @@ public:
     return this->address;
   }
 
+  void setDefined()
+  {
+    defined = true;
+  }
+
+  bool isDefined()
+  {
+    return defined;
+  }
+
 
 
 
@@ -61,7 +71,7 @@ public:
     // Contrat :
     //
 
-    Variable (string name, Type type, int address) : name(name), type(type), address(address){}
+    Variable (string name, Type type, int address) : name(name), type(type), address(address), defined(false){}
     // Mode d'emploi :
     //
     // Contrat :
@@ -78,7 +88,7 @@ protected:
   string name;
   Type type;
   int address;
-
+  bool defined;
 
 
 };

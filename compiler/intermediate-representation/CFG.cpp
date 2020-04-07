@@ -84,6 +84,16 @@ bool CFG::isVarExist(string var){
   return false;
 }
 
+bool CFG::isDefined(string var){
+  Variable* varPt = getVariable(var);
+  return varPt->isDefined();
+}
+
+void CFG::setDefined(string var){
+  Variable* varPt = getVariable(var);
+  varPt->setDefined();
+}
+
 string CFG::varToAsm(string var){
   for(vector<SymbolTable*>::reverse_iterator it = symbolTableStack.rbegin(); it != symbolTableStack.rend(); ++it ){
     if((*it)->variableExiste(var)){
