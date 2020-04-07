@@ -849,9 +849,9 @@ antlrcpp::Any Visitor::visitAffDecArray(ifccParser::AffDecArrayContext *ctx) {
 }
 
 antlrcpp::Any Visitor::visitArrayExpr(ifccParser::ArrayExprContext *ctx) {
-  int address = visit(ctx->array_elt());
+  string address = visit(ctx->array_elt());
 
-  if (address != -1) {
+  if (address != "") {
     vector<string> params {address, (*currentRegister).name};
     currentBasicBlock->addIRInstr(IRInstr::rmem, INT, params);
   }
@@ -864,14 +864,52 @@ antlrcpp::Any Visitor::visitAffArray(ifccParser::AffArrayContext *ctx) {
 }
 
 antlrcpp::Any Visitor::visitAffEltVar(ifccParser::AffEltVarContext *ctx) {
+  string arrayEltAddr = visit(ctx->array_elt());
+  if (arrayEltAddr == "") {
+    return 0;
+  }
+
+  string rightValName = ctx->VAR()->getText();
+  if (!currentCFG->isVarExist(rightValName)) {
+    // if the variable name doesn't exist, we throw an error.
+    string message = "variable " + rightValName + " does not exist";
+    errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+    return 0;
+  }
+  vector<string> params {currentCFG->varToAsm(rightValName), "%eax"};
+  vector<string> params2 {"%eax", arrayEltAddr};
+
+  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params2);
+
   return 0;
 }
 
 antlrcpp::Any Visitor::visitAffEltConst(ifccParser::AffEltConstContext *ctx) {
+  int valeur = stoi(ctx->CONST()->getText());
+
+  string arrayEltAddr = visit(ctx->array_elt());
+  if (arrayEltAddr == "") {
+    return 0;
+  }
+
+  string constant = "$"+ to_string(valeur);
+  vector<string> params {constant, arrayEltAddr};
+  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
   return 0;
 }
 
 antlrcpp::Any Visitor::visitAffEltExpr(ifccParser::AffEltExprContext *ctx) {
+  string arrayEltAddr = visit(ctx->array_elt());
+  if (arrayEltAddr == "") {
+    return 0;
+  }
+
+  visit(ctx->expr());
+
+  vector<string> params { "%eax", arrayEltAddr}; //TODO eax par current register
+  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+
   return 0;
 }
 
@@ -883,16 +921,22 @@ antlrcpp::Any Visitor::visitArray_elt(ifccParser::Array_eltContext *ctx) {
     errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
     // if the variable name does not exist, we throw an error.
 
-    return -1;
+    return "";
   }
 
-  Array a = (Array)(currentCFG->getVariable(arrayName));
   int index = visit(ctx->CONST());
-  int address;
+  string address = currentCFG->arrayToAsm(arrayName, index);
 
-  if ((address = a.getAddress(index)) != -1) {
+  if (address != "") {
     return address;
   }
+  else {
+    string message = "Index out of bounds : " + to_string(index);
+    errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+    // if the variable name does not exist, we throw an error.
 
-  return -1;
+    return "";
+  }
+
+  return "";
 }

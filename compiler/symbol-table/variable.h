@@ -58,8 +58,10 @@ public:
     return defined;
   }
 
-
-
+  bool isArray()
+  {
+    return (this->type == INT_ARRAY);
+  }
 
 //------------------------------------------------- Surcharge d'opérateurs
 

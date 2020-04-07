@@ -58,6 +58,7 @@ class CFG {
   bool isDefined(string var);
   void setDefined(string var);
   string varToAsm(string var);
+  string arrayToAsm(string arrayName, int index);
   Variable* getVariable(string var);
 
 	// basic block management
