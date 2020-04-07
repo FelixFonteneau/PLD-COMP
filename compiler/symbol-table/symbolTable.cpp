@@ -65,6 +65,21 @@ int SymbolTable::bitesSize(){
 SymbolTable* SymbolTable::getGlobalVariablesST(){
   return globalVariables;
 }
+
+
+string SymbolTable::generateAScodeGlobalVariable(){
+  if(globalVariables == nullptr){
+    return "";
+  }
+  for (unordered_map<string,Variable>::iterator it = globalVariables->variables.begin(); it != globalVariables->variables.end(); ++it){
+    if(it->second.getType() == INT  ){
+      bitesNumber += 4;
+    } else if(it->second.getType() == CHAR) {
+      bitesNumber += 1;
+    }
+  }
+}
+
 //------------------------------------------------- Surcharge d'opérateurs
 
 

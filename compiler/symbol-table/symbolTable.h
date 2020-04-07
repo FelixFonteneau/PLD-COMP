@@ -44,6 +44,7 @@ public:
 
     // variables globales
     static SymbolTable* getGlobalVariablesST();
+    static string generateAScodeGlobalVariable();
 //------------------------------------------------- Surcharge d'opérateurs
 
 //-------------------------------------------- Constructeurs - destructeur
