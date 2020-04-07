@@ -21,9 +21,7 @@ public:
    */
     virtual antlrcpp::Any visitAxiom(ifccParser::AxiomContext *context) = 0;
 
-    virtual antlrcpp::Any visitNothing(ifccParser::NothingContext *context) = 0;
-
-    virtual antlrcpp::Any visitDecGAbstract(ifccParser::DecGAbstractContext *context) = 0;
+    virtual antlrcpp::Any visitGlobalVariables(ifccParser::GlobalVariablesContext *context) = 0;
 
     virtual antlrcpp::Any visitBloc(ifccParser::BlocContext *context) = 0;
 

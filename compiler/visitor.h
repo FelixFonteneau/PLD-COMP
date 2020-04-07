@@ -53,8 +53,6 @@ class  Visitor : public ifccBaseVisitor {
 
     virtual antlrcpp::Any visitAffExpr(ifccParser::AffExprContext *ctx) override ;
 
-    virtual antlrcpp::Any visitDecGAbstract(ifccParser::DecGAbstractContext *ctx) override ;
-
     virtual antlrcpp::Any visitDecGMult(ifccParser::DecGMultContext *ctx) override ;
 
     virtual antlrcpp::Any visitLastDecG(ifccParser::LastDecGContext *ctx) override ;

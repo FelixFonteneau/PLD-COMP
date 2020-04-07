@@ -19,11 +19,7 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitNothing(ifccParser::NothingContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitDecGAbstract(ifccParser::DecGAbstractContext *ctx) override {
+  virtual antlrcpp::Any visitGlobalVariables(ifccParser::GlobalVariablesContext *ctx) override {
     return visitChildren(ctx);
   }
 

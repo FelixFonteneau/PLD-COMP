@@ -70,30 +70,12 @@ public:
   class  GlobalVariablesContext : public antlr4::ParserRuleContext {
   public:
     GlobalVariablesContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-   
-    GlobalVariablesContext() = default;
-    void copyFrom(GlobalVariablesContext *context);
-    using antlr4::ParserRuleContext::copyFrom;
-
     virtual size_t getRuleIndex() const override;
-
-   
-  };
-
-  class  DecGAbstractContext : public GlobalVariablesContext {
-  public:
-    DecGAbstractContext(GlobalVariablesContext *ctx);
-
     DecGlobalContext *decGlobal();
     GlobalVariablesContext *globalVariables();
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
-  class  NothingContext : public GlobalVariablesContext {
-  public:
-    NothingContext(GlobalVariablesContext *ctx);
 
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
   };
 
   GlobalVariablesContext* globalVariables();
