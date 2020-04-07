@@ -746,6 +746,19 @@ antlrcpp::Any Visitor::visitWhileLoop(ifccParser::WhileLoopContext *ctx) {
 }
 
 antlrcpp::Any Visitor::visitAffDecArray(ifccParser::AffDecArrayContext *ctx) {
+  string variableName = ctx->VAR()->getText();
+
+  if(currentCFG->isVarExist(variableName)) {
+    string message = "variable " + variableName + " is already defined";
+    errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+    // if the variable name already exists, we throw an error.
+  }
+
+  string eltType = ctx->eltType->getText();
+  int size = visit(ctx->CONST()[0]);//1;//stoi(ctx->CONST()->getText());
+
+  currentCFG->addArrayToSymbolTable(variableName, INT_ARRAY, size);
+
   return 0;
 }
 
@@ -757,10 +770,6 @@ antlrcpp::Any Visitor::visitArrayExpr(ifccParser::ArrayExprContext *ctx) {
     currentBasicBlock->addIRInstr(IRInstr::rmem, INT, params);
   }
 
-  return 0;
-}
-
-antlrcpp::Any Visitor::visitAffArray(ifccParser::AffArrayContext *ctx) {
   return 0;
 }
 
