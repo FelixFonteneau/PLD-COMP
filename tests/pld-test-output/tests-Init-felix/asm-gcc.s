@@ -3,14 +3,7 @@
 	.comm	a,4,4
 	.comm	b,4,4
 	.comm	c,4,4
-	.globl	d
-	.data
-	.align 4
-	.type	d, @object
-	.size	d, 4
-d:
-	.long	5
-	.text
+	.comm	d,4,4
 	.globl	main
 	.type	main, @function
 main:
@@ -24,6 +17,7 @@ main:
 	movl	$7, a(%rip)
 	movl	$42, b(%rip)
 	movl	$20, c(%rip)
+	movl	$0, d(%rip)
 	movl	a(%rip), %edx
 	movl	b(%rip), %eax
 	addl	%eax, %edx
