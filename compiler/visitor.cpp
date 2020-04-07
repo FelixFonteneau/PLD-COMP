@@ -538,8 +538,7 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
     string exprLeft = ctx->expr()[0]->getText();
     string exprRight = ctx->expr()[1]->getText();
 
-    int memoryAddressLeft = 0;
-    int memoryAddressRight = 0;
+    string memoryAddressRight = "";
 
 
     if(currentCFG->isVarExist(exprRight)) {
@@ -549,7 +548,7 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
     if(exprRight.find("(") != string::npos || exprRight.find("*") != string::npos) {
       isExpr = true;
     }
-    if(memoryAddressRight != 0) {
+    if(memoryAddressRight != "") {
       isVar = true;
     }
 
@@ -652,11 +651,9 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
   string exprLeft = ctx->expr()[0]->getText();
   string exprRight = ctx->expr()[1]->getText();
 
-  int memoryAddressLeft = 0;
-  int memoryAddressRight = 0;
+  string memoryAddressRight = "";
 
   if(currentCFG->isVarExist(exprLeft)) {
-    memoryAddressLeft = currentCFG->getVariable(exprLeft)->getAddress();
   }
 
   if(currentCFG->isVarExist(exprRight)) {
@@ -666,7 +663,7 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
   if(exprRight.find("(") != string::npos) {
     isExpr = true;
   }
-  if(memoryAddressRight != 0) {
+  if(memoryAddressRight != "") {
     isVar = true;
   }
 
