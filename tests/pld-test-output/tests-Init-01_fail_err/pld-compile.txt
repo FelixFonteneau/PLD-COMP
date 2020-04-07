@@ -1,0 +1,8 @@
+Error in input.c.
+Error no viable alternative at input 'int a  42'. On position 3:8
+   "	int a  42;"
+            ^
+
+1 error generated.
+
+return code: 1
