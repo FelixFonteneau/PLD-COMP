@@ -50,12 +50,11 @@ dec   : type vars;
 aff   : type VAR '=' CONST	     # affDecConst
       | type VAR '=' VAR	       # affDecVar
       | type VAR '=' CHAREXP     # affDecChar
-      | type VAR '=' arraydec    # affDecArray
+      | type VAR '=' 'new' eltType=(INT | CHAR) '[' + CONST + ']'    # affDecArray
       | type VAR '=' expr        # affDecExpr
       | VAR '=' VAR              # affVar
       | VAR '=' CONST            # affConst
       | VAR '=' CHAREXP          # affChar
-      | VAR '=' arraydec         # affArray
       | VAR '=' expr             # affExpr
       | array_elt '=' VAR        # affEltVar
       | array_elt '=' CONST      # affEltConst
@@ -87,7 +86,6 @@ type : INT
       | INT_ARRAY
       ;
 
-arraydec : 'new' eltType=(INT | CHAR) '[' + CONST + ']';
 array_elt : VAR '[' CONST ']';
 
 INT : 'int' ;
