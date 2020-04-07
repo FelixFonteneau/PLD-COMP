@@ -21,8 +21,8 @@ using namespace std;
 
 //----------------------------------------------------------------- PUBLIC
 SymbolTable* SymbolTable::globalVariables = new SymbolTable();
-int SymbolTable::nextFreeSymbolIndex = 4;
-
+int SymbolTable::nextFreeSymbolIndex = -4;
+string SymbolTable::asGlobalVar = "";
 //----------------------------------------------------- Méthodes publiques
 bool SymbolTable::variableExiste(string nom){
   return variables.find(nom)!=variables.end();
@@ -33,8 +33,8 @@ Variable* SymbolTable::getVariable(string nom){
 }
 
 void SymbolTable::addVariable(string name, Type t){
-  Variable var(name, t, nextFreeSymbolIndex);
-  nextFreeSymbolIndex += 4;
+  Variable var(name, t, to_string(nextFreeSymbolIndex));
+  nextFreeSymbolIndex -= 4;
   variables.insert({var.getName(),var});
 }
 
@@ -42,7 +42,7 @@ void SymbolTable::addVariable(string name, Type t){
 string SymbolTable::varToAsm(string reg){ /**< helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24 */
   Variable* var = this->getVariable(reg);
   if(var != nullptr){
-    return "-" + to_string(var->getAddress()) + "(%rbp)";
+    return var->getAddress() + "(%rbp)";
   }
   return "";
 }
@@ -60,6 +60,25 @@ int SymbolTable::bitesSize(){
 
 }
 
+//global variables;
+void SymbolTable::addDeclaredVarToGlobalVariables(string name){
+  Variable var(name, t, name);
+  variables.insert({var.getName(),var});}
+
+void SymbolTable::addDefinedVarToGlobalVariables(string name, int value){
+  Variable var(name, t, name));
+  variables.insert({var.getName(),var});
+  // complete the asCodeGlobalVar
+  /*
+  .globl	d
+  .data
+  .align 4
+  .type	d, @object
+  .size	d, 4
+d:
+  .long	5
+  */
+}
 
 
 SymbolTable* SymbolTable::getGlobalVariablesST(){

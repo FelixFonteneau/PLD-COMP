@@ -43,6 +43,8 @@ public:
     int bitesSize();
 
     // variables globales
+    static void addDeclaredVarToGlobalVariables(string var);
+    static void addDefinedVarToGlobalVariables(string var, int value);
     static SymbolTable* getGlobalVariablesST();
     static string generateAScodeGlobalVariable();
 //------------------------------------------------- Surcharge d'opérateurs
@@ -64,9 +66,10 @@ protected:
 
 //----------------------------------------------------- Attributs protégés
   static int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
-  static SymbolTable* globalVariables;
   unordered_map<string, Variable> variables; // <liste des variables dans le bloc principal>
 
+  static SymbolTable* globalVariables;
+  static string asCodeGlobalVar;
 };
 
 //-------------------------------- Autres définitions dépendantes de <SymbolTable>
