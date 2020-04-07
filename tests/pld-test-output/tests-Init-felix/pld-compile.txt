@@ -3,10 +3,14 @@ Error variable a is already defined. On position 5:1
    "	a = 7;"
      ^
 
-Error variable a does not exist. On position 8:1
+Error variable d is already defined. On position 8:2
+   "  d = 0;"
+      ^
+
+Error variable a does not exist. On position 9:1
    "	a = a+b+c+d;"
      ^
 
-2 errors generated.
+3 errors generated.
 
 return code: 1

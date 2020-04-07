@@ -130,7 +130,11 @@ antlrcpp::Any Visitor::visitAffDecExpr(ifccParser::AffDecExprContext *ctx)
 antlrcpp::Any Visitor::visitAffVar(ifccParser::AffVarContext *ctx)
 {
   string leftValName = ctx->VAR()[0]->getText();
-
+  if (!currentCFG->isVarExist(leftValName)) {
+    // if the variable name already exist, we throw an error.
+    string message = "variable " + leftValName + " does not exist";
+    errorlistener->addSemanticError(ctx->VAR()[0]->getSymbol(), message);
+  }
 
   string rightValName = ctx->VAR()[1]->getText();
   if (!currentCFG->isVarExist(rightValName)) {
@@ -156,7 +160,7 @@ antlrcpp::Any Visitor::visitAffConst(ifccParser::AffConstContext *ctx) // a = 2
     if (!currentCFG->isVarExist(variableName))
     {
         // if the variable name already exists, we throw an error.
-        string message = "variable " + variableName + " is already defined";
+        string message = "variable " + variableName + " does not exist";
         errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
     }
     string constant = "$"+ to_string(retval);
