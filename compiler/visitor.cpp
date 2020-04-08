@@ -833,7 +833,7 @@ antlrcpp::Any Visitor::visitArray_elt(ifccParser::Array_eltContext *ctx) {
     return "";
   }
 
-  int index = visit(ctx->CONST());
+  int index = stoi(ctx->CONST()->getText());
   string address = currentCFG->arrayToAsm(arrayName, index);
 
   if (address != "") {
