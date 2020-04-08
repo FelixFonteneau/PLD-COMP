@@ -15,6 +15,8 @@
 #include <vector>
 #include <string>
 #include "array.h"
+#include "variable-locale.h"
+#include "variable-globale.h"
 
 //------------------------------------------------------------- Constantes
 
@@ -37,6 +39,7 @@ public:
     bool variableExiste(string nom);
     Variable* getVariable(string nom);
     void addVariable(string name, Type t);
+    void addArray(string name, Type t, int size);
     bool isArray(string nom);
 
     string varToAsm(string reg);

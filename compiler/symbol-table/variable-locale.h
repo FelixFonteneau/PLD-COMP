@@ -1,18 +1,17 @@
 /*************************************************************************
-                           Variable  -  description
+                           VariableLocale  -  description
                              -------------------
     début                : $DATE$
     copyright            : (C) $YEAR$ par $AUTHOR$
     e-mail               : $EMAIL$
 *************************************************************************/
 
-//---------- Interface de la classe <Variable> (fichier Variable.h) ----------------
-#if ! defined ( VARIABLE_H )
-#define VARIABLE_H
+//---------- Interface de la classe <VariableLocale> (fichier variable-locale.h) ----------------
+#if ! defined ( VARIABLE_LOCALE_H )
+#define VARIABLE_LOCALE_H
 
 //--------------------------------------------------- Interfaces utilisées
-#include <string>
-#include "type.h"
+#include "variable.h"
 //------------------------------------------------------------- Constantes
 
 //------------------------------------------------------------------ Types
@@ -20,66 +19,41 @@
 using namespace std;
 
 //------------------------------------------------------------------------
-// Rôle de la classe <Variable>
+// Rôle de la classe <VariableLocale>
 //
 // Cette classe correspond a l'objet represetant toues les informations d'une
 // variable. Elle contient toutes les donnees nécessaires concernant les
 // variables pendant la compilation.
 //
 //------------------------------------------------------------------------
-class Variable
+class VariableLocale : public Variable
 {
 //----------------------------------------------------------------- PUBLIC
 
 public:
 //----------------------------------------------------- Méthodes publiques
-  string getName()
+  string getAddress()
   {
-    return this->name;
-  }
-
-  Type getType()
-  {
-    return this->type;
-  }
-
-  virtual string getAddress()
-  {
-      return "";
-  }
-
-  void setDefined()
-  {
-    defined = true;
-  }
-
-  bool isDefined()
-  {
-    return defined;
-  }
-
-  bool isArray()
-  {
-    return (this->type == INT_ARRAY);
+    return to_string(this->address) + "(%rbp)";
   }
 
 //------------------------------------------------- Surcharge d'opérateurs
 
 //-------------------------------------------- Constructeurs - destructeur
-    // Variable (const Variable & unVariable);
-    Variable ();
+    // VariableLocale (const VariableLocale & unVariableLocale);
+    VariableLocale ();
     // Mode d'emploi :
     //
     // Contrat :
     //
 
-    Variable (string name, Type type) : name(name), type(type), defined(false){}
+    VariableLocale (string name, Type type, int address) : Variable(name, type), address(address){}
     // Mode d'emploi :
     //
     // Contrat :
     //
 
-    virtual ~Variable ( );
+    virtual ~VariableLocale ( );
 
 //------------------------------------------------------------------ PRIVE
 
@@ -87,12 +61,9 @@ protected:
 //----------------------------------------------------- Méthodes protégées
 
 //----------------------------------------------------- Attributs protégés
-  string name;
-  Type type;
-  bool defined;
-
+  int address;
 };
 
-//-------------------------------- Autres définitions dépendantes de <Variable>
+//-------------------------------- Autres définitions dépendantes de <VariableLocale>
 
-#endif // VARIABLE_H
+#endif // VARIABLE_LOCALE_H

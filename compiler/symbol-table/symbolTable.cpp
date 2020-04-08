@@ -23,6 +23,7 @@ using namespace std;
 SymbolTable* SymbolTable::globalVariables = new SymbolTable();
 int SymbolTable::nextFreeSymbolIndex = -4;
 vector<string> SymbolTable::asCodeGlobalVar;
+
 //----------------------------------------------------- Méthodes publiques
 bool SymbolTable::variableExiste(string nom){
   return variables.find(nom)!=variables.end();
@@ -33,9 +34,15 @@ Variable* SymbolTable::getVariable(string nom){
 }
 
 void SymbolTable::addVariable(string name, Type t){
-  Variable var(name, t, to_string(nextFreeSymbolIndex));
+  VariableLocale var(name, t, nextFreeSymbolIndex);
   nextFreeSymbolIndex -= 4;
   variables.insert({var.getName(),var});
+}
+
+void SymbolTable::addArray(string name, Type t, int size) {
+  Array array(name, t, nextFreeSymbolIndex, size);
+  nextFreeSymbolIndex -= (4*size);
+  variables.insert({array.getName(),array});
 }
 
 bool SymbolTable::isArray(string nom) {
@@ -44,42 +51,28 @@ bool SymbolTable::isArray(string nom) {
 
 string SymbolTable::varToAsm(string reg){ /**< helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24 */
   Variable* var = this->getVariable(reg);
+
   if(var != nullptr){
-    string suffixe = "(%rbp)";
-    if(this == globalVariables){
-      suffixe = "(%rip)";
-    }
-    return var->getAddress() + suffixe;
+    return var->getAddress();
   }
+
   return "";
 }
 
 string SymbolTable::arrayToAsm(string reg, int index) {
   Variable* var = this->getVariable(reg);
-  if(var != nullptr){
-    int addr = ((Array*)var)->getAddress(index);
 
-    if (addr != -1) {
-      return "-" + to_string(addr) + "(%rbp)";
-    }
-  }
-  return "";
-}
+  if(var != nullptr && var->isArray()){
+    string addr = ((Array*)var)->getAddress(index);
 
-string SymbolTable::arrayToAsm(string reg, int index) {
-  Variable* var = this->getVariable(reg);
-  if(var != nullptr){
-    int addr = ((Array*)var)->getAddress(index);
-
-    if (addr != -1) {
-      return "-" + to_string(addr) + "(%rbp)";
-    }
+    return addr;
   }
   return "";
 }
 
 int SymbolTable::bitesSize(){
   int bitesNumber = 0;
+
   for (unordered_map<string,Variable>::iterator it = variables.begin(); it != variables.end(); ++it){
     if(it->second.getType() == INT  ){
       bitesNumber += 4;
@@ -87,22 +80,25 @@ int SymbolTable::bitesSize(){
       bitesNumber += 1;
     }
   }
-  return bitesNumber;
 
+  return bitesNumber;
 }
 
 //global variables;
 void SymbolTable::addDeclaredVarToGlobalVariables(string name, Type t){
-  Variable var(name, t, name);
+  VariableGlobale var(name, t, name);
+
   globalVariables->variables.insert({var.getName(),var});
+
   string asCode = " .comm " + name +",4,4\n";
   asCodeGlobalVar.push_back(asCode);
-
 }
 
 void SymbolTable::addDefinedVarToGlobalVariables(string name, Type t, int value){
-  Variable var(name, t, name);
+  VariableGlobale var(name, t, name);
+
   globalVariables->variables.insert({var.getName(),var});
+
   string asCode = " .global " + name + "\n";
   asCode += " .data \n";
   asCode += " .align 4\n";

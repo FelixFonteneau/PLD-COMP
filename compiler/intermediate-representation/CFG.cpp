@@ -71,18 +71,7 @@ void CFG::addToSymbolTable(string name, Type t){
 
 // symbol table methods
 void CFG::addArrayToSymbolTable(string name, Type t, int size){
-
-  Array arr(name, t, nextFreeSymbolIndex, size);
-  nextFreeSymbolIndex += (4*size);
-  currentSymbolTable->addVariable(arr);
-}
-
-// symbol table methods
-void CFG::addArrayToSymbolTable(string name, Type t, int size){
-
-  Array arr(name, t, nextFreeSymbolIndex, size);
-  nextFreeSymbolIndex += (4*size);
-  currentSymbolTable->addVariable(arr);
+  currentSymbolTable->addArray(name, t, size);
 }
 
 //TODO bellow
@@ -149,9 +138,11 @@ CFG::CFG(string name_)
   nextBBnumber = 0;
   current_bb = nullptr;
   scopeNumber = 1;
+
   if (SymbolTable::getGlobalVariablesST() != nullptr){
     symbolTableStack.push_back(SymbolTable::getGlobalVariablesST());
   }
+  
   currentSymbolTable = new SymbolTable();
   symbolTableStack.push_back(currentSymbolTable);
 } //----- Fin de CFG

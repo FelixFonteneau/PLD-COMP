@@ -23,6 +23,8 @@ ifcc: dirs antlr  main.cpp visitor.cpp visitor.h
 	$(CC) $(CCARGS) $(GENERATED)/ifccVisitor.cpp -o $(OUTPUT)/ifccVisitor.o
 	$(CC) $(CCARGS) $(GENERATED)/ifccParser.cpp -o $(OUTPUT)/ifccParser.o
 	$(CC) $(CCARGS) $(SBLTBL)/variable.cpp -o $(OUTPUT)/variable.o
+	$(CC) $(CCARGS) $(SBLTBL)/variable-globale.cpp -o $(OUTPUT)/variable-globale.o
+	$(CC) $(CCARGS) $(SBLTBL)/variable-locale.cpp -o $(OUTPUT)/variable-locale.o
 	$(CC) $(CCARGS) $(SBLTBL)/array.cpp -o $(OUTPUT)/array.o
 	$(CC) $(CCARGS) $(SBLTBL)/symbolTable.cpp -o $(OUTPUT)/symbolTable.o
 	$(CC) $(CCARGS) $(ERROR)/error.cpp -o $(OUTPUT)/error.o
@@ -34,7 +36,7 @@ ifcc: dirs antlr  main.cpp visitor.cpp visitor.h
 	$(CC) $(CCARGS) $(IR)/CFG.cpp -o $(OUTPUT)/CFG.o
 	$(CC) $(CCARGS) $(IR)/IRInstr.cpp -o $(OUTPUT)/IRInstr.o
 	$(CC) $(CCARGS) visitor.cpp -o $(OUTPUT)/visitor.o
-	$(CC) $(LDARGS) $(OUTPUT)/main.o $(OUTPUT)/ifccBaseVisitor.o $(OUTPUT)/ifccLexer.o $(OUTPUT)/ifccVisitor.o $(OUTPUT)/ifccParser.o $(OUTPUT)/variable.o $(OUTPUT)/array.o $(OUTPUT)/symbolTable.o $(OUTPUT)/visitor.o $(OUTPUT)/IRInstr.o $(OUTPUT)/BasicBlock.o $(OUTPUT)/CFG.o $(OUTPUT)/error.o $(OUTPUT)/semanticErrorListener.o $(OUTPUT)/syntaxErrorListener.o $(OUTPUT)/syntaxError.o $(ANTLR4_LIBDIR)/libantlr4-runtime.a -o ifcc
+	$(CC) $(LDARGS) $(OUTPUT)/main.o $(OUTPUT)/ifccBaseVisitor.o $(OUTPUT)/ifccLexer.o $(OUTPUT)/ifccVisitor.o $(OUTPUT)/ifccParser.o $(OUTPUT)/variable.o $(OUTPUT)/variable-globale.o $(OUTPUT)/variable-locale.o $(OUTPUT)/array.o $(OUTPUT)/symbolTable.o $(OUTPUT)/visitor.o $(OUTPUT)/IRInstr.o $(OUTPUT)/BasicBlock.o $(OUTPUT)/CFG.o $(OUTPUT)/error.o $(OUTPUT)/semanticErrorListener.o $(OUTPUT)/syntaxErrorListener.o $(OUTPUT)/syntaxError.o $(ANTLR4_LIBDIR)/libantlr4-runtime.a -o ifcc
 
 antlr: $(GRAMMAR)
 	$(ANTLR4_BINDIR)/antlr4 -visitor -no-listener -Dlanguage=Cpp -o $(GENERATED) $(GRAMMAR)

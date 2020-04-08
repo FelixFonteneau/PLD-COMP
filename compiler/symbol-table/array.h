@@ -11,7 +11,7 @@
 #define ARRAY_H
 
 //--------------------------------------------------- Interfaces utilisées
-#include "variable.h"
+#include "variable-locale.h"
 //------------------------------------------------------------- Constantes
 
 //------------------------------------------------------------------ Types
@@ -25,7 +25,7 @@ using namespace std;
 // tableau. Elle hérite de la classe Variable.
 //
 //------------------------------------------------------------------------
-class Array : public Variable
+class Array : public VariableLocale
 {
 //----------------------------------------------------------------- PUBLIC
 
@@ -36,13 +36,13 @@ public:
     return this->size;
   }
 
-  int getAddress(int index)
+  string getAddress(int index)
   {
     if (index >= 0 && index < this->size) {
-      return this->address + 4*index;
+      return to_string(this->address - 4*index) + "(%rbp)";
     }
     else {
-      return -1;
+      return "";
     }
   }
 
@@ -57,7 +57,7 @@ public:
     // Contrat :
     //
 
-    Array (string name, Type type, int address, int size) : Variable(name, type, address), size(size){}
+    Array (string name, Type type, int address, int size) : VariableLocale(name, type, address), size(size){}
     // Mode d'emploi :
     //
     // Contrat :
