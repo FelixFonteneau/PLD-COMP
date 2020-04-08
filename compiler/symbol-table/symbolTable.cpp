@@ -66,6 +66,18 @@ string SymbolTable::arrayToAsm(string reg, int index) {
   return "";
 }
 
+string SymbolTable::arrayToAsm(string reg, int index) {
+  Variable* var = this->getVariable(reg);
+  if(var != nullptr){
+    int addr = ((Array*)var)->getAddress(index);
+
+    if (addr != -1) {
+      return "-" + to_string(addr) + "(%rbp)";
+    }
+  }
+  return "";
+}
+
 int SymbolTable::bitesSize(){
   int bitesNumber = 0;
   for (unordered_map<string,Variable>::iterator it = variables.begin(); it != variables.end(); ++it){
