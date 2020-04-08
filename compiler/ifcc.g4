@@ -12,29 +12,40 @@ bloc : '{' statements '}';
 blocRet : '{' statements ret '}'
         ;
 
-prog  : 'int' 'main' '(' ')' blocRet;
+prog  : INT 'main' '(' ')' blocRet;
 
 functions : funcDec
-          | funcDec functions
-          | /*epsilon*/
-          ;
+         | funcDec functions
+         | /*epsilon*/
+         ;
 
-funcDec : INT VAR '(' ')' ';'   #funcDecStrict
-        | INT VAR '(' ')' blocRet  #funcDecDef
+funcDec : INT VAR '(' argsDec ')' blocRet  #funcDecDef
+       | INT VAR '(' argsDec ')' ';'    #funcDecStrict
+       ;
+
+funcCall : VAR '(' args ')';
+
+argsDec : INT VAR ',' argsDec   #argsDecVar
+        | INT VAR               #lastArgDec
+        | /*epsilon*/           #noArgDec
         ;
 
-funcCall : VAR '(' ')'
-         ;
+args : VAR ',' args         #argsVar
+     | CONST ',' args       #argsConst
+     | VAR                  #lastArgVar
+     | CONST                #lastArgConst
+     | /*epsilon*/          #noArg
+     ;
 
 statements : statement
            | statement statements
            ;
 
-statement : dec ';'   # statementDeclaration
-          | aff ';'   # statementAffectation
-          | ret ';'   # statementReturn
-          | ifLoop    # boucleIf
-          | whileLoop # boucleWhile
+statement : dec ';'      # statementDeclaration
+          | aff ';'      # statementAffectation
+          | ret          # statementReturn
+          | ifLoop       # boucleIf
+          | whileLoop    # boucleWhile
           | funcCall ';' # callAFunction
           ;
 
@@ -94,9 +105,9 @@ ifLoop  : 'if' '(' testExpr ')' bloc                # ifNoElse
 
 whileLoop : 'while' '(' testExpr ')' bloc;
 
-ret   : RET VAR   # retVar
-      | RET CONST # retConst
-      | RET expr  # retExpr
+ret   : RET VAR ';'     # retVar
+      | RET CONST ';'   # retConst
+      | RET expr ';'    # retExpr
       ;
 
 type : INT

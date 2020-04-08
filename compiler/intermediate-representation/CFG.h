@@ -61,6 +61,7 @@ class CFG {
   string varToAsm(string var);
   string arrayToAsm(string arrayName, int index);
   Variable* getVariable(string var);
+  string getName();
 
 	// basic block management
 	BasicBlock* current_bb;

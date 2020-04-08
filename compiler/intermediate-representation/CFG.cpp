@@ -142,6 +142,10 @@ Variable* CFG::getVariable(string var){
   return nullptr;
 }
 
+string CFG::getName(){
+  return name;
+}
+
 
 //------------------------------------------------- Surcharge d'opérateurs
 //-------------------------------------------- Constructeurs - destructeur

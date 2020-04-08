@@ -117,14 +117,114 @@ antlrcpp::Any Visitor::visitFuncDecDef(ifccParser::FuncDecDefContext *ctx)
     currentBasicBlock = currentCFG->createNewBB();
 
     visitChildren(ctx);
+
+    currentRegFunc = registersFunc;
+
     return 0;
 }
 
 antlrcpp::Any Visitor::visitFuncCall(ifccParser::FuncCallContext *ctx)
 {
     string functionName = ctx->VAR()[0].getText();
+    visitChildren(ctx);
     vector<string> params {functionName};
     currentBasicBlock->addIRInstr(IRInstr::call, INT, params);
+    return 0;
+}
+
+antlrcpp::Any Visitor::visitArgsDecVar(ifccParser::ArgsDecVarContext *ctx)
+{
+    string variableName = ctx->VAR()->getText();
+    currentCFG->addToSymbolTable(variableName, INT);
+
+    vector<string> params {currentRegFunc->name, currentCFG->varToAsm(variableName)};
+    currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+    currentRegFunc++;
+
+    return visitChildren(ctx);
+}
+
+antlrcpp::Any Visitor::visitLastArgDec(ifccParser::LastArgDecContext *ctx)
+{
+    string variableName = ctx->VAR()->getText();
+    currentCFG->addToSymbolTable(variableName, INT);
+
+    vector<string> params {currentRegFunc->name, currentCFG->varToAsm(variableName)};
+    currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+    currentRegFunc++;
+
+    return 0;
+}
+
+antlrcpp::Any Visitor::visitArgsVar(ifccParser::ArgsVarContext *ctx)
+{
+    string variableName = ctx->VAR()->getText();
+    if (!currentCFG->isVarExist(variableName)) {
+      string message = "variable " + variableName + " is undefined";
+      errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+      // if the variable does not exists, we throw an error.
+    }
+
+    vector<string> params {currentCFG->varToAsm(variableName), currentRegFunc->name};
+    currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+    currentRegFunc++;
+
+    return visitChildren(ctx);
+}
+
+antlrcpp::Any Visitor::visitLastArgVar(ifccParser::LastArgVarContext *ctx)
+{
+    string variableName = ctx->VAR()->getText();
+    if (!currentCFG->isVarExist(variableName)) {
+      string message = "variable " + variableName + " is undefined";
+      errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+      // if the variable does not exists, we throw an error.
+    }
+
+    vector<string> params {currentCFG->varToAsm(variableName), currentRegFunc->name};
+    currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+    currentRegFunc++;
+
+    return 0;
+}
+
+antlrcpp::Any Visitor::visitArgsConst(ifccParser::ArgsConstContext *ctx)
+{
+    string value = "$" + ctx->CONST()->getText();
+
+    if(currentCFG->getName() == "main") {
+      vector<string> params {value, currentRegFunc->name};
+      currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+      currentRegFunc++;
+    } else {
+      cout << "error" << endl;
+      /*
+      currentCFG->addToSymbolTable(variableName, INT);
+      vector<string> params {currentRegFunc->name, currentCFG->varToAsm(variableName)};
+      currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+      currentRegFunc++;
+      */
+    }
+    return visitChildren(ctx);
+}
+
+antlrcpp::Any Visitor::visitLastArgConst(ifccParser::LastArgConstContext *ctx)
+{
+    string value = "$" + ctx->CONST()->getText();
+
+    if(currentCFG->getName() == "main") {
+      vector<string> params {value, currentRegFunc->name};
+      currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+      currentRegFunc++;
+    } else {
+      cout << "error" << endl;
+      /*
+      currentCFG->addToSymbolTable(variableName, INT);
+      vector<string> params {currentRegFunc->name, currentCFG->varToAsm(variableName)};
+      currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+      currentRegFunc++;
+      */
+    }
     return 0;
 }
 
