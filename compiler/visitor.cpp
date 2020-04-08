@@ -654,8 +654,8 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
 */
 
     if(isExpr) {
-      if(currentRegister->name == "%ebx" && currentRegister->used == true) {
-        currentRegister = registers + 1; //à mettre à 8
+      if(currentRegister->name == "%r15" && currentRegister->used == true) {
+        currentRegister = registers + 8; //à mettre à 8
 
         noRegLeft = true;
         vector<string> params {currentRegister->name, currentCFG->varToAsm(currentCFG->createNewTempvar(INT))};
@@ -671,7 +671,7 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
         cout << "exprLeft :" << endl;
         cout << exprLeft << endl;
 */
-      } else if(currentRegister->name != "%ebx") {
+} else if(currentRegister->name != "%r15") {
         currentRegister++;
         currentRegister->used = true;
       }
@@ -683,16 +683,16 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
       }
 
       if(tempVarCreated) {
-        cout << "you motherfucker i'm in" << endl;
+        //cout << "you motherfucker i'm in" << endl;
         string tempVarName = "!" + to_string(numberTempVar);
         exprLeft = exprRight;
         exprRight = tempVarName;
         numberTempVar--;
-        cout << "ouesh :" << numberTempVar << endl;
+        //cout << "ouesh :" << numberTempVar << endl;
       }
 
       if(currentRegister->name != "%eax" && !noRegLeft) {
-        cout << "hi there" << endl;
+        //cout << "hi there" << endl;
         currentRegister--;
       }
     }
@@ -704,13 +704,13 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
     if(memoryAddressRight != "") {
       isVar = true;
     }
-
+/*
     cout << "curre :" << endl;
     cout << currentRegister->name << endl;
 
     cout << "prout :" << endl;
     cout << exprRight << endl;
-
+*/
     if(ctx->op->getText() == "+") {
         if(!isVar) {
           if(!isExpr) {
@@ -806,11 +806,11 @@ antlrcpp::Any Visitor::visitRetExpr(ifccParser::RetExprContext *ctx) {
 
 antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprContext *ctx)
 {
-
+/*
   cout << "start of exprMult" << endl;
   cout << "Curr : "<< endl;
   cout << currentRegister-> name << " - " << currentRegister->used << endl;
-
+*/
   bool isVar = false;
   bool isExpr = false;
 
@@ -825,18 +825,18 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
   if(exprRight.find("(") != string::npos) {
     isExpr = true;
   }
-
+/*
   cout << "exprRight :"<< endl;
   cout << exprRight << endl;
   cout << "exprLeft :" << endl;
   cout << exprLeft << endl;
-
+*/
   visit(ctx->expr()[0]);
 
 
 
   if(isExpr) {
-    if(currentRegister->name == "%ebx" && currentRegister->used == true) {
+    if(currentRegister->name == "%r15" && currentRegister->used == true) {
       currentRegister = registers + 1; //à mettre à 8
 
       noRegLeft = true;
@@ -845,15 +845,15 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
       numberTempVar++;
       currentRegister->used = false;
       tempVarCreated = 1;
-
+/*
       cout << "salut" << endl;
 
       cout << "exprRight :"<< endl;
       cout << exprRight << endl;
       cout << "exprLeft :" << endl;
       cout << exprLeft << endl;
-
-    } else if(currentRegister->name != "%ebx") {
+*/
+} else if(currentRegister->name != "%r15") {
       currentRegister->used = true;
       currentRegister++;
     }
@@ -865,16 +865,16 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
     }
 
     if(tempVarCreated) {
-      cout << "you motherfucker i'm in" << endl;
+      //cout << "you motherfucker i'm in" << endl;
       string tempVarName = "!" + to_string(numberTempVar);
       exprLeft = exprRight;
       exprRight = tempVarName;
       numberTempVar--;
-      cout << "ouesh :" << numberTempVar << endl;
+      //cout << "ouesh :" << numberTempVar << endl;
     }
 
     if(currentRegister->name != "%eax" && !noRegLeft) {
-      cout << "hi there" << endl;
+      //cout << "hi there" << endl;
       currentRegister--;
     }
   }
