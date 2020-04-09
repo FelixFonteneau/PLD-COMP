@@ -56,6 +56,7 @@ class CFG {
 	string createNewTempvar(Type t);
   string deleteLastTempvar(Type t);
   bool isVarExist(string var);
+  bool isVarExistInScope(string var);
   bool isDefined(string var);
   void setDefined(string var);
   string varToAsm(string var);

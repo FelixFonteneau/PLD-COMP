@@ -15,6 +15,7 @@
 #include <vector>
 #include <string>
 #include "fonction.h"
+#include "antlr4-runtime.h"
 
 //------------------------------------------------------------- Constantes
 
@@ -34,13 +35,15 @@ class FunctionTable
 public:
 //----------------------------------------------------- Méthodes publiques
 
-    static void addDeclaredFunction(string name, string t);
-    static void addDefinedFunction(string name, string t);
+    static void addDeclaredFunction(string name, string t, antlr4::Token* token);
+    static void addDefinedFunction(string name, string t, antlr4::Token* token);
     static Fonction* getFunction(string name);
     static bool checkIfFunctionExist(string name);
     static int getNumberOfFunction();
     static bool thereIsFunction();
-
+    static unordered_map<string, Fonction*>* getFonctions(){
+      return &progFonctions;
+    }
 //------------------------------------------------- Surcharge d'opérateurs
 
 //-------------------------------------------- Constructeurs - destructeur

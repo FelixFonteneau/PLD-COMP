@@ -1,7 +1,8 @@
 int factorielle(int a){
 	int result;
 	if (a > 1){
-		result = a*factorielle(a-1);
+		int b = a - 1;
+		result = a*factorielle(b);
 	}
 	else{
 		result = 1;
