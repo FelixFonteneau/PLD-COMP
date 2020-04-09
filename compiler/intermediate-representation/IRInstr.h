@@ -44,13 +44,16 @@ class IRInstr
      not_op,
      rmem,
      wmem,
+     wmemq,
      call,
      cmp_eq,
      cmp_lt,
      cmp_le,
      and_bit,
      or_bit,
-     xor_bit
+     xor_bit,
+     activationRecord,
+     desactivationRecord
     } Operation;
 
     /**  constructor */

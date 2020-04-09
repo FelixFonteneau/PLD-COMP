@@ -1,7 +1,4 @@
-#include <inttypes.h>
 int main() {
-	int a = 100;
-	int c = 100;
-	int b = (a-10)+(32+c);
-	return b;
+	int a = ((1+2*3)+(3+4))+(((5+6)+(7+8))+((10+11)+(12+13*(2+2))));
+	return a;
 }

@@ -54,12 +54,14 @@ class CFG {
 	void addToSymbolTable(string name, Type t);
 	void addArrayToSymbolTable(string name, Type t, int size);
 	string createNewTempvar(Type t);
+  string deleteLastTempvar(Type t);
   bool isVarExist(string var);
   bool isDefined(string var);
   void setDefined(string var);
   string varToAsm(string var);
   string arrayToAsm(string arrayName, int index);
   Variable* getVariable(string var);
+  string getName();
 
 	// basic block management
 	BasicBlock* current_bb;
@@ -74,6 +76,7 @@ class CFG {
   vector<SymbolTable*> symbolTableStack; // stack of symbol table. Access the last in first.
   SymbolTable* currentSymbolTable;
   string name;
+  int numberTempVar;
 	int nextBBnumber; /**< just for naming */
 
   int scopeNumber;

@@ -1,16 +1,41 @@
 grammar ifcc;
 
-axiom : prog
+axiom : globalVariables functions prog functions
       ;
 
 globalVariables :
                 | decGlobal ';' globalVariables
                 ;
 
-
 bloc : '{' statements '}';
 
-prog  : globalVariables 'int' 'main' '(' ')' bloc;
+blocRet : '{' statements ret '}'
+        ;
+
+prog  : INT 'main' '(' ')' bloc;
+
+functions : funcDec
+          | funcDec functions
+          | /*epsilon*/
+          ;
+
+funcDec : INT VAR '(' argsDec ')' bloc     #funcDecDef
+        | INT VAR '(' argsDec ')' ';'      #funcDecStrict
+        ;
+
+funcCall : VAR '(' args ')' ;
+
+argsDec : INT VAR ',' argsDec   #argsDecVar
+        | INT VAR               #lastArgDec
+        | /*epsilon*/           #noArgDec
+        ;
+
+args : VAR ',' args         #argsVar
+     | CONST ',' args       #argsConst
+     | VAR                  #lastArgVar
+     | CONST                #lastArgConst
+     | /*epsilon*/          #noArg
+     ;
 
 statements : statement
            | statement statements
@@ -18,9 +43,10 @@ statements : statement
 
 statement : dec ';'   # statementDeclaration
           | aff ';'   # statementAffectation
-          | ret ';'   # statementReturn
+          | ret ';'      # statementReturn
           | ifLoop    # boucleIf
           | whileLoop # boucleWhile
+          | funcCall ';' # callAFunction
           ;
 
 expr    : expr op=('|' | '&' | '^') expr            #bitsExpr
@@ -29,6 +55,7 @@ expr    : expr op=('|' | '&' | '^') expr            #bitsExpr
         | expr '*' expr                             #multiplicationExpr
         | expr op=('+' | '-') expr                  #additiveExpr
         | '(' expr ')'                              #parExpr
+        | funcCall                                  #funcCallExpr
         | CONST                                     #constExpr
         | VAR                                       #varExpr
         | CHAREXP                                   #charExpr
@@ -78,9 +105,9 @@ ifLoop  : 'if' '(' testExpr ')' bloc                # ifNoElse
 
 whileLoop : 'while' '(' testExpr ')' bloc;
 
-ret   : RET VAR   # retVar
-      | RET CONST # retConst
-      | RET expr  # retExpr
+ret   : RET VAR      # retVar
+      | RET CONST    # retConst
+      | RET expr     # retExpr
       ;
 
 type : INT
