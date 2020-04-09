@@ -648,6 +648,12 @@ antlrcpp::Any Visitor::visitRetConst(ifccParser::RetConstContext *ctx)
     return 0;
 }
 
+
+antlrcpp::Any Visitor::visitRetExpr(ifccParser::RetExprContext *ctx) {
+    visit(ctx->expr()); //TODO : voir avec les registres
+    return 0;
+}
+
 antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprContext *ctx)
 {
   bool isVar = false;
