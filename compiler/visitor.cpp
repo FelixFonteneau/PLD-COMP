@@ -99,7 +99,20 @@ antlrcpp::Any Visitor::visitFunctions(ifccParser::FunctionsContext *ctx)
 
 antlrcpp::Any Visitor::visitFuncDecStrict(ifccParser::FuncDecStrictContext *ctx)
 {
-    //string functionName = ctx->VAR()->getText();
+    string functionName = ctx->VAR()->getText();
+    string retType = ctx->funcType()->getText();
+
+    if(SymbolTable::getGlobalVariablesST()->variableExiste(functionName)) {
+        string message = functionName + " redeclared as different kind of symbol";
+        errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+    }
+
+    if(FunctionTable::checkIfFunctionExist(functionName)) {
+      string message = "different type declaration for " + functionName;
+      errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+    } else {
+      FunctionTable::addDeclaredFunction(functionName, retType);
+    }
     //currentCFG = new CFG(functionName);
     //(*cfgs).push_back(currentCFG);
     //currentBasicBlock = currentCFG->createNewBB();
