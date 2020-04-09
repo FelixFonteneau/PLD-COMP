@@ -771,7 +771,7 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
         cout << "exprLeft :" << endl;
         cout << exprLeft << endl;
 */
-} else if(currentRegister->name != "%r15") {
+      } else if(currentRegister->name != "%r15") {
         currentRegister++;
         currentRegister->used = true;
       }
@@ -953,7 +953,7 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
       cout << "exprLeft :" << endl;
       cout << exprLeft << endl;
 */
-} else if(currentRegister->name != "%r15") {
+    } else if(currentRegister->name != "%r15") {
       currentRegister->used = true;
       currentRegister++;
     }
