@@ -95,6 +95,8 @@ class  Visitor : public ifccBaseVisitor {
 
     virtual antlrcpp::Any visitRetConst(ifccParser::RetConstContext *ctx) override ;
 
+    virtual antlrcpp::Any visitRetExpr(ifccParser::RetExprContext *ctx) override;
+
     virtual antlrcpp::Any visitMultiplicationExpr(ifccParser::MultiplicationExprContext *ctx) override ;
 
     virtual antlrcpp::Any visitNotExpr(ifccParser::NotExprContext *ctx) override;

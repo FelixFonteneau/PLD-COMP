@@ -648,6 +648,12 @@ antlrcpp::Any Visitor::visitRetConst(ifccParser::RetConstContext *ctx)
     return 0;
 }
 
+
+antlrcpp::Any Visitor::visitRetExpr(ifccParser::RetExprContext *ctx) {
+    visit(ctx->expr()); //TODO : voir avec les registres
+    return 0;
+}
+
 antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprContext *ctx)
 {
   bool isVar = false;
@@ -686,7 +692,7 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
     }
   }
 
-  if(ctx->op->getText() == "*") {
+  //if(ctx->op->getText() == "*") {
     if(!isVar) {
       if(!isExpr) {
         string rightVal = "$" + exprRight;
@@ -700,7 +706,7 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
       vector<string> params {currentCFG->varToAsm(exprRight), (*currentRegister).name};
       currentBasicBlock->addIRInstr(IRInstr::mul, INT, params);
     }
-  }
+  //}
   return 0;
 }
 

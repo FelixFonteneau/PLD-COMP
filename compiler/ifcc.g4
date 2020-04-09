@@ -3,7 +3,7 @@ grammar ifcc;
 axiom : prog
       ;
 
-globalVariables :                               
+globalVariables :
                 | decGlobal ';' globalVariables
                 ;
 
@@ -26,7 +26,7 @@ statement : dec ';'   # statementDeclaration
 expr    : expr op=('|' | '&' | '^') expr            #bitsExpr
         | '-' expr                                  #minusExpr
         | '!' expr                                  #notExpr
-        | expr op=('*' | '/' | '%') expr            #multiplicationExpr
+        | expr '*' expr                             #multiplicationExpr
         | expr op=('+' | '-') expr                  #additiveExpr
         | '(' expr ')'                              #parExpr
         | CONST                                     #constExpr
@@ -79,6 +79,7 @@ whileLoop : 'while' '(' testExpr ')' bloc;
 
 ret   : RET VAR   # retVar
       | RET CONST # retConst
+      | RET expr  # retExpr
       ;
 
 type : INT
