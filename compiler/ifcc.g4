@@ -19,8 +19,8 @@ functions : funcDec
           | /*epsilon*/
           ;
 
-funcDec : INT VAR '(' argsDec ')' bloc     #funcDecDef
-        | INT VAR '(' argsDec ')' ';'      #funcDecStrict
+funcDec : type VAR '(' argsDec ')' bloc     #funcDecDef
+        | type VAR '(' argsDec ')' ';'      #funcDecStrict
         ;
 
 funcCall : VAR '(' args ')' ;
@@ -120,7 +120,7 @@ INT : 'int' ;
 CHAR : 'char' ;
 RET : 'return' ;
 CHAREXP : '\'' .*? '\'' ; // prends tout ce qu'il y a entre les ' ' -> TODO verifier si c'est un char ou pas lors de l'affectation
-VAR : [a-z]+ ;
+VAR : [a-zA-Z]+ ;
 CONST : [0-9]+ ;
 COMMENT : '/*' .*? '*/' -> skip ;
 DIRECTIVE : '#' .*? '\n' -> skip ;
