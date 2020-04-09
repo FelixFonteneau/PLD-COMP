@@ -17,7 +17,7 @@ image and execute the `pld-test.py` script. Results are put in a new directory
 Executing `test.sh clean` will delete all files in `pld-test-outputs`.
 
 
-The tests are in the `tests` subfolder.
+The tests are in the `tests` subfolder. They are ordered by different folders depending on the feature they test.
 
 ## Clean
 
