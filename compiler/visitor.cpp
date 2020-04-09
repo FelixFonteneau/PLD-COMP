@@ -112,8 +112,11 @@ antlrcpp::Any Visitor::visitAffDecVar(ifccParser::AffDecVarContext *ctx)
   }
 
   currentCFG->addToSymbolTable(newVariableName, INT);
-  vector<string> params {currentCFG->varToAsm(existingVariableName), currentCFG->varToAsm(newVariableName)};
-  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+
+  vector<string> params1 {currentCFG->varToAsm(existingVariableName), "%eax"}; //TODO : registes
+  vector<string> params2 {"%eax", currentCFG->varToAsm(newVariableName)};
+  currentBasicBlock->addIRInstr(IRInstr::rmem, INT, params1);
+  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params2);
 
   currentCFG->setDefined(newVariableName);
   return visitChildren(ctx);
@@ -164,9 +167,10 @@ antlrcpp::Any Visitor::visitAffVar(ifccParser::AffVarContext *ctx)
     return 0;
   }
 
-//ERROR : ca devrait pas marcher ca (il faut d'abord passer par un registre)
-  vector<string> params {currentCFG->varToAsm(rightValName), currentCFG->varToAsm(leftValName)};
-  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+  vector<string> params1 {currentCFG->varToAsm(rightValName), "%eax"};//TODO : registres
+  vector<string> params2 { "%eax", currentCFG->varToAsm(leftValName)};
+  currentBasicBlock->addIRInstr(IRInstr::rmem, INT, params1);
+  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params2);
 
   currentCFG->setDefined(leftValName);
   return 0;
@@ -895,7 +899,7 @@ antlrcpp::Any Visitor::visitAffEltVar(ifccParser::AffEltVarContext *ctx) {
   vector<string> params {currentCFG->varToAsm(rightValName), "%eax"};
   vector<string> params2 {"%eax", arrayEltAddr};
 
-  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+  currentBasicBlock->addIRInstr(IRInstr::rmem, INT, params);
   currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params2);
 
   return 0;
