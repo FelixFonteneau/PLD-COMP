@@ -64,8 +64,8 @@ expr    : expr op=('|' | '&' | '^') expr            #bitsExpr
 
 testExpr  : expr op=('<=' | '>=' | '<' | '>') expr    #relationalTestExpr
           | expr op=('==' | '!=') expr                #equalityTestExpr
-          | expr '&&' expr                            #andTestExpr
-          | expr '||' expr                            #orTestExpr
+          /* | expr '&&' expr                            #andTestExpr*/
+          /* | expr '||' expr                            #orTestExpr*/
           | '(' testExpr ')'                          #parTestExpr
           ;
 
@@ -89,8 +89,8 @@ aff   : type VAR '=' CONST	   # affDecConst
       | array_elt '=' expr       # affEltExpr
       ;
 
-varsG  : VAR ',' vars  #decGMult
-       | VAR           #lastDecG
+varsG  : VAR ',' varsG  #decGMult
+       | VAR            #lastDecG
        ;
 
 decGlobal   : type varsG               # decG

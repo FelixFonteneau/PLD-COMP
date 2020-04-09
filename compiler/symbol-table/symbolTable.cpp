@@ -100,6 +100,7 @@ void SymbolTable::addDeclaredVarToGlobalVariables(string name, Type t){
 
 void SymbolTable::addDefinedVarToGlobalVariables(string name, Type t, int value){
   VariableGlobale* var = new VariableGlobale(name, t, name);
+  var->setDefined();
 
   globalVariables->variables.insert({var->getName(),var});
 
