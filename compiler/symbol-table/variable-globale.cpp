@@ -63,6 +63,11 @@ VariableGlobale::VariableGlobale (double uneValue, Moment& uneDate, string uneDe
 
 */
 
+string VariableGlobale::getAddress()
+{
+  return this->address + "(%rip)";
+}
+
 VariableGlobale::~VariableGlobale ( )
 // Algorithme :
 //

@@ -32,10 +32,7 @@ class VariableGlobale : public Variable
 
 public:
 //----------------------------------------------------- Méthodes publiques
-  string getAddress()
-  {
-    return this->address + "(%rip)";
-  }
+  virtual string getAddress() override;
 
 //------------------------------------------------- Surcharge d'opérateurs
 

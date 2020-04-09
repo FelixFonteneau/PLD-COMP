@@ -71,7 +71,7 @@ protected:
 
 //----------------------------------------------------- Attributs protégés
   static int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
-  unordered_map<string, Variable> variables; // <liste des variables dans le bloc principal>
+  unordered_map<string, Variable*> variables; // <liste des variables dans le bloc principal>
 
   static SymbolTable* globalVariables;
   static vector<string> asCodeGlobalVar;

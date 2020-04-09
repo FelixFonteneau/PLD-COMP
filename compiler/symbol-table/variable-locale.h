@@ -32,10 +32,7 @@ class VariableLocale : public Variable
 
 public:
 //----------------------------------------------------- Méthodes publiques
-  string getAddress()
-  {
-    return to_string(this->address) + "(%rbp)";
-  }
+  virtual string getAddress() override;
 
 //------------------------------------------------- Surcharge d'opérateurs
 

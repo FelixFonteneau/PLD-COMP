@@ -43,10 +43,7 @@ public:
     return this->type;
   }
 
-  virtual string getAddress()
-  {
-      return "";
-  }
+  virtual string getAddress() = 0;
 
   void setDefined()
   {

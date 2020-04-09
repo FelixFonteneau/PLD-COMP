@@ -61,6 +61,10 @@ VariableLocale::VariableLocale (double uneValue, Moment& uneDate, string uneDesc
 }
 
 */
+string VariableLocale::getAddress()
+{
+  return to_string(this->address) + "(%rbp)";
+}
 
 VariableLocale::~VariableLocale ( )
 // Algorithme :
