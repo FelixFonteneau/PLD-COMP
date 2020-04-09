@@ -31,6 +31,7 @@ expr    : expr op=('|' | '&' | '^') expr            #bitsExpr
         | '(' expr ')'                              #parExpr
         | CONST                                     #constExpr
         | VAR                                       #varExpr
+        | array_elt                                 #arrayExpr
         ;
 
 testExpr  : expr op=('<=' | '>=' | '<' | '>') expr    #relationalTestExpr
@@ -49,11 +50,15 @@ dec   : type vars;
 aff   : type VAR '=' CONST	     # affDecConst
       | type VAR '=' VAR	       # affDecVar
       | type VAR '=' CHAREXP     # affDecChar
+      | type VAR '[' CONST ']'   # affDecArray
       | type VAR '=' expr        # affDecExpr
       | VAR '=' VAR              # affVar
       | VAR '=' CONST            # affConst
       | VAR '=' CHAREXP          # affChar
       | VAR '=' expr             # affExpr
+      | array_elt '=' VAR        # affEltVar
+      | array_elt '=' CONST      # affEltConst
+      | array_elt '=' expr       # affEltExpr
       ;
 
 varsG  : VAR ',' vars  #decGMult
@@ -79,6 +84,8 @@ ret   : RET VAR   # retVar
 type : INT
       | CHAR
       ;
+
+array_elt : VAR '[' CONST ']';
 
 INT : 'int' ;
 CHAR : 'char' ;

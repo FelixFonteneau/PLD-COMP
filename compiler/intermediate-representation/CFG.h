@@ -21,6 +21,7 @@
 
 #include "../symbol-table/symbolTable.h"
 #include "../symbol-table/variable.h"
+#include "../symbol-table/array.h"
 #include "../symbol-table/type.h"
 
 
@@ -51,11 +52,13 @@ class CFG {
 
 	// symbol table methods
 	void addToSymbolTable(string name, Type t);
+	void addArrayToSymbolTable(string name, Type t, int size);
 	string createNewTempvar(Type t);
   bool isVarExist(string var);
   bool isDefined(string var);
   void setDefined(string var);
   string varToAsm(string var);
+  string arrayToAsm(string arrayName, int index);
   Variable* getVariable(string var);
 
 	// basic block management

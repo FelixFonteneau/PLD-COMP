@@ -6,13 +6,12 @@
     e-mail               : $EMAIL$
 *************************************************************************/
 
-//---------- Interface de la classe <Variable> (fichier Variable.h) ----------------
-#if ! defined ( VARIABLE_H )
-#define VARIABLE_H
+//---------- Interface de la classe <Array> (fichier array.h) ----------------
+#if ! defined ( ARRAY_H )
+#define ARRAY_H
 
 //--------------------------------------------------- Interfaces utilisées
-#include <string>
-#include "type.h"
+#include "variable-locale.h"
 //------------------------------------------------------------- Constantes
 
 //------------------------------------------------------------------ Types
@@ -20,63 +19,51 @@
 using namespace std;
 
 //------------------------------------------------------------------------
-// Rôle de la classe <Variable>
+// Rôle de la classe <Array>
 //
-// Cette classe correspond a l'objet represetant toues les informations d'une
-// variable. Elle contient toutes les donnees nécessaires concernant les
-// variables pendant la compilation.
+// Cette classe correspond a l'objet representant toues les informations d'un
+// tableau. Elle hérite de la classe Variable.
 //
 //------------------------------------------------------------------------
-class Variable
+class Array : public VariableLocale
 {
 //----------------------------------------------------------------- PUBLIC
 
 public:
 //----------------------------------------------------- Méthodes publiques
-  string getName()
+  int getSize()
   {
-    return this->name;
+    return this->size;
   }
 
-  Type getType()
+  string getAddress(int index)
   {
-    return this->type;
+    if (index >= 0 && index < this->size) {
+      return to_string(this->address - 4*index) + "(%rbp)";
+    }
+    else {
+      return "";
+    }
   }
 
-  virtual string getAddress() = 0;
-
-  void setDefined()
-  {
-    defined = true;
-  }
-
-  bool isDefined()
-  {
-    return defined;
-  }
-
-  bool isArray()
-  {
-    return (this->type == INT_ARRAY);
-  }
 
 //------------------------------------------------- Surcharge d'opérateurs
 
 //-------------------------------------------- Constructeurs - destructeur
-    // Variable (const Variable & unVariable);
-    Variable ();
+    // Array (const Array & unArray);
+    Array ();
     // Mode d'emploi :
     //
     // Contrat :
     //
 
-    Variable (string name, Type type) : name(name), type(type), defined(false){}
+    Array (string name, Type type, int address, int size) : VariableLocale(name, type, address), size(size){}
     // Mode d'emploi :
     //
     // Contrat :
     //
 
-    virtual ~Variable ( );
+    virtual ~Array ( );
 
 //------------------------------------------------------------------ PRIVE
 
@@ -84,12 +71,9 @@ protected:
 //----------------------------------------------------- Méthodes protégées
 
 //----------------------------------------------------- Attributs protégés
-  string name;
-  Type type;
-  bool defined;
-
+  int size;
 };
 
-//-------------------------------- Autres définitions dépendantes de <Variable>
+//-------------------------------- Autres définitions dépendantes de <Array>
 
 #endif // VARIABLE_H

@@ -69,6 +69,11 @@ void CFG::addToSymbolTable(string name, Type t){
   currentSymbolTable->addVariable(name, t);
 }
 
+// symbol table methods
+void CFG::addArrayToSymbolTable(string name, Type t, int size){
+  currentSymbolTable->addArray(name, t, size);
+}
+
 //TODO bellow
 string CFG::createNewTempvar(Type t){return "";}
 
@@ -100,6 +105,15 @@ string CFG::varToAsm(string var){
   return "";
 }
 
+string CFG::arrayToAsm(string arrayName, int index){
+  for(vector<SymbolTable*>::reverse_iterator it = symbolTableStack.rbegin(); it != symbolTableStack.rend(); ++it ){
+    if((*it)->variableExiste(arrayName) && (*it)->isArray(arrayName)){
+      return (*it)->arrayToAsm(arrayName, index);
+    }
+  }
+  return "";
+}
+
 Variable* CFG::getVariable(string var){
   for(vector<SymbolTable*>::reverse_iterator it = symbolTableStack.rbegin(); it != symbolTableStack.rend(); ++it ){
     if((*it)->variableExiste(var)){
@@ -124,9 +138,11 @@ CFG::CFG(string name_)
   nextBBnumber = 0;
   current_bb = nullptr;
   scopeNumber = 1;
+
   if (SymbolTable::getGlobalVariablesST() != nullptr){
     symbolTableStack.push_back(SymbolTable::getGlobalVariablesST());
   }
+  
   currentSymbolTable = new SymbolTable();
   symbolTableStack.push_back(currentSymbolTable);
 } //----- Fin de CFG

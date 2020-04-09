@@ -14,7 +14,9 @@
 #include <unordered_map>
 #include <vector>
 #include <string>
-#include "variable.h"
+#include "array.h"
+#include "variable-locale.h"
+#include "variable-globale.h"
 
 //------------------------------------------------------------- Constantes
 
@@ -37,8 +39,11 @@ public:
     bool variableExiste(string nom);
     Variable* getVariable(string nom);
     void addVariable(string name, Type t);
+    void addArray(string name, Type t, int size);
+    bool isArray(string nom);
 
     string varToAsm(string reg);
+    string arrayToAsm(string reg, int index);
 
     int bitesSize();
 
@@ -66,7 +71,7 @@ protected:
 
 //----------------------------------------------------- Attributs protégés
   static int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
-  unordered_map<string, Variable> variables; // <liste des variables dans le bloc principal>
+  unordered_map<string, Variable*> variables; // <liste des variables dans le bloc principal>
 
   static SymbolTable* globalVariables;
   static vector<string> asCodeGlobalVar;

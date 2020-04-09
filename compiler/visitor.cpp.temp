@@ -211,55 +211,6 @@ antlrcpp::Any Visitor::visitAffExpr(ifccParser::AffExprContext *ctx)
   return 0;
 }
 
-antlrcpp::Any Visitor::visitDecGMult(ifccParser::DecGMultContext *ctx)  {
-  string variableName = ctx->VAR()->getText();
-
-  if (SymbolTable::getGlobalVariablesST()->variableExiste(variableName))
-  {
-    // if the variable name already exists, we throw an error.
-      string message = "variable " + variableName + " is already defined";
-      errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
-  }
-  SymbolTable::addDeclaredVarToGlobalVariables(variableName, INT);
-
-  return visit(ctx->vars());
-}
-
-antlrcpp::Any Visitor::visitLastDecG(ifccParser::LastDecGContext *ctx)  {
-  string variableName = ctx->VAR()->getText();
-
-  if (SymbolTable::getGlobalVariablesST()->variableExiste(variableName))
-  {
-    // if the variable name already exists, we throw an error.
-      string message = "variable " + variableName + " is already defined";
-      errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
-  }
-  SymbolTable::addDeclaredVarToGlobalVariables(variableName, INT);
-  return 0;
-}
-
-
-
-antlrcpp::Any Visitor::visitDecGAffConst(ifccParser::DecGAffConstContext *ctx){
-  int retval = stoi(ctx->CONST()->getText());
-  string variableName = ctx->VAR()->getText();
-  if (SymbolTable::getGlobalVariablesST()->variableExiste(variableName))
-  {
-      // if the variable name already exists, we throw an error.
-      string message = "variable " + variableName + " is already defined";
-      errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
-  }
-  SymbolTable::addDefinedVarToGlobalVariables(variableName, INT, retval);
-  return visitChildren(ctx);
-
-}
-
-antlrcpp::Any Visitor::visitDecGAffChar(ifccParser::DecGAffCharContext *ctx){
-  return visitChildren(ctx);
-}
-
-
-
 antlrcpp::Any Visitor::visitIfNoElse(ifccParser::IfNoElseContext *ctx)
 {
   int testSign = visit(ctx->testExpr());
@@ -412,7 +363,7 @@ antlrcpp::Any Visitor::visitIfElseIf(ifccParser::IfElseIfContext *ctx)
 antlrcpp::Any Visitor::visitRelationalTestExpr(ifccParser::RelationalTestExprContext *ctx)
 {
   visit(ctx->expr()[0]);
-  vector<string> params {"%eax", "%ebx"};
+  vector<string> params {"%eax", "%ebx"}; //TODO : registres
   currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
 
   visit(ctx->expr()[1]);
@@ -533,13 +484,16 @@ antlrcpp::Any Visitor::visitVarExpr(ifccParser::VarExprContext *ctx)
 
 antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
 {
+  //TODO : je comprend pas les histoires de isVar et isExpr. On a pas besoin de ca !
+  /*
     bool isVar = false;
     bool isExpr = false;
 
     string exprLeft = ctx->expr()[0]->getText();
     string exprRight = ctx->expr()[1]->getText();
 
-    string memoryAddressRight = "";
+    int memoryAddressLeft = 0;
+    int memoryAddressRight = 0;
 
 
     if(currentCFG->isVarExist(exprRight)) {
@@ -549,7 +503,7 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
     if(exprRight.find("(") != string::npos || exprRight.find("*") != string::npos) {
       isExpr = true;
     }
-    if(memoryAddressRight != "") {
+    if(memoryAddressRight != 0) {
       isVar = true;
     }
 
@@ -600,7 +554,7 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
           currentBasicBlock->addIRInstr(IRInstr::sub, INT, params);
           //cout << "  subl -" << memoryAddressRight << "(%rbp), %" << (*currentRegister).name << endl;
         }
-    }
+    }*/
     return 0;
   }
 
@@ -646,14 +600,15 @@ antlrcpp::Any Visitor::visitRetConst(ifccParser::RetConstContext *ctx)
 
 antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprContext *ctx)
 {
-  bool isVar = false;
+  //TODO : je comprend pas les histoires de isVar et isExpr. On a pas besoin de ca !
+  /*bool isVar = false;
   bool isExpr = false;
 
   string exprLeft = ctx->expr()[0]->getText();
   string exprRight = ctx->expr()[1]->getText();
 
-  string memoryAddressRight = "";
-  string memoryAddressLeft = "";
+  int memoryAddressLeft = 0;
+  int memoryAddressRight = 0;
 
   if(currentCFG->isVarExist(exprLeft)) {
     memoryAddressLeft = currentCFG->getVariable(exprLeft)->getAddress();
@@ -666,7 +621,7 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
   if(exprRight.find("(") != string::npos) {
     isExpr = true;
   }
-  if(memoryAddressRight != "") {
+  if(memoryAddressRight != 0) {
     isVar = true;
   }
 
@@ -696,13 +651,13 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
       vector<string> params {currentCFG->varToAsm(exprRight), (*currentRegister).name};
       currentBasicBlock->addIRInstr(IRInstr::mul, INT, params);
     }
-  }
+  }*/
   return 0;
 }
 
 antlrcpp::Any Visitor::visitNotExpr(ifccParser::NotExprContext *ctx) {
   visit(ctx->expr());
-  vector<string> params {"%eax"};
+  vector<string> params {"%eax"}; //TODO : registres
   currentBasicBlock->addIRInstr(IRInstr::not_op, INT, params);
 
   return 0;
@@ -850,109 +805,4 @@ antlrcpp::Any Visitor::visitWhileLoop(ifccParser::WhileLoopContext *ctx) {
   currentBasicBlock = endBlock;
 
   return 0;
-}
-
-antlrcpp::Any Visitor::visitAffDecArray(ifccParser::AffDecArrayContext *ctx) {
-  string variableName = ctx->VAR()->getText();
-
-  if(currentCFG->isVarExist(variableName)) {
-    string message = "variable " + variableName + " is already defined";
-    errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
-    // if the variable name already exists, we throw an error.
-  }
-
-  int size = stoi(ctx->CONST()->getText());
-
-  currentCFG->addArrayToSymbolTable(variableName, INT_ARRAY, size);
-
-  return 0;
-}
-
-antlrcpp::Any Visitor::visitArrayExpr(ifccParser::ArrayExprContext *ctx) {
-  string address = visit(ctx->array_elt());
-
-  if (address != "") {
-    vector<string> params {address, (*currentRegister).name};
-    currentBasicBlock->addIRInstr(IRInstr::rmem, INT, params);
-  }
-
-  return 0;
-}
-
-antlrcpp::Any Visitor::visitAffEltVar(ifccParser::AffEltVarContext *ctx) {
-  string arrayEltAddr = visit(ctx->array_elt());
-  if (arrayEltAddr == "") {
-    return 0;
-  }
-
-  string rightValName = ctx->VAR()->getText();
-  if (!currentCFG->isVarExist(rightValName)) {
-    // if the variable name doesn't exist, we throw an error.
-    string message = "variable " + rightValName + " does not exist";
-    errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
-    return 0;
-  }
-  vector<string> params {currentCFG->varToAsm(rightValName), "%eax"};
-  vector<string> params2 {"%eax", arrayEltAddr};
-
-  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
-  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params2);
-
-  return 0;
-}
-
-antlrcpp::Any Visitor::visitAffEltConst(ifccParser::AffEltConstContext *ctx) {
-  int valeur = stoi(ctx->CONST()->getText());
-
-  string arrayEltAddr = visit(ctx->array_elt());
-  if (arrayEltAddr == "") {
-    return 0;
-  }
-
-  string constant = "$"+ to_string(valeur);
-  vector<string> params {constant, arrayEltAddr};
-  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
-  return 0;
-}
-
-antlrcpp::Any Visitor::visitAffEltExpr(ifccParser::AffEltExprContext *ctx) {
-  string arrayEltAddr = visit(ctx->array_elt());
-  if (arrayEltAddr == "") {
-    return 0;
-  }
-
-  visit(ctx->expr());
-
-  vector<string> params { "%eax", arrayEltAddr}; //TODO eax par current register
-  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
-
-  return 0;
-}
-
-antlrcpp::Any Visitor::visitArray_elt(ifccParser::Array_eltContext *ctx) {
-  string arrayName = ctx->VAR()->getText();
-
-  if (!currentCFG->isVarExist(arrayName)){
-    string message = "variable " + arrayName + " does not exist";
-    errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
-    // if the variable name does not exist, we throw an error.
-
-    return "";
-  }
-
-  int index = stoi(ctx->CONST()->getText());
-  string address = currentCFG->arrayToAsm(arrayName, index);
-
-  if (address != "") {
-    return address;
-  }
-  else {
-    string message = "Index out of bounds : " + to_string(index);
-    errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
-    // if the variable name does not exist, we throw an error.
-
-    return "";
-  }
-
-  return "";
 }

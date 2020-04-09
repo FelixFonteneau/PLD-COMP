@@ -1,18 +1,17 @@
 /*************************************************************************
-                           Variable  -  description
+                           VariableGlobale  -  description
                              -------------------
     début                : $DATE$
     copyright            : (C) $YEAR$ par $AUTHOR$
     e-mail               : $EMAIL$
 *************************************************************************/
 
-//---------- Interface de la classe <Variable> (fichier Variable.h) ----------------
-#if ! defined ( VARIABLE_H )
-#define VARIABLE_H
+//---------- Interface de la classe <VariableGlobale> (fichier variable-globale.h) ----------------
+#if ! defined ( VARIABLE_GLOBALE_H )
+#define VARIABLE_GLOBALE_H
 
 //--------------------------------------------------- Interfaces utilisées
-#include <string>
-#include "type.h"
+#include "variable.h"
 //------------------------------------------------------------- Constantes
 
 //------------------------------------------------------------------ Types
@@ -20,63 +19,38 @@
 using namespace std;
 
 //------------------------------------------------------------------------
-// Rôle de la classe <Variable>
+// Rôle de la classe <VariableGlobale>
 //
 // Cette classe correspond a l'objet represetant toues les informations d'une
 // variable. Elle contient toutes les donnees nécessaires concernant les
 // variables pendant la compilation.
 //
 //------------------------------------------------------------------------
-class Variable
+class VariableGlobale : public Variable
 {
 //----------------------------------------------------------------- PUBLIC
 
 public:
 //----------------------------------------------------- Méthodes publiques
-  string getName()
-  {
-    return this->name;
-  }
-
-  Type getType()
-  {
-    return this->type;
-  }
-
-  virtual string getAddress() = 0;
-
-  void setDefined()
-  {
-    defined = true;
-  }
-
-  bool isDefined()
-  {
-    return defined;
-  }
-
-  bool isArray()
-  {
-    return (this->type == INT_ARRAY);
-  }
+  virtual string getAddress() override;
 
 //------------------------------------------------- Surcharge d'opérateurs
 
 //-------------------------------------------- Constructeurs - destructeur
-    // Variable (const Variable & unVariable);
-    Variable ();
+    // VariableGlobale (const VariableGlobale & unVariableGlobale);
+    VariableGlobale ();
     // Mode d'emploi :
     //
     // Contrat :
     //
 
-    Variable (string name, Type type) : name(name), type(type), defined(false){}
+    VariableGlobale (string name, Type type, string address) : Variable(name, type), address(address){}
     // Mode d'emploi :
     //
     // Contrat :
     //
 
-    virtual ~Variable ( );
+    virtual ~VariableGlobale ( );
 
 //------------------------------------------------------------------ PRIVE
 
@@ -84,12 +58,10 @@ protected:
 //----------------------------------------------------- Méthodes protégées
 
 //----------------------------------------------------- Attributs protégés
-  string name;
-  Type type;
-  bool defined;
+  string address;
 
 };
 
-//-------------------------------- Autres définitions dépendantes de <Variable>
+//-------------------------------- Autres définitions dépendantes de <VariableGlobale>
 
-#endif // VARIABLE_H
+#endif // VARIABLE_GLOBALE_H
