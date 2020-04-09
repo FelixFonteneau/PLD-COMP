@@ -19,15 +19,15 @@ functions : funcDec
           | /*epsilon*/
           ;
 
-funcDec : type VAR '(' argsDec ')' bloc     #funcDecDef
-        | type VAR '(' argsDec ')' ';'      #funcDecStrict
+funcDec : funcType VAR '(' argsDec ')' bloc     #funcDecDef
+        | funcType VAR '(' argsDec ')' ';'      #funcDecStrict
         ;
 
 funcCall : VAR '(' args ')' ;
 
-argsDec : INT VAR ',' argsDec   #argsDecVar
-        | INT VAR               #lastArgDec
-        | /*epsilon*/           #noArgDec
+argsDec : type VAR ',' argsDec   #argsDecVar
+        | type VAR               #lastArgDec
+        | /*epsilon*/            #noArgDec
         ;
 
 args : VAR ',' args         #argsVar
@@ -113,6 +113,11 @@ ret   : RET VAR      # retVar
 type : INT
       | CHAR
       ;
+
+funcType : INT
+         | CHAR
+         | 'void'
+         ;
 
 array_elt : VAR '[' CONST ']';
 

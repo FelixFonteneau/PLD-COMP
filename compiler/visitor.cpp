@@ -4,6 +4,7 @@
 #include "intermediate-representation/IRInstr.h"
 #include "intermediate-representation/BasicBlock.h"
 #include "intermediate-representation/CFG.h"
+#include "symbol-table/functionTable.h"
 
 Visitor::Visitor(vector<CFG*>* cfgs_, SemanticErrorListener* errorlistener_)
 {
@@ -11,7 +12,6 @@ Visitor::Visitor(vector<CFG*>* cfgs_, SemanticErrorListener* errorlistener_)
     cfgs = cfgs_;
     currentCFG = nullptr;
     currentBasicBlock = nullptr;
-    thereIsFunc = false;
     numberTempVar = -1;
     thereIsTempVar = false;
     eax.name = "%eax";
@@ -72,16 +72,22 @@ antlrcpp::Any Visitor::visitAxiom(ifccParser::AxiomContext *ctx)
 
 antlrcpp::Any Visitor::visitProg(ifccParser::ProgContext *ctx)
 {
+
     currentCFG = new CFG("main");
     (*cfgs).push_back(currentCFG);
     currentBasicBlock = currentCFG->createNewBB();
 
     vector<string> params {"$32", "%rsp"};
-    currentBasicBlock->addIRInstr(IRInstr::activationRecord, INT, params);
+
+    if(FunctionTable::thereIsFunction()) {
+      currentBasicBlock->addIRInstr(IRInstr::activationRecord, INT, params);
+    }
 
     visitChildren(ctx);
 
-    currentBasicBlock->addIRInstr(IRInstr::desactivationRecord, INT, params);
+    if(FunctionTable::thereIsFunction()) {
+      currentBasicBlock->addIRInstr(IRInstr::desactivationRecord, INT, params);
+    }
 
     return 0;
 }
@@ -93,7 +99,6 @@ antlrcpp::Any Visitor::visitFunctions(ifccParser::FunctionsContext *ctx)
 
 antlrcpp::Any Visitor::visitFuncDecStrict(ifccParser::FuncDecStrictContext *ctx)
 {
-    thereIsFunc = true;
     //string functionName = ctx->VAR()->getText();
     //currentCFG = new CFG(functionName);
     //(*cfgs).push_back(currentCFG);
@@ -105,20 +110,42 @@ antlrcpp::Any Visitor::visitFuncDecStrict(ifccParser::FuncDecStrictContext *ctx)
 
 antlrcpp::Any Visitor::visitFuncDecDef(ifccParser::FuncDecDefContext *ctx)
 {
-    thereIsFunc = true;
+
     string functionName = ctx->VAR()->getText();
-    currentCFG = new CFG(functionName);
-    (*cfgs).push_back(currentCFG);
-    currentBasicBlock = currentCFG->createNewBB();
+    string retType = ctx->funcType()->getText();
+
+    if(FunctionTable::checkIfFunctionExist(functionName)) {
+      if(FunctionTable::getFunction(functionName)->isDefined()) {
+        string message = "function " + functionName + " is already defined";
+        errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+      } else if(FunctionTable::getFunction(functionName)->getReturnType()==retType){
+        FunctionTable::getFunction(functionName)->setDefined();
+        currentCFG = new CFG(functionName);
+        (*cfgs).push_back(currentCFG);
+        currentBasicBlock = currentCFG->createNewBB();
+      } else {
+        string message = "different type declaration for " + functionName;
+        errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+      }
+    } else {
+      currentCFG = new CFG(functionName);
+      (*cfgs).push_back(currentCFG);
+      currentBasicBlock = currentCFG->createNewBB();
+      FunctionTable::addDefinedFunction(functionName, retType);
+    }
 
     vector<string> params {"$32", "%rsp"};
-    currentBasicBlock->addIRInstr(IRInstr::activationRecord, INT, params);
+
+    if(FunctionTable::thereIsFunction()) {
+      currentBasicBlock->addIRInstr(IRInstr::activationRecord, INT, params);
+    }
 
     visitChildren(ctx);
 
     currentRegFunc = registersFunc;
-
-    currentBasicBlock->addIRInstr(IRInstr::desactivationRecord, INT, params);
+    if(FunctionTable::thereIsFunction()) {
+      currentBasicBlock->addIRInstr(IRInstr::desactivationRecord, INT, params);
+    }
 
     return 0;
 }
@@ -126,6 +153,17 @@ antlrcpp::Any Visitor::visitFuncDecDef(ifccParser::FuncDecDefContext *ctx)
 antlrcpp::Any Visitor::visitFuncCall(ifccParser::FuncCallContext *ctx)
 {
     string functionName = ctx->VAR()[0].getText();
+
+    if(FunctionTable::checkIfFunctionExist(functionName)) {
+      if(!FunctionTable::getFunction(functionName)->isDefined()) {
+        string message = "function " + functionName + " is declared but undefined";
+        errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+      }
+    } else {
+        string message = "function " + functionName + " undefined";
+        errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+    }
+
     visitChildren(ctx);
     vector<string> params {functionName};
     currentBasicBlock->addIRInstr(IRInstr::call, INT, params);

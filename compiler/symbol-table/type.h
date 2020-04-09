@@ -4,7 +4,7 @@
 typedef enum {
   INT,
   CHAR,
-  INT_ARRAY
+  INT_ARRAY,
 } Type;
 
 #endif // TYPE_H

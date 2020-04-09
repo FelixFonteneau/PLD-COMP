@@ -67,8 +67,6 @@ class CFG {
 	BasicBlock* current_bb;
 
 
-
-
  protected:
   void genAsmPrologue(ostream& o);
   string newBBName();
