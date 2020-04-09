@@ -5,6 +5,6 @@ int main() {
 	b = 4;
 	c = 6;
 	d = 1;
-	a = a*b-c/a+d;
+	a = a*b-c*a+d;
 	return a;
 }
