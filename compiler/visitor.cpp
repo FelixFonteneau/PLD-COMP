@@ -1237,28 +1237,27 @@ antlrcpp::Any Visitor::visitAffEltExpr(ifccParser::AffEltExprContext *ctx) {
 
 antlrcpp::Any Visitor::visitArray_elt(ifccParser::Array_eltContext *ctx) {
   string arrayName = ctx->VAR()->getText();
+  string addr = "";
 
   if (!currentCFG->isVarExist(arrayName)){
     string message = "variable " + arrayName + " does not exist";
     errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
     // if the variable name does not exist, we throw an error.
 
-    return "";
+    return addr;
   }
 
   int index = stoi(ctx->CONST()->getText());
-  string address = currentCFG->arrayToAsm(arrayName, index);
+  addr = currentCFG->arrayToAsm(arrayName, index);
 
-  if (address != "") {
-    return address;
+  if (addr != "") {
+    return addr;
   }
   else {
     string message = "Index out of bounds : " + to_string(index);
     errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
     // if the variable name does not exist, we throw an error.
 
-    return "";
+    return addr;
   }
-
-  return "";
 }
