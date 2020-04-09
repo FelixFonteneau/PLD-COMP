@@ -15,15 +15,15 @@ blocRet : '{' statements ret '}'
 prog  : INT 'main' '(' ')' blocRet;
 
 functions : funcDec
-         | funcDec functions
-         | /*epsilon*/
-         ;
+          | funcDec functions
+          | /*epsilon*/
+          ;
 
 funcDec : INT VAR '(' argsDec ')' blocRet  #funcDecDef
-       | INT VAR '(' argsDec ')' ';'    #funcDecStrict
-       ;
+        | INT VAR '(' argsDec ')' ';'      #funcDecStrict
+        ;
 
-funcCall : VAR '(' args ')';
+funcCall : VAR '(' args ')' ;
 
 argsDec : INT VAR ',' argsDec   #argsDecVar
         | INT VAR               #lastArgDec
@@ -41,11 +41,11 @@ statements : statement
            | statement statements
            ;
 
-statement : dec ';'      # statementDeclaration
-          | aff ';'      # statementAffectation
-          | ret          # statementReturn
-          | ifLoop       # boucleIf
-          | whileLoop    # boucleWhile
+statement : dec ';'   # statementDeclaration
+          | aff ';'   # statementAffectation
+          | ret       # statementReturn
+          | ifLoop    # boucleIf
+          | whileLoop # boucleWhile
           | funcCall ';' # callAFunction
           ;
 
@@ -119,7 +119,7 @@ array_elt : VAR '[' CONST ']';
 INT : 'int' ;
 CHAR : 'char' ;
 RET : 'return' ;
-CHAREXP : '\'' .*? '\'' ; /* prends tout ce qu'il y a entre les ' ' -> TODO verifier si c'est un char ou pas lors de l'affectation */
+CHAREXP : '\'' .*? '\'' ; // prends tout ce qu'il y a entre les ' ' -> TODO verifier si c'est un char ou pas lors de l'affectation
 VAR : [a-z]+ ;
 CONST : [0-9]+ ;
 COMMENT : '/*' .*? '*/' -> skip ;
