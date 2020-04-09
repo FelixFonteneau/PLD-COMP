@@ -1,6 +1,6 @@
 # C Compiler test framework
 
-This directory contains scripts to test your compiler along with
+This directory contains scripts to test the compiler with
 a collection of C language source codes that can be tested.
 
 ## Prerequisites
@@ -18,3 +18,9 @@ Executing `test.sh clean` will delete all files in `pld-test-outputs`.
 
 
 The tests are in the `tests` subfolder.
+
+## Clean
+
+You can clean the generated tests folders with the command
+`test.sh clean `
+It can be useful to not track them on your git for example.

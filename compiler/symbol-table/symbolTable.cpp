@@ -21,7 +21,6 @@ using namespace std;
 
 //----------------------------------------------------------------- PUBLIC
 SymbolTable* SymbolTable::globalVariables = new SymbolTable();
-int SymbolTable::nextFreeSymbolIndex = -4;
 vector<string> SymbolTable::asCodeGlobalVar;
 
 //----------------------------------------------------- Méthodes publiques
@@ -33,15 +32,13 @@ Variable* SymbolTable::getVariable(string nom){
   return variables.find(nom)->second;
 }
 
-void SymbolTable::addVariable(string name, Type t){
-  VariableLocale* var = new VariableLocale(name, t, nextFreeSymbolIndex);
-  nextFreeSymbolIndex -= 4;
+void SymbolTable::addVariable(string name, Type t, int adress){
+  VariableLocale* var = new VariableLocale(name, t, adress);
   variables.insert({var->getName(),var});
 }
 
-void SymbolTable::addArray(string name, Type t, int size) {
-  Array* array = new Array(name, t, nextFreeSymbolIndex, size);
-  nextFreeSymbolIndex -= (4*size);
+void SymbolTable::addArray(string name, Type t, int size, int adress) {
+  Array* array = new Array(name, t, adress, size);
   variables.insert({array->getName(),array});
 }
 

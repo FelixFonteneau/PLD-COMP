@@ -66,18 +66,24 @@ void CFG::exitScope(){
 
 // symbol table methods
 void CFG::addToSymbolTable(string name, Type t){
-  currentSymbolTable->addVariable(name, t);
+  currentSymbolTable->addVariable(name, t, nextFreeSymbolIndex);
+  nextFreeSymbolIndex -= 4;
+
 }
 
 // symbol table methods
 void CFG::addArrayToSymbolTable(string name, Type t, int size){
-  currentSymbolTable->addArray(name, t, size);
+  currentSymbolTable->addArray(name, t, size, nextFreeSymbolIndex);
+  nextFreeSymbolIndex -= (4*size);
+
 }
 
 string CFG::createNewTempvar(Type t){
   string name = "!" + to_string(numberTempVar);
 
-  currentSymbolTable->addVariable(name, t);
+  currentSymbolTable->addVariable(name, t, nextFreeSymbolIndex);
+  nextFreeSymbolIndex -= 4;
+
   //Variable var(name, t, nextFreeSymbolIndex);
   //nextFreeSymbolIndex += 4;
   //currentSymbolTable->addVariable(var);
@@ -89,7 +95,7 @@ string CFG::createNewTempvar(Type t){
 string CFG::deleteLastTempvar(Type t){
   numberTempVar--;
   string name = "!" + to_string(numberTempVar);
-  
+
   currentSymbolTable->removeVariable(name);
 
   return name;
@@ -161,6 +167,7 @@ CFG::CFG(string name_)
   nextBBnumber = 0;
   current_bb = nullptr;
   scopeNumber = 1;
+  nextFreeSymbolIndex = -4;
 
   if (SymbolTable::getGlobalVariablesST() != nullptr){
     symbolTableStack.push_back(SymbolTable::getGlobalVariablesST());

@@ -38,8 +38,8 @@ public:
 
     bool variableExiste(string nom);
     Variable* getVariable(string nom);
-    void addVariable(string name, Type t);
-    void addArray(string name, Type t, int size);
+    void addVariable(string name, Type t, int adress);
+    void addArray(string name, Type t, int size, int adress);
     bool isArray(string nom);
     void removeVariable(string name);
 
@@ -71,7 +71,6 @@ protected:
 //----------------------------------------------------- Méthodes protégées
 
 //----------------------------------------------------- Attributs protégés
-  static int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
   unordered_map<string, Variable*> variables; // <liste des variables dans le bloc principal>
 
   static SymbolTable* globalVariables;
