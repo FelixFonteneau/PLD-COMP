@@ -395,7 +395,7 @@ antlrcpp::Any Visitor::visitDecGMult(ifccParser::DecGMultContext *ctx)  {
   }
   SymbolTable::addDeclaredVarToGlobalVariables(variableName, INT);
 
-  return visit(ctx->vars());
+  return visit(ctx->varsG());
 }
 
 antlrcpp::Any Visitor::visitLastDecG(ifccParser::LastDecGContext *ctx)  {
