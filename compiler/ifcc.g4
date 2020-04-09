@@ -19,7 +19,7 @@ functions : funcDec
           | /*epsilon*/
           ;
 
-funcDec : INT VAR '(' argsDec ')' bloc  #funcDecDef
+funcDec : INT VAR '(' argsDec ')' bloc     #funcDecDef
         | INT VAR '(' argsDec ')' ';'      #funcDecStrict
         ;
 

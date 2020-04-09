@@ -76,17 +76,12 @@ antlrcpp::Any Visitor::visitProg(ifccParser::ProgContext *ctx)
     (*cfgs).push_back(currentCFG);
     currentBasicBlock = currentCFG->createNewBB();
 
-    if(thereIsFunc) {
-      vector<string> params {"$32", "%rsp"};
-      currentBasicBlock->addIRInstr(IRInstr::activationRecord, INT, params);
-    }
+    vector<string> params {"$32", "%rsp"};
+    currentBasicBlock->addIRInstr(IRInstr::activationRecord, INT, params);
 
     visitChildren(ctx);
 
-    if(thereIsFunc) {
-      vector<string> params {"$32", "%rsp"};
-      currentBasicBlock->addIRInstr(IRInstr::desactivationRecord, INT, params);
-    }
+    currentBasicBlock->addIRInstr(IRInstr::desactivationRecord, INT, params);
 
     return 0;
 }
@@ -116,9 +111,14 @@ antlrcpp::Any Visitor::visitFuncDecDef(ifccParser::FuncDecDefContext *ctx)
     (*cfgs).push_back(currentCFG);
     currentBasicBlock = currentCFG->createNewBB();
 
+    vector<string> params {"$32", "%rsp"};
+    currentBasicBlock->addIRInstr(IRInstr::activationRecord, INT, params);
+
     visitChildren(ctx);
 
     currentRegFunc = registersFunc;
+
+    currentBasicBlock->addIRInstr(IRInstr::desactivationRecord, INT, params);
 
     return 0;
 }
