@@ -12,14 +12,14 @@ bloc : '{' statements '}';
 blocRet : '{' statements ret '}'
         ;
 
-prog  : INT 'main' '(' ')' blocRet;
+prog  : INT 'main' '(' ')' bloc;
 
 functions : funcDec
           | funcDec functions
           | /*epsilon*/
           ;
 
-funcDec : INT VAR '(' argsDec ')' blocRet  #funcDecDef
+funcDec : INT VAR '(' argsDec ')' bloc  #funcDecDef
         | INT VAR '(' argsDec ')' ';'      #funcDecStrict
         ;
 
@@ -43,7 +43,7 @@ statements : statement
 
 statement : dec ';'   # statementDeclaration
           | aff ';'   # statementAffectation
-          | ret       # statementReturn
+          | ret ';'      # statementReturn
           | ifLoop    # boucleIf
           | whileLoop # boucleWhile
           | funcCall ';' # callAFunction
@@ -105,9 +105,9 @@ ifLoop  : 'if' '(' testExpr ')' bloc                # ifNoElse
 
 whileLoop : 'while' '(' testExpr ')' bloc;
 
-ret   : RET VAR ';'     # retVar
-      | RET CONST ';'   # retConst
-      | RET expr ';'    # retExpr
+ret   : RET VAR      # retVar
+      | RET CONST    # retConst
+      | RET expr     # retExpr
       ;
 
 type : INT

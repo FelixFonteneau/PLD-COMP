@@ -32,8 +32,8 @@ class  Visitor : public ifccBaseVisitor {
     struct reg {
       string name;
       bool used;
-    } eax, ebx, ecx, r10, r11, r12, r13, r14, r15, rdi, rsi, rdx, rcx, r8, r9; //edi, esi, ebp, esp;
-    reg registers[9];
+    } eax, ebx, r10d, r11d, r12d, r13d, r14d, r15d, edi, esi, edx, ecx, r8d, r9d; //edi, esi, ebp, esp;
+    reg registers[8];
     reg* currentRegister;
     reg registersFunc[6];
     reg* currentRegFunc;

@@ -20,46 +20,46 @@ Visitor::Visitor(vector<CFG*>* cfgs_, SemanticErrorListener* errorlistener_)
     ebx.name = "%ebx";
     ebx.used = false;
     registers[1] = ebx;
+    //ecx.name = "%ecx";
+    //ecx.used = false;
+    //registers[2] = ecx;
+    r10d.name = "%r10d";
+    r10d.used = false;
+    registers[2] = r10d;
+    r11d.name = "%r11d";
+    r11d.used = false;
+    registers[3] = r11d;
+    r12d.name = "%r12d";
+    r12d.used = false;
+    registers[4] = r12d;
+    r13d.name = "%r13d";
+    r13d.used = false;
+    registers[5] = r13d;
+    r14d.name = "%r14d";
+    r14d.used = false;
+    registers[6] = r14d;
+    r15d.name = "%r15d";
+    r15d.used = false;
+    registers[7] = r15d;
+    currentRegister = registers;
+    edi.name = "%edi";
+    edi.used = false;
+    registersFunc[0] = edi;
+    esi.name = "%esi";
+    esi.used = false;
+    registersFunc[1] = esi;
+    edx.name = "%edx";
+    edx.used = false;
+    registersFunc[2] = edx;
     ecx.name = "%ecx";
     ecx.used = false;
-    registers[2] = ecx;
-    r10.name = "%r10";
-    r10.used = false;
-    registers[3] = r10;
-    r11.name = "%r11";
-    r11.used = false;
-    registers[4] = r11;
-    r12.name = "%r12";
-    r12.used = false;
-    registers[5] = r12;
-    r13.name = "%r13";
-    r13.used = false;
-    registers[6] = r13;
-    r14.name = "%r14";
-    r14.used = false;
-    registers[7] = r14;
-    r15.name = "%r15";
-    r15.used = false;
-    registers[8] = r15;
-    currentRegister = registers;
-    rdi.name = "%rdi";
-    rdi.used = false;
-    registersFunc[0] = rdi;
-    rsi.name = "%rsi";
-    rsi.used = false;
-    registersFunc[1] = rsi;
-    rdx.name = "%rdx";
-    rdx.used = false;
-    registersFunc[2] = rdx;
-    rcx.name = "%rcx";
-    rcx.used = false;
-    registersFunc[3] = rcx;
-    r8.name = "%r8";
-    r8.used = false;
-    registersFunc[4] = r8;
-    r9.name = "%r9";
-    r9.used = false;
-    registersFunc[5] = r9;
+    registersFunc[3] = ecx;
+    r8d.name = "%r8d";
+    r8d.used = false;
+    registersFunc[4] = r8d;
+    r9d.name = "%r9d";
+    r9d.used = false;
+    registersFunc[5] = r9d;
     currentRegFunc = registersFunc;
 }
 
@@ -754,8 +754,8 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
 */
 
     if(isExpr) {
-      if(currentRegister->name == "%r15" && currentRegister->used == true) {
-        currentRegister = registers + 8; //à mettre à 8
+      if(currentRegister->name == "%r15s" && currentRegister->used == true) {
+        currentRegister = registers + 7; //à mettre à 7
 
         noRegLeft = true;
         vector<string> params {currentRegister->name, currentCFG->varToAsm(currentCFG->createNewTempvar(INT))};
@@ -771,7 +771,7 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
         cout << "exprLeft :" << endl;
         cout << exprLeft << endl;
 */
-      } else if(currentRegister->name != "%r15") {
+      } else if(currentRegister->name != "%r15d") {
         currentRegister++;
         currentRegister->used = true;
       }
@@ -886,7 +886,7 @@ antlrcpp::Any Visitor::visitRetVar(ifccParser::RetVarContext *ctx)
   }
 
   vector<string> params {currentCFG->varToAsm(variable), "%rax"};
-  currentBasicBlock->addIRInstr(IRInstr::rmem, INT, params);
+  currentBasicBlock->addIRInstr(IRInstr::wmemq, INT, params);
   return 0;
 }
 
@@ -936,8 +936,8 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
 
 
   if(isExpr) {
-    if(currentRegister->name == "%r15" && currentRegister->used == true) {
-      currentRegister = registers + 1; //à mettre à 8
+    if(currentRegister->name == "%r15d" && currentRegister->used == true) {
+      currentRegister = registers + 7; //à mettre à 7
 
       noRegLeft = true;
       vector<string> params {currentRegister->name, currentCFG->varToAsm(currentCFG->createNewTempvar(INT))};
@@ -953,7 +953,7 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
       cout << "exprLeft :" << endl;
       cout << exprLeft << endl;
 */
-    } else if(currentRegister->name != "%r15") {
+    } else if(currentRegister->name != "%r15d") {
       currentRegister->used = true;
       currentRegister++;
     }
