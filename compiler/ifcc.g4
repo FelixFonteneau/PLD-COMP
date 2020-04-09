@@ -31,6 +31,7 @@ expr    : expr op=('|' | '&' | '^') expr            #bitsExpr
         | '(' expr ')'                              #parExpr
         | CONST                                     #constExpr
         | VAR                                       #varExpr
+        | CHAREXP                                   #charExpr
         | array_elt                                 #arrayExpr
         ;
 
@@ -47,8 +48,8 @@ vars  : VAR ',' vars  #declMult
 
 dec   : type vars;
 
-aff   : type VAR '=' CONST	     # affDecConst
-      | type VAR '=' VAR	       # affDecVar
+aff   : type VAR '=' CONST	   # affDecConst
+      | type VAR '=' VAR	   # affDecVar
       | type VAR '=' CHAREXP     # affDecChar
       | type VAR '[' CONST ']'   # affDecArray
       | type VAR '=' expr        # affDecExpr
