@@ -43,6 +43,8 @@ public:
 
     virtual antlrcpp::Any visitVarExpr(ifccParser::VarExprContext *context) = 0;
 
+    virtual antlrcpp::Any visitCharExpr(ifccParser::CharExprContext *context) = 0;
+
     virtual antlrcpp::Any visitBitsExpr(ifccParser::BitsExprContext *context) = 0;
 
     virtual antlrcpp::Any visitNotExpr(ifccParser::NotExprContext *context) = 0;

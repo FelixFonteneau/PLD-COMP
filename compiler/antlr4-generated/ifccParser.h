@@ -204,6 +204,14 @@ public:
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
+  class  CharExprContext : public ExprContext {
+  public:
+    CharExprContext(ExprContext *ctx);
+
+    antlr4::tree::TerminalNode *CHAREXP();
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
   class  BitsExprContext : public ExprContext {
   public:
     BitsExprContext(ExprContext *ctx);
