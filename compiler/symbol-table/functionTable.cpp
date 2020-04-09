@@ -16,19 +16,20 @@ using namespace std;
 
 //------------------------------------------------------ Include personnel
 #include "functionTable.h"
+#include "antlr4-runtime.h"
 
 //------------------------------------------------------------- Constantes
 unordered_map<string, Fonction*> FunctionTable::progFonctions;
 //----------------------------------------------------------------- PUBLIC
 
 //----------------------------------------------------- Méthodes publiques
-void FunctionTable::addDeclaredFunction(string name, string t){
-  Fonction* f = new Fonction(name, t);
+void FunctionTable::addDeclaredFunction(string name, string t, antlr4::Token* token){
+  Fonction* f = new Fonction(name, t, token);
   progFonctions.insert({name, f});
 }
 
-void FunctionTable::addDefinedFunction(string name, string t){
-  Fonction* f = new Fonction(name, t);
+void FunctionTable::addDefinedFunction(string name, string t, antlr4::Token* token){
+  Fonction* f = new Fonction(name, t, token);
   f->setDefined();
   progFonctions.insert({name, f});
 }

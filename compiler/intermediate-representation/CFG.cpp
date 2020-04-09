@@ -110,6 +110,14 @@ bool CFG::isVarExist(string var){
   return false;
 }
 
+bool CFG::isVarExistInScope(string var){
+  vector<SymbolTable*>::reverse_iterator it = symbolTableStack.rbegin();
+  if((*it)->variableExiste(var)){
+    return true;
+  }
+  return false;
+}
+
 bool CFG::isDefined(string var){
   Variable* varPt = getVariable(var);
   return varPt->isDefined();

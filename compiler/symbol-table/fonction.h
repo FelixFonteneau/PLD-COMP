@@ -13,6 +13,8 @@
 //--------------------------------------------------- Interfaces utilisées
 #include <string>
 #include "type.h"
+#include "antlr4-runtime.h"
+
 //------------------------------------------------------------- Constantes
 
 //------------------------------------------------------------------ Types
@@ -53,6 +55,19 @@ public:
     return defined;
   }
 
+  void setUsed(){
+    used = true;
+  }
+
+  bool isUsed(){
+    return used;
+  }
+
+  antlr4::Token* getToken(){
+    return token;
+  }
+
+
 //------------------------------------------------- Surcharge d'opérateurs
 
 //-------------------------------------------- Constructeurs - destructeur
@@ -63,7 +78,7 @@ public:
     // Contrat :
     //
 
-    Fonction (string name, string returnType) : name(name), returnType(returnType), defined(false){}
+    Fonction (string name, string returnType, antlr4::Token* token) : name(name), returnType(returnType), token(token), defined(false), used(false){}
     // Mode d'emploi :
     //
     // Contrat :
@@ -79,8 +94,9 @@ protected:
 //----------------------------------------------------- Attributs protégés
   string name;
   string returnType;
+  antlr4::Token* token;
   bool defined;
-
+  bool used;
 };
 
 //-------------------------------- Autres définitions dépendantes de <Variable>

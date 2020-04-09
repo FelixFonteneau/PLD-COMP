@@ -67,7 +67,15 @@ Visitor::Visitor(vector<CFG*>* cfgs_, SemanticErrorListener* errorlistener_)
 
 antlrcpp::Any Visitor::visitAxiom(ifccParser::AxiomContext *ctx)
 {
-    return visitChildren(ctx);
+    visitChildren(ctx);
+    //check if
+    for (unordered_map<string, Fonction*>::iterator it = FunctionTable::getFonctions()->begin(); it != FunctionTable::getFonctions()->end(); ++it){
+      if(!it->second->isDefined() && it->second->isUsed()){
+        string message = it->first + " is not defined";
+        errorlistener->addSemanticError(it->second->getToken(), message);
+      }
+    }
+    return 0;
 }
 
 antlrcpp::Any Visitor::visitProg(ifccParser::ProgContext *ctx)
@@ -111,7 +119,7 @@ antlrcpp::Any Visitor::visitFuncDecStrict(ifccParser::FuncDecStrictContext *ctx)
       string message = "different type declaration for " + functionName;
       errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
     } else {
-      FunctionTable::addDeclaredFunction(functionName, retType);
+      FunctionTable::addDeclaredFunction(functionName, retType, ctx->VAR()->getSymbol());
     }
     //currentCFG = new CFG(functionName);
     //(*cfgs).push_back(currentCFG);
@@ -144,7 +152,7 @@ antlrcpp::Any Visitor::visitFuncDecDef(ifccParser::FuncDecDefContext *ctx)
       currentCFG = new CFG(functionName);
       (*cfgs).push_back(currentCFG);
       currentBasicBlock = currentCFG->createNewBB();
-      FunctionTable::addDefinedFunction(functionName, retType);
+      FunctionTable::addDefinedFunction(functionName, retType, ctx->VAR()->getSymbol());
     }
 
     vector<string> params {"$32", "%rsp"};
@@ -167,16 +175,11 @@ antlrcpp::Any Visitor::visitFuncCall(ifccParser::FuncCallContext *ctx)
 {
     string functionName = ctx->VAR()[0].getText();
 
-    if(FunctionTable::checkIfFunctionExist(functionName)) {
-      if(!FunctionTable::getFunction(functionName)->isDefined()) {
-        string message = "function " + functionName + " is declared but undefined";
-        errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
-      }
-    } else {
+    if(!FunctionTable::checkIfFunctionExist(functionName)){
         string message = "function " + functionName + " undefined";
         errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
     }
-
+    FunctionTable::getFunction(functionName)->setUsed();
     visitChildren(ctx);
     vector<string> params {functionName};
     currentBasicBlock->addIRInstr(IRInstr::call, INT, params);
@@ -284,7 +287,7 @@ antlrcpp::Any Visitor::visitAffDecConst(ifccParser::AffDecConstContext *ctx) // 
   int retval = stoi(ctx->CONST()->getText());
 
   string variableName = ctx->VAR()->getText();
-  if (currentCFG->isVarExist(variableName))
+  if (currentCFG->isVarExistInScope(variableName))
   {
     string message = "variable " + variableName + " already exists";
     errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
@@ -307,7 +310,7 @@ antlrcpp::Any Visitor::visitAffDecVar(ifccParser::AffDecVarContext *ctx)
 {
   string newVariableName = ctx->VAR()[0]->getText();
   //check if the left variable doesn't exist
-  if (currentCFG->isVarExist(newVariableName))    {
+  if (currentCFG->isVarExistInScope(newVariableName))    {
     string message = "variable " + newVariableName + " already exists";
     errorlistener->addSemanticError(ctx->VAR()[0]->getSymbol(), message);
     // if the variable name already exists, we throw an error.
@@ -346,7 +349,7 @@ antlrcpp::Any Visitor::visitAffDecExpr(ifccParser::AffDecExprContext *ctx)
 {
   string variableName = ctx->VAR()->getText();
   visitChildren(ctx);
-  if(currentCFG->isVarExist(variableName)) {
+  if(currentCFG->isVarExistInScope(variableName)) {
     string message = "variable " + variableName + " already exists";
     errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
     // if the variable name already exists, we throw an error.
@@ -1114,7 +1117,7 @@ antlrcpp::Any Visitor::visitAffDecChar(ifccParser::AffDecCharContext *ctx)
   int retval = (int)character;
 
   string variableName = ctx->VAR()->getText();
-  if (currentCFG->isVarExist(variableName))
+  if (currentCFG->isVarExistInScope(variableName))
   {
     string message = "variable " + variableName + " already exists";
     errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
@@ -1158,7 +1161,7 @@ antlrcpp::Any Visitor::visitAffChar(ifccParser::AffCharContext *ctx)
 antlrcpp::Any Visitor::visitDeclMult(ifccParser::DeclMultContext *ctx) {
   string variableName = ctx->VAR()->getText();
 
-  if (currentCFG->isVarExist(variableName))
+  if (currentCFG->isVarExistInScope(variableName))
   {
     // if the variable name already exists, we throw an error.
       string message = "variable " + variableName + " already exists";
@@ -1224,7 +1227,7 @@ antlrcpp::Any Visitor::visitWhileLoop(ifccParser::WhileLoopContext *ctx) {
 antlrcpp::Any Visitor::visitAffDecArray(ifccParser::AffDecArrayContext *ctx) {
   string variableName = ctx->VAR()->getText();
 
-  if(currentCFG->isVarExist(variableName)) {
+  if(currentCFG->isVarExistInScope(variableName)) {
     string message = "variable " + variableName + " is already defined";
     errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
     // if the variable name already exists, we throw an error.
