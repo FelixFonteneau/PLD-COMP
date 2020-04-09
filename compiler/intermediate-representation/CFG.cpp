@@ -77,9 +77,10 @@ void CFG::addArrayToSymbolTable(string name, Type t, int size){
 string CFG::createNewTempvar(Type t){
   string name = "!" + to_string(numberTempVar);
 
-  Variable var(name, t, nextFreeSymbolIndex);
-  nextFreeSymbolIndex += 4;
-  currentSymbolTable->addVariable(var);
+  currentSymbolTable->addVariable(name, t);
+  //Variable var(name, t, nextFreeSymbolIndex);
+  //nextFreeSymbolIndex += 4;
+  //currentSymbolTable->addVariable(var);
 
   numberTempVar++;
   return name;
@@ -88,10 +89,8 @@ string CFG::createNewTempvar(Type t){
 string CFG::deleteLastTempvar(Type t){
   numberTempVar--;
   string name = "!" + to_string(numberTempVar);
-
-  Variable var(name, t, nextFreeSymbolIndex);
-  nextFreeSymbolIndex -= 4;
-  currentSymbolTable->removeVariable(var);
+  
+  currentSymbolTable->removeVariable(name);
 
   return name;
 }

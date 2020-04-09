@@ -70,7 +70,7 @@ antlrcpp::Any Visitor::visitAxiom(ifccParser::AxiomContext *ctx)
     return visitChildren(ctx);
 }
 
-antlrcpp::Any Visitor::visitMain(ifccParser::MainContext *ctx)
+antlrcpp::Any Visitor::visitProg(ifccParser::ProgContext *ctx)
 {
     currentCFG = new CFG("main");
     (*cfgs).push_back(currentCFG);
@@ -707,9 +707,9 @@ antlrcpp::Any Visitor::visitVarExpr(ifccParser::VarExprContext *ctx)
   }
 
   //check if the variable is defined
-  if (!currentCFG->isDefined(variable)){
+  if (!currentCFG->isDefined(var)){
     // if the variable name is not defined, we throw an error.
-    string message = "variable " + variable + " is not defined";
+    string message = "variable " + var + " is not defined";
     errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
     return 0;
   }
@@ -987,22 +987,20 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
     isVar = true;
   }
 
-  if(ctx->op->getText() == "*") {
-    if(!isVar) {
-      if(!isExpr) {
-        string rightVal = "$" + exprRight;
-        vector<string> params {rightVal, currentRegister->name};
-        currentBasicBlock->addIRInstr(IRInstr::mul, INT, params);
-      } else {
-        vector<string> params {(currentRegister + 1)->name, currentRegister->name};
-        currentBasicBlock->addIRInstr(IRInstr::mul, INT, params);
-      }
-    } else if(isVar) {
-      vector<string> params {currentCFG->varToAsm(exprRight), currentRegister->name};
+  if(!isVar) {
+    if(!isExpr) {
+      string rightVal = "$" + exprRight;
+      vector<string> params {rightVal, currentRegister->name};
       currentBasicBlock->addIRInstr(IRInstr::mul, INT, params);
-      if(exprRight.find("!") != string::npos) {
-        currentCFG->deleteLastTempvar(INT);
-      }
+    } else {
+      vector<string> params {(currentRegister + 1)->name, currentRegister->name};
+      currentBasicBlock->addIRInstr(IRInstr::mul, INT, params);
+    }
+  } else if(isVar) {
+    vector<string> params {currentCFG->varToAsm(exprRight), currentRegister->name};
+    currentBasicBlock->addIRInstr(IRInstr::mul, INT, params);
+    if(exprRight.find("!") != string::npos) {
+      currentCFG->deleteLastTempvar(INT);
     }
   }
   return 0;

@@ -44,7 +44,7 @@ class  Visitor : public ifccBaseVisitor {
 
     virtual antlrcpp::Any visitAxiom(ifccParser::AxiomContext *ctx) override;
 
-    virtual antlrcpp::Any visitMain(ifccParser::MainContext *ctx) override;
+    virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override;
 
     virtual antlrcpp::Any visitFunctions(ifccParser::FunctionsContext *ctx) override;
 
@@ -53,12 +53,6 @@ class  Visitor : public ifccBaseVisitor {
     virtual antlrcpp::Any visitFuncDecDef(ifccParser::FuncDecDefContext *ctx) override;
 
     virtual antlrcpp::Any visitFuncCall(ifccParser::FuncCallContext *ctx) override;
-    
-    virtual antlrcpp::Any visitAffDecArray(ifccParser::AffDecArrayContext *ctx) override;
-
-    virtual antlrcpp::Any visitAffDecExpr(ifccParser::AffDecExprContext *ctx) override ;
-
-    virtual antlrcpp::Any visitDec(ifccParser::DecContext *ctx) override;
 
     virtual antlrcpp::Any visitArgsDecVar(ifccParser::ArgsDecVarContext *ctx) override;
 
@@ -71,6 +65,8 @@ class  Visitor : public ifccBaseVisitor {
     virtual antlrcpp::Any visitArgsConst(ifccParser::ArgsConstContext *ctx) override;
 
     virtual antlrcpp::Any visitLastArgConst(ifccParser::LastArgConstContext *ctx) override;
+
+    virtual antlrcpp::Any visitAffDecArray(ifccParser::AffDecArrayContext *ctx) override;
 
     virtual antlrcpp::Any visitAffDecConst(ifccParser::AffDecConstContext *ctx) override;
 

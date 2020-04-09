@@ -41,7 +41,7 @@ public:
     void addVariable(string name, Type t);
     void addArray(string name, Type t, int size);
     bool isArray(string nom);
-    void removeVariable(Variable &var);
+    void removeVariable(string name);
 
     string varToAsm(string reg);
     string arrayToAsm(string reg, int index);

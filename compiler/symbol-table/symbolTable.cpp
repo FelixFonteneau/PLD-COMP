@@ -49,8 +49,8 @@ bool SymbolTable::isArray(string nom) {
   return variables.find(nom)->second->isArray();
 }
 
-void SymbolTable::removeVariable(Variable &var) {
-  variables.erase(var.getName());
+void SymbolTable::removeVariable(string name) {
+  variables.erase(name);
 }
 
 string SymbolTable::varToAsm(string reg){ /**< helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24 */
