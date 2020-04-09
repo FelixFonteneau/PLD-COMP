@@ -509,6 +509,21 @@ antlrcpp::Any Visitor::visitConstExpr(ifccParser::ConstExprContext *ctx)
     return 0;
 }
 
+antlrcpp::Any Visitor::visitCharExpr(ifccParser::CharExprContext *ctx)
+{
+  string charExp = ctx->CHAREXP()->getText();
+  charExp = charExp.substr(1, charExp.length()-1);
+  char character = charExp[0]; //TODO : tester avec \n, \0
+  int retval = (int)character;
+
+  string constant = "$" + to_string(retval);
+  vector<string> params {constant, (*currentRegister).name}; //TODO : verifier registres
+  currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+  //cout << "  movl $" << val << ", %" << (*currentRegister).name << endl;
+  return 0;
+}
+
+
 antlrcpp::Any Visitor::visitVarExpr(ifccParser::VarExprContext *ctx)
 {
   string var = ctx->VAR()->getText();
