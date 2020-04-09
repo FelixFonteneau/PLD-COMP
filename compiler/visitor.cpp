@@ -428,10 +428,22 @@ antlrcpp::Any Visitor::visitDecGAffConst(ifccParser::DecGAffConstContext *ctx){
 }
 
 antlrcpp::Any Visitor::visitDecGAffChar(ifccParser::DecGAffCharContext *ctx){
+  string charExp = ctx->CHAREXP()->getText();
+  charExp = charExp.substr(1, charExp.length()-1);
+  char character = charExp[0]; //tester avec \n, \0
+  int retval = (int)character;
+
+  string variableName = ctx->VAR()->getText();
+  if (SymbolTable::getGlobalVariablesST()->variableExiste(variableName))
+  {
+      // if the variable name already exists, we throw an error.
+      string message = "variable " + variableName + " is already defined";
+      errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+  }
+  SymbolTable::addDefinedVarToGlobalVariables(variableName, INT, retval);
+
   return visitChildren(ctx);
 }
-
-
 
 antlrcpp::Any Visitor::visitIfNoElse(ifccParser::IfNoElseContext *ctx)
 {

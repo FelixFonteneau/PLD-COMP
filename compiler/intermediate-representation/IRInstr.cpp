@@ -64,13 +64,13 @@ void IRInstr::genAsm(ostream &o){ /**< x86 assembly code generation for this IR 
       operation = "callq"; //à implementer
       break;
 		case cmp_eq:
-      operation = "cmpl"; //à implementer
+      operation = "cmpl";
       break;
 		case cmp_lt:
-      operation = "cmpl"; //à implementer
+      operation = "cmpl";
       break;
 		case cmp_le:
-      operation = "cmpl"; //à implementer
+      operation = "cmpl";
       break;
     case and_bit :
       operation = "andl";
@@ -80,6 +80,7 @@ void IRInstr::genAsm(ostream &o){ /**< x86 assembly code generation for this IR 
       break;
     case xor_bit :
       operation = "xorl";
+      break;
     case activationRecord:
       operation = "subq";
       break;
