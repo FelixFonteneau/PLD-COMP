@@ -26,7 +26,7 @@ statement : dec ';'   # statementDeclaration
 expr    : expr op=('|' | '&' | '^') expr            #bitsExpr
         | '-' expr                                  #minusExpr
         | '!' expr                                  #notExpr
-        | expr op=('*' | '/' | '%') expr            #multiplicationExpr
+        | expr '*' expr                             #multiplicationExpr
         | expr op=('+' | '-') expr                  #additiveExpr
         | '(' expr ')'                              #parExpr
         | CONST                                     #constExpr
