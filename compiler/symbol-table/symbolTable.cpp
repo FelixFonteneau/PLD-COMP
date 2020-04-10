@@ -139,8 +139,6 @@ SymbolTable::SymbolTable()
 
 
 SymbolTable::~SymbolTable ( )
-// Algorithme :
-//
 {
 
 } //----- Fin de ~SymbolTable

@@ -56,12 +56,8 @@ public:
 //------------------------------------------------- Surcharge d'opérateurs
 
 //-------------------------------------------- Constructeurs - destructeur
-    // SymbolTable (const SymbolTable & unSymbolTable);
     SymbolTable ();
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
+
 
     virtual ~SymbolTable ( );
 

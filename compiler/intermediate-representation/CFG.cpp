@@ -205,9 +205,6 @@ CFG::~CFG ( )
 //----------------------------------------------------- Méthodes protégées
 void CFG::genAsmPrologue(ostream& o){
   o << "  #prologue" << endl;
-//  o << "  pushq %rbp" << endl;
-//  o << "  mov	%rbp, %rsp" << endl;
-//  o << "  sub	%rsp, " << symbolTable.bitesSize()<< endl;
   o <<"  pushq %rbp\n"      //save %rbp on the stack
       "  movq %rsp, %rbp\n"; //define %rbp for the current function
 }

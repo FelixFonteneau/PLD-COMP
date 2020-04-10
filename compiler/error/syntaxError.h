@@ -33,11 +33,7 @@ class SyntaxError : Error
 
 public:
 //----------------------------------------------------- Méthodes publiques
-    // type Méthode ( liste des paramètres );
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
+
     void showError(ostream & os) const
     {
       Error::showError(os);
@@ -50,17 +46,10 @@ public:
 
 //-------------------------------------------- Constructeurs - destructeur
     SyntaxError ( const SyntaxError & unSyntaxError );
-    // Mode d'emploi (constructeur de copie) :
-    //
-    // Contrat :
-    //
+
 
     SyntaxError (Recognizer *recognizerA, Token * offendingSymbolA, size_t lineNumberA, size_t charPositionInLineA,
        const std::string &msgA, std::exception_ptr eA, string &lineA);
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
 
 //------------------------------------------------------------------ PRIVE
 

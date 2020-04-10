@@ -39,16 +39,8 @@ public:
 //-------------------------------------------- Constructeurs - destructeur
     // VariableLocale (const VariableLocale & unVariableLocale);
     VariableLocale ();
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
 
     VariableLocale (string name, Type type, int address) : Variable(name, type), address(address){}
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
 
     virtual ~VariableLocale ( );
 

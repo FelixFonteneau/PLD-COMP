@@ -22,11 +22,7 @@ using namespace std;
 //----------------------------------------------------------------- PUBLIC
 
 //----------------------------------------------------- Méthodes publiques
-// type BasicBlock::Méthode ( liste des paramètres )
-// Algorithme :
-//
-//{
-//} //----- Fin de Méthode
+
 void BasicBlock::genAsm(ostream &o){ /**< x86 assembly code generation for this basic block (very simple) */
   for(vector<IRInstr*>::iterator it = instrs.begin(); it != instrs.end(); it++){
     (*it)->genAsm(o);
@@ -68,10 +64,6 @@ void BasicBlock::addIRInstr(IRInstr::Operation op, Type t, vector<string> params
 
 }
 void BasicBlock::genAsmEpilogue(ostream& o){
-//  o << "  #epilogue" << endl;
-//  o << "  mov	%rsp, %rbp" << endl;
-//  o << "  popq	%rbp"     << endl;
-//  o << "  ret"           << endl;
 cout << "\n  # epilogue\n"
         "  popq %rbp\n" //restore %rbp from the stack
         "  ret\n";      //return to the caller (here the shell)
@@ -93,8 +85,7 @@ string BasicBlock::getLabel(){
 //-------------------------------------------- Constructeurs - destructeur
 
 BasicBlock::BasicBlock (string entry_label)
-// Algorithme :
-//
+
 {
   exit_true = nullptr;
   exit_false = nullptr;
@@ -103,8 +94,6 @@ BasicBlock::BasicBlock (string entry_label)
 
 
 BasicBlock::~BasicBlock ( )
-// Algorithme :
-//
 {
   for(auto it = instrs.begin(); it != instrs.end(); ++it){
     delete *it;

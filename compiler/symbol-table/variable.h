@@ -65,16 +65,8 @@ public:
 //-------------------------------------------- Constructeurs - destructeur
     // Variable (const Variable & unVariable);
     Variable ();
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
 
     Variable (string name, Type type) : name(name), type(type), defined(false){}
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
 
     virtual ~Variable ( );
 

@@ -22,11 +22,7 @@ using namespace std;
 //----------------------------------------------------------------- PUBLIC
 
 //----------------------------------------------------- Méthodes publiques
-// type Error::Méthode ( liste des paramètres )
-// Algorithme :
-//
-//{
-//} //----- Fin de Méthode
+
 void Error::showError(ostream & os) const {
   os << "Error " << message << ". On position " << lineNumber << ":" << charPositionInLine << endl;
   os << "   \"" << line << "\"" << endl;
@@ -36,12 +32,3 @@ void Error::showError(ostream & os) const {
   }
   os << "^" << endl;
 }
-
-//------------------------------------------------- Surcharge d'opérateurs
-
-//-------------------------------------------- Constructeurs - destructeur
-
-
-//------------------------------------------------------------------ PRIVE
-
-//----------------------------------------------------- Méthodes protégées

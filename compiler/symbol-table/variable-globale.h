@@ -39,16 +39,8 @@ public:
 //-------------------------------------------- Constructeurs - destructeur
     // VariableGlobale (const VariableGlobale & unVariableGlobale);
     VariableGlobale ();
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
 
     VariableGlobale (string name, Type type, string address) : Variable(name, type), address(address){}
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
 
     virtual ~VariableGlobale ( );
 

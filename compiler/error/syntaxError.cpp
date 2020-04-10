@@ -22,24 +22,6 @@ using namespace std;
 //----------------------------------------------------------------- PUBLIC
 
 //----------------------------------------------------- Méthodes publiques
-// type SyntaxError::Méthode ( liste des paramètres )
-// Algorithme :
-//
-//{
-//} //----- Fin de Méthode
-
-
-//------------------------------------------------- Surcharge d'opérateurs
-/*ostream & operator << (ostream & os, const SyntaxError & error){
-  os << "Error " << error.message << ". On position " << error.lineNumber << ":" << error.charPositionInLine << endl;
-  os << "   \"" << error.line << "\"" << endl;
-  for(int i = 0; i < error.charPositionInLine + 4; i++)
-  {
-    os << " ";
-  }
-  os << "^" << endl;
-  return os;
-} */
 
 //-------------------------------------------- Constructeurs - destructeur
 SyntaxError::SyntaxError ( const SyntaxError & unSyntaxError ) :   Error(unSyntaxError.message, unSyntaxError.lineNumber, unSyntaxError.charPositionInLine, unSyntaxError.line)

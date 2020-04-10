@@ -31,12 +31,6 @@ class SemanticError : public Error
 
 public:
 //----------------------------------------------------- Méthodes publiques
-    // type Méthode ( liste des paramètres );
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
-
     void showError(ostream & os) const
     {
       Error::showError(os);
@@ -51,10 +45,6 @@ public:
   SemanticError (size_t lineNumberA, size_t charPositionInLineA,
    const std::string &msgA, string &lineA) :
                   Error(msgA, lineNumberA, charPositionInLineA, lineA){}
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
 
 //------------------------------------------------------------------ PRIVE
 

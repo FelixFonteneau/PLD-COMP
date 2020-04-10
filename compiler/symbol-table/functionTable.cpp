@@ -71,8 +71,6 @@ FunctionTable::FunctionTable()
 
 
 FunctionTable::~FunctionTable ( )
-// Algorithme :
-//
 {
 
 } //----- Fin de ~SymbolTable

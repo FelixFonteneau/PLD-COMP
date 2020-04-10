@@ -52,16 +52,10 @@ public:
 //-------------------------------------------- Constructeurs - destructeur
     // Array (const Array & unArray);
     Array ();
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
+
 
     Array (string name, Type type, int address, int size) : VariableLocale(name, type, address), size(size){}
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
+
 
     virtual ~Array ( );
 

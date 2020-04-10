@@ -23,10 +23,7 @@ using namespace std;
 
 //----------------------------------------------------- Méthodes publiques
 // type IRInstr::Méthode ( liste des paramètres )
-// Algorithme :
-//
-//{
-//} //----- Fin de Méthode
+
 
 void IRInstr::genAsm(ostream &o){ /**< x86 assembly code generation for this IR instruction */
   string operation = "";

@@ -23,10 +23,7 @@ using namespace std;
 
 //----------------------------------------------------- Méthodes publiques
 
-
-
 //------------------------------------------------- Surcharge d'opérateurs
-
 
 //-------------------------------------------- Constructeurs - destructeur
 

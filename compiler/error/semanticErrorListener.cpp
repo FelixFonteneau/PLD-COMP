@@ -22,11 +22,6 @@ using namespace std;
 //----------------------------------------------------------------- PUBLIC
 
 //----------------------------------------------------- Méthodes publiques
-// type SemanticErrorListener::Méthode ( liste des paramètres )
-// Algorithme :
-//
-//{
-//} //----- Fin de Méthode
 
 void SemanticErrorListener::addSemanticError(antlr4::Token* symbol, string message){
   string token;

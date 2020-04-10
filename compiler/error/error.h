@@ -31,11 +31,7 @@ class Error
 
 public:
 //----------------------------------------------------- Méthodes publiques
-    // type Méthode ( liste des paramètres );
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
+
     virtual void showError(ostream & os) const;
 
 
@@ -48,11 +44,6 @@ public:
                                                                     lineNumber(lineNb),
                                                                     charPositionInLine(charPos),
                                                                     line(line){}
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
-
 
 //------------------------------------------------------------------ PRIVE
 

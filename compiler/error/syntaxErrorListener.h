@@ -26,10 +26,7 @@ using namespace antlr4;
 
 //------------------------------------------------------------------------
 // Rôle de la classe <SyntaxErrorListener>
-//
-//
-//
-//
+
 //------------------------------------------------------------------------
 class SyntaxErrorListener : public BaseErrorListener
 {

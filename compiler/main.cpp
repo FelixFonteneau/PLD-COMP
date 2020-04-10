@@ -33,9 +33,6 @@ int main(int argn, const char **argv) {
   FunctionTable::addDefinedFunction("getchar", "void" , nullptr);
 
   tokens.fill();
-  //for (auto token : tokens.getTokens()) {
-  //  std::cout << token->toString() << std::endl;
-  //}
 
   ifccParser parser(&tokens);
 
@@ -43,6 +40,7 @@ int main(int argn, const char **argv) {
   parser.removeErrorListeners();
   parser.addErrorListener(&errorlistener);
 
+  // parse the antlr4 tree to find syntax errors.
   tree::ParseTree* tree = parser.axiom();
   if (errorlistener.Error()){
     cerr << "Error in " << argv[1] << "." << endl;
@@ -53,10 +51,11 @@ int main(int argn, const char **argv) {
   vector<CFG*> cfgs;
   SemanticErrorListener semanticErrorListener(in.str());
 
-
+  // visit the antlr4 tree, build IR and semantic errors
   Visitor visitor(&cfgs, &semanticErrorListener);
   visitor.visit(tree);
 
+  // show semantic errors.
   if (semanticErrorListener.Error()){
     cerr << "Error in " << argv[1] << "." << endl;
     cerr << semanticErrorListener;
@@ -64,7 +63,7 @@ int main(int argn, const char **argv) {
   }
 
 
-  // pass CFG to x86 back-end
+  // x86 back-end to transform the IR in assembly code
 
   // global variables
   cout << " .text" << endl;

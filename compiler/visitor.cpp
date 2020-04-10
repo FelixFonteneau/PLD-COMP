@@ -122,11 +122,6 @@ antlrcpp::Any Visitor::visitFuncDecStrict(ifccParser::FuncDecStrictContext *ctx)
     } else {
       FunctionTable::addDeclaredFunction(functionName, retType, ctx->VAR()->getSymbol());
     }
-    //currentCFG = new CFG(functionName);
-    //(*cfgs).push_back(currentCFG);
-    //currentBasicBlock = currentCFG->createNewBB();
-
-    //visitChildren(ctx);
     return 0;
 }
 
@@ -264,12 +259,6 @@ antlrcpp::Any Visitor::visitArgsConst(ifccParser::ArgsConstContext *ctx)
       currentRegFunc++;
     } else {
       cout << "error" << endl;
-      /*
-      currentCFG->addToSymbolTable(variableName, INT);
-      vector<string> params {currentRegFunc->name, currentCFG->varToAsm(variableName)};
-      currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
-      currentRegFunc++;
-      */
     }
     return visitChildren(ctx);
 }
@@ -284,12 +273,6 @@ antlrcpp::Any Visitor::visitLastArgConst(ifccParser::LastArgConstContext *ctx)
       currentRegFunc++;
     } else {
       cout << "error" << endl;
-      /*
-      currentCFG->addToSymbolTable(variableName, INT);
-      vector<string> params {currentRegFunc->name, currentCFG->varToAsm(variableName)};
-      currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
-      currentRegFunc++;
-      */
     }
     return 0;
 }
@@ -316,10 +299,7 @@ antlrcpp::Any Visitor::visitAffDecConst(ifccParser::AffDecConstContext *ctx) // 
   return visitChildren(ctx);
 }
 
-antlrcpp::Any Visitor::visitAffDecVar(ifccParser::AffDecVarContext *ctx)
-// int b;
-// int a = b;
-{
+antlrcpp::Any Visitor::visitAffDecVar(ifccParser::AffDecVarContext *ctx){
   string newVariableName = ctx->VAR()[0]->getText();
   //check if the left variable doesn't exist
   if (currentCFG->isVarExistInScope(newVariableName))    {
@@ -542,15 +522,6 @@ antlrcpp::Any Visitor::visitIfNoElse(ifccParser::IfNoElseContext *ctx)
 
   currentBasicBlock = endBlock;
   return endBlock;
-
-  /*
-  int ifnumber = labelcounter++;
-  cout << ".if" << ifnumber << ":" <<endl;
-  visit(ctx->testExpr());
-  cout << ".fi" << ifnumber << endl;
-  visit(ctx->bloc());
-  cout << ".fi" << ifnumber << ":" << endl;
-*/
 }
 
 antlrcpp::Any Visitor::visitIfWithElse(ifccParser::IfWithElseContext *ctx)
@@ -593,17 +564,6 @@ antlrcpp::Any Visitor::visitIfWithElse(ifccParser::IfWithElseContext *ctx)
 
   currentBasicBlock = endBlock;
   return endBlock;
-  /*
-  int ifnumber = labelcounter++;
-  cout << ".if" << ifnumber << ":" <<endl;
-  visit(ctx->testExpr());
-  cout << ".else" << ifnumber << endl;
-  visit(ctx->bloc()[0]);
-  cout << " jmp .fi" << ifnumber << endl;
-  cout << ".else" << ifnumber << ":" << endl;
-  visit(ctx->bloc()[1]);
-  cout << ".fi" << ifnumber << ":" << endl;
-*/
 }
 
 antlrcpp::Any Visitor::visitIfElseIf(ifccParser::IfElseIfContext *ctx)
@@ -646,18 +606,6 @@ antlrcpp::Any Visitor::visitIfElseIf(ifccParser::IfElseIfContext *ctx)
 
   currentBasicBlock = endBlock;
   return endBlock;
-
-  /*
-  int ifnumber = labelcounter++;
-  cout << ".if" << ifnumber << ":" <<endl;
-  visit(ctx->testExpr());
-  cout << ".else" << ifnumber << endl;
-  visit(ctx->bloc());
-  cout << " jmp .fi" << ifnumber << endl;
-  cout << ".else" << ifnumber << ":" << endl;
-  visit(ctx->ifLoop());
-  cout << ".fi" << ifnumber << ":" << endl;
-*/
 }
 
 antlrcpp::Any Visitor::visitRelationalTestExpr(ifccParser::RelationalTestExprContext *ctx)
@@ -687,26 +635,6 @@ antlrcpp::Any Visitor::visitRelationalTestExpr(ifccParser::RelationalTestExprCon
   else {
     return 0;
   }
-  /*
-  visit(ctx->expr()[0]);
-  cout << " movl %eax, %ebx" << endl;
-  visit(ctx->expr()[1]);
-  cout << " cmpl %eax, %ebx" << endl;
-
-  if(ctx->op->getText() == ">") {
-    cout << " jle ";
-  }
-  else if(ctx->op->getText() == "<") {
-    cout << " jge ";
-  }
-  else if(ctx->op->getText() == ">=") {
-    cout << " jl ";
-  }
-  else if(ctx->op->getText() == "<=") {
-    cout << " jg ";
-  }
-  */
-  //return 0;
 }
 
 antlrcpp::Any Visitor::visitEqualityTestExpr(ifccParser::EqualityTestExprContext *ctx)
@@ -717,19 +645,6 @@ antlrcpp::Any Visitor::visitEqualityTestExpr(ifccParser::EqualityTestExprContext
 
   visit(ctx->expr()[1]);
   currentBasicBlock->addIRInstr(IRInstr::cmp_eq, INT, params);
-  /*
-  visit(ctx->expr()[0]);
-  cout << " movl %eax, %ebx" << endl;
-  visit(ctx->expr()[1]);
-  cout << " cmpl %eax, %ebx" << endl;
-
-  if(ctx->op->getText() == "==") {
-    cout << " jne ";
-  }
-  else if(ctx->op->getText() == "!=") {
-    cout << " je ";
-  }
-  */
 
   if(ctx->op->getText() == "==") {
     return 1;
@@ -753,7 +668,6 @@ antlrcpp::Any Visitor::visitConstExpr(ifccParser::ConstExprContext *ctx)
     vector<string> params {constant, currentRegister->name};
     currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
     currentRegister->used = true;
-    //cout << "  movl $" << val << ", %" << (*currentRegister).name << endl;
     return 0;
 }
 
@@ -767,7 +681,6 @@ antlrcpp::Any Visitor::visitCharExpr(ifccParser::CharExprContext *ctx)
   string constant = "$" + to_string(retval);
   vector<string> params {constant, (*currentRegister).name}; //TODO : verifier registres
   currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
-  //cout << "  movl $" << val << ", %" << (*currentRegister).name << endl;
   return 0;
 }
 
@@ -795,7 +708,6 @@ antlrcpp::Any Visitor::visitVarExpr(ifccParser::VarExprContext *ctx)
   vector<string> params {currentCFG->varToAsm(var), currentRegister->name};
   currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
   currentRegister->used = true;
-  //cout << "  movl -" << blocPrincipal.getVariable(var)->getAddress() << "(%rbp), %" << (*currentRegister).name << endl;
   return 0;
 }
 
@@ -812,24 +724,11 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
 
     string memoryAddressRight = "";
 
-/*
-    cout << "exprRight :"<< endl;
-    cout << exprRight << endl;
-    cout << "exprLeft :" << endl;
-    cout << exprLeft << endl;
-*/
-
     if(exprRight.find("(") != string::npos || exprRight.find("*") != string::npos) {
       isExpr = true;
     }
 
     visit(ctx->expr()[0]);
-/*
-    cout << "isExpr : " << endl;
-    cout << isExpr << endl;
-    cout << "Curr :";
-    cout << currentRegister->name <<  "  -  " << currentRegister->used << endl;
-*/
 
     if(isExpr) {
       if(currentRegister->name == "%r15s" && currentRegister->used == true) {
@@ -841,14 +740,7 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
         numberTempVar++;
         currentRegister->used = false;
         tempVarCreated = 1;
-/*
-        cout << "salut" << endl;
 
-        cout << "exprRight :"<< endl;
-        cout << exprRight << endl;
-        cout << "exprLeft :" << endl;
-        cout << exprLeft << endl;
-*/
       } else if(currentRegister->name != "%r15d") {
         currentRegister++;
         currentRegister->used = true;
@@ -861,16 +753,13 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
       }
 
       if(tempVarCreated) {
-        //cout << "you motherfucker i'm in" << endl;
         string tempVarName = "!" + to_string(numberTempVar);
         exprLeft = exprRight;
         exprRight = tempVarName;
         numberTempVar--;
-        //cout << "ouesh :" << numberTempVar << endl;
       }
 
       if(currentRegister->name != "%eax" && !noRegLeft) {
-        //cout << "hi there" << endl;
         currentRegister--;
       }
     }
@@ -882,25 +771,17 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
     if(memoryAddressRight != "") {
       isVar = true;
     }
-/*
-    cout << "curre :" << endl;
-    cout << currentRegister->name << endl;
 
-    cout << "prout :" << endl;
-    cout << exprRight << endl;
-*/
     if(ctx->op->getText() == "+") {
         if(!isVar) {
           if(!isExpr) {
             string rightVal = "$" + exprRight;
             vector<string> params {rightVal, currentRegister->name};
             currentBasicBlock->addIRInstr(IRInstr::add, INT, params);
-            //cout << "  addl $" << rightVal << ", %" << (*currentRegister).name << endl;
           } else {
             vector<string> params {(currentRegister + 1)->name, currentRegister->name};
             currentBasicBlock->addIRInstr(IRInstr::add, INT, params);
             (currentRegister + 1)->used = false;
-            //cout << "  addl %" << (*(currentRegister + 1)).name << ", %" << (*currentRegister).name << endl;
           }
         } else if(isVar) {
           vector<string> params {currentCFG->varToAsm(exprRight), currentRegister->name};
@@ -908,21 +789,17 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
           if(exprRight.find("!") != string::npos) {
             currentCFG->deleteLastTempvar(INT);
           }
-          //cout << "  addl -" << memoryAddressRight << "(%rbp), %" << (*currentRegister).name << endl;
         }
       } else {
         if(!isVar) {
           if(!isExpr) {
-            //int rightVal = stoi(exprRight);
             string rightVal = "$" + exprRight;
             vector<string> params {rightVal, currentRegister->name};
             currentBasicBlock->addIRInstr(IRInstr::sub, INT, params);
-            //cout << "  subl $" << rightVal << ", %" << (*currentRegister).name << endl;
           } else {
             vector<string> params {(currentRegister + 1)->name, currentRegister->name};
             currentBasicBlock->addIRInstr(IRInstr::sub, INT, params);
             (currentRegister + 1)->used = false;
-            //cout << "  subl %" << (*(currentRegister + 1)).name << ", %" << (*currentRegister).name << endl;
           }
         } else if(isVar) {
           vector<string> params {currentCFG->varToAsm(exprRight), currentRegister->name};
@@ -930,7 +807,6 @@ antlrcpp::Any Visitor::visitAdditiveExpr(ifccParser::AdditiveExprContext *ctx)
           if(exprRight.find("!") != string::npos) {
             currentCFG->deleteLastTempvar(INT);
           }
-          //cout << "  subl -" << memoryAddressRight << "(%rbp), %" << (*currentRegister).name << endl;
         }
     }
     return tempVarCreated;
@@ -984,11 +860,7 @@ antlrcpp::Any Visitor::visitRetExpr(ifccParser::RetExprContext *ctx) {
 
 antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprContext *ctx)
 {
-/*
-  cout << "start of exprMult" << endl;
-  cout << "Curr : "<< endl;
-  cout << currentRegister-> name << " - " << currentRegister->used << endl;
-*/
+
   bool isVar = false;
   bool isExpr = false;
 
@@ -1003,12 +875,6 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
   if(exprRight.find("(") != string::npos) {
     isExpr = true;
   }
-/*
-  cout << "exprRight :"<< endl;
-  cout << exprRight << endl;
-  cout << "exprLeft :" << endl;
-  cout << exprLeft << endl;
-*/
   visit(ctx->expr()[0]);
 
 
@@ -1023,14 +889,6 @@ antlrcpp::Any Visitor::visitMultiplicationExpr(ifccParser::MultiplicationExprCon
       numberTempVar++;
       currentRegister->used = false;
       tempVarCreated = 1;
-/*
-      cout << "salut" << endl;
-
-      cout << "exprRight :"<< endl;
-      cout << exprRight << endl;
-      cout << "exprLeft :" << endl;
-      cout << exprLeft << endl;
-*/
     } else if(currentRegister->name != "%r15d") {
       currentRegister->used = true;
       currentRegister++;

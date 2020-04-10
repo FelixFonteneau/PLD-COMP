@@ -73,16 +73,8 @@ public:
 //-------------------------------------------- Constructeurs - destructeur
     // Variable (const Variable & unVariable);
     Fonction ();
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
 
     Fonction (string name, string returnType, antlr4::Token* token) : name(name), returnType(returnType), token(token), defined(false), used(false){}
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
 
     virtual ~Fonction ( );
 

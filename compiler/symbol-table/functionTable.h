@@ -49,10 +49,6 @@ public:
 //-------------------------------------------- Constructeurs - destructeur
     // FunctionTable (const FunctionTable & unFunctionTable);
     FunctionTable ();
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
 
     virtual ~FunctionTable ( );
 
