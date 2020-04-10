@@ -1,7 +1,9 @@
 # Documentation développeur
 
 ## 1 - Introduction
-Le répertoire de ce projet est divisé en deux grandes parties, une partie Compiler qui contient l’ensemble du code source et une partie Tests qui contient la structure de test de ce projet. Nous admettrons par la suite que l’utilisation de l’outil ifcc est acquise (cf. documentation utilisateur) ainsi que l’installation, soit du conteneur Docker, soit des librairies Antlr4.
+Le répertoire de ce projet est divisé en deux grandes parties, une partie Compiler qui contient l’ensemble du code source et une partie Tests qui contient la structure de test de ce projet. De plus, un dossier comprennant la documentation est à disposition. Nous admettrons par la suite que l’utilisation de l’outil ifcc est acquise ainsi que l’installation, soit du conteneur Docker, soit des librairies Antlr4.
+### Prérequis et environement de travail
+Vous trouverez tous les prérequis, ainsi que le guide d'installation des outils dans la <a href="documentation/Documentation Utilisateur.pdf/">documentation utilisateur</a>. 
 
 ## 2 - Organisation du code (dossier /compiler)
 ### 2.1 - Fonctionnement du compilateur
