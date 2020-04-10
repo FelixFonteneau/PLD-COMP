@@ -207,6 +207,8 @@ antlrcpp::Any Visitor::visitLastArgDec(ifccParser::LastArgDecContext *ctx)
     currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
     currentRegFunc++;
 
+    currentRegFunc = registersFunc;
+
     return 0;
 }
 
