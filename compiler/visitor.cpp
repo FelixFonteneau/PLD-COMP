@@ -113,6 +113,7 @@ antlrcpp::Any Visitor::visitFuncDecStrict(ifccParser::FuncDecStrictContext *ctx)
     if(SymbolTable::getGlobalVariablesST()->variableExiste(functionName)) {
         string message = functionName + " redeclared as different kind of symbol";
         errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+        return 0;
     }
 
     if(FunctionTable::checkIfFunctionExist(functionName)) {
@@ -135,6 +136,11 @@ antlrcpp::Any Visitor::visitFuncDecDef(ifccParser::FuncDecDefContext *ctx)
     string functionName = ctx->VAR()->getText();
     string retType = ctx->funcType()->getText();
 
+    if(SymbolTable::getGlobalVariablesST()->variableExiste(functionName)) {
+        string message = functionName + " redeclared as different kind of symbol";
+        errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+        return 0;
+    }
     if(FunctionTable::checkIfFunctionExist(functionName)) {
       if(FunctionTable::getFunction(functionName)->isDefined()) {
         string message = "function " + functionName + " is already defined";
