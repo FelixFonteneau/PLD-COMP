@@ -9,6 +9,9 @@ Détaillons d’abord le fonctionnement général du compilateur.
 Le compilateur utilise la librairie Antlr4 afin d’analyser la grammaire des fichiers à compiler. Cela permet de générer les erreurs de syntaxe dans les fichiers. Si aucune erreur n’est retournée, Antlr génère un arbre lié à la grammaire ifcc contenue dans le fichier ifcc.g4.
 Le compilateur parcourt ensuite cet arbre par le biais d’un Visiteur (visitor.h et visitor.cpp). Le parcours de cet arbre va créer, dans un premier temps, une représentation intermédiaire du code assembleur et de générer les erreurs sémantiques du code à compiler.
 Ensuite, de cette représentation intermédiaire, le compilateur génère le code assembleur final pour l’architecture choisie. Dans notre cas, seule l’architecture x86 est supportée.
+
+<img src="./img/flowchart comp.svg"/>
+
 Diagramme d’état transition du compilateur
 
 ### 2.2 - Implémentation du compilateur
