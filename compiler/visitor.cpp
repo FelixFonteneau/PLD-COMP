@@ -190,6 +190,7 @@ antlrcpp::Any Visitor::visitFuncCall(ifccParser::FuncCallContext *ctx)
     visitChildren(ctx);
     vector<string> params {functionName};
     currentBasicBlock->addIRInstr(IRInstr::call, INT, params);
+    currentRegFunc = registersFunc;
     return 0;
 }
 
