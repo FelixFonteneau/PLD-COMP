@@ -1,0 +1,8 @@
+Error in input.c.
+Error function aFunction undefined. On position 4:5
+   "	a = aFunction();"
+         ^
+
+1 error generated.
+
+return code: 1

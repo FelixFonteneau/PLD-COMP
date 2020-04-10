@@ -1,0 +1,8 @@
+Error in input.c.
+Error variable c is not defined. On position 5:8
+   "	return c;"
+            ^
+
+1 error generated.
+
+return code: 1

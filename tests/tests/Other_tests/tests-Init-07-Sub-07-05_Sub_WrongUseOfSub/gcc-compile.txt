@@ -1,0 +1,6 @@
+input.c: In function ‘main’:
+input.c:4:13: error: expected ‘,’ or ‘;’ before ‘b’
+  int c = a--b;
+             ^
+
+return code: 1

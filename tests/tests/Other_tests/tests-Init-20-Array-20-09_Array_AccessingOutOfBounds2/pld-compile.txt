@@ -1,0 +1,8 @@
+Error in input.c.
+Error Index out of bounds : 3. On position 13:5
+   "	a = array[3];"
+         ^
+
+1 error generated.
+
+return code: 1

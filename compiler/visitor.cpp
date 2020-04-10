@@ -178,6 +178,7 @@ antlrcpp::Any Visitor::visitFuncCall(ifccParser::FuncCallContext *ctx)
     if(!FunctionTable::checkIfFunctionExist(functionName)){
         string message = "function " + functionName + " undefined";
         errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+        return 0;
     }
     FunctionTable::getFunction(functionName)->setUsed();
     visitChildren(ctx);

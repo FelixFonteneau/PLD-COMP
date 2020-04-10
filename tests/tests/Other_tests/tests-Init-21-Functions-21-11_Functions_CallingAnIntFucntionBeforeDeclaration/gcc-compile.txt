@@ -1,0 +1,6 @@
+input.c: In function ‘main’:
+input.c:4:6: warning: implicit declaration of function ‘aFunction’ [-Wimplicit-function-declaration]
+  a = aFunction();
+      ^~~~~~~~~
+
+return code: 0

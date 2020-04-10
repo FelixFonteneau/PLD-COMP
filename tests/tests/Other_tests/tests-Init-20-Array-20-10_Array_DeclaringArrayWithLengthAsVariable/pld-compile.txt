@@ -1,0 +1,8 @@
+Error in input.c.
+Error no viable alternative at input 'int array[length'. On position 5:11
+   "	int array[length];"
+               ^
+
+1 error generated.
+
+return code: 1
