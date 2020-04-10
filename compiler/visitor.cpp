@@ -152,7 +152,7 @@ antlrcpp::Any Visitor::visitFuncDecDef(ifccParser::FuncDecDefContext *ctx)
       currentCFG = new CFG(functionName);
       (*cfgs).push_back(currentCFG);
       currentBasicBlock = currentCFG->createNewBB();
-      FunctionTable::addDefinedFunction(functionName, retType, ctx->VAR()->getSymbol());
+      FunctionTable::addDefinedFunction(functionName, retType, ctx->VAR()->getSymbol(), currentCFG);
     }
 
     vector<string> params {"$32", "%rsp"};
@@ -181,8 +181,15 @@ antlrcpp::Any Visitor::visitFuncCall(ifccParser::FuncCallContext *ctx)
     }
     FunctionTable::getFunction(functionName)->setUsed();
     visitChildren(ctx);
+
+    //CFG* cfgCalling = currentCFG;
+    //currentCFG = FunctionTable::getFunction(functionName)->getCFG();
+
     vector<string> params {functionName};
     currentBasicBlock->addIRInstr(IRInstr::call, INT, params);
+
+    //currentCFG = cfgCalling;
+
     return 0;
 }
 
@@ -207,7 +214,7 @@ antlrcpp::Any Visitor::visitLastArgDec(ifccParser::LastArgDecContext *ctx)
     currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
     currentRegFunc++;
 
-    currentRegFunc = registersFunc;
+    currentRegFunc = registersFunc; //bonjour
 
     return 0;
 }
@@ -240,6 +247,8 @@ antlrcpp::Any Visitor::visitLastArgVar(ifccParser::LastArgVarContext *ctx)
     vector<string> params {currentCFG->varToAsm(variableName), currentRegFunc->name};
     currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
     currentRegFunc++;
+
+    currentRegFunc = registersFunc;
 
     return 0;
 }

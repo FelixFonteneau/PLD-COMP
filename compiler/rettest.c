@@ -1,15 +1,18 @@
-int g(int b) {
-  b = 666;
-  return b;
+int factorielle(int a){
+	int result;
+	if (a > 1){
+		int b = a - 1;
+		result = a*factorielle(b);
+	}
+	else{
+		result = 1;
+	}
+	return result;
 }
 
-int fac(int a) {
-  a = g(a);
-  return a;
-}
 
-int main() {
-  int k = 12;
-  int b = fac(k);
-  return 8;
+int main(){
+	int a = 4;
+	int result = factorielle(a);
+	return result;
 }

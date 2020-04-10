@@ -14,6 +14,7 @@
 #include <string>
 #include "type.h"
 #include "antlr4-runtime.h"
+#include "../intermediate-representation/CFG.h"
 
 //------------------------------------------------------------- Constantes
 
@@ -67,6 +68,10 @@ public:
     return token;
   }
 
+  CFG* getCFG() {
+    return cfg_;
+  }
+
 
 //------------------------------------------------- Surcharge d'opérateurs
 
@@ -78,7 +83,7 @@ public:
     // Contrat :
     //
 
-    Fonction (string name, string returnType, antlr4::Token* token) : name(name), returnType(returnType), token(token), defined(false), used(false){}
+    Fonction (string name, string returnType, antlr4::Token* token, CFG* cfg_) : name(name), returnType(returnType), token(token), cfg_(cfg_), defined(false), used(false){}
     // Mode d'emploi :
     //
     // Contrat :
@@ -95,6 +100,7 @@ protected:
   string name;
   string returnType;
   antlr4::Token* token;
+  CFG* cfg_;
   bool defined;
   bool used;
 };

@@ -24,12 +24,12 @@ unordered_map<string, Fonction*> FunctionTable::progFonctions;
 
 //----------------------------------------------------- Méthodes publiques
 void FunctionTable::addDeclaredFunction(string name, string t, antlr4::Token* token){
-  Fonction* f = new Fonction(name, t, token);
+  Fonction* f = new Fonction(name, t, token, nullptr);
   progFonctions.insert({name, f});
 }
 
-void FunctionTable::addDefinedFunction(string name, string t, antlr4::Token* token){
-  Fonction* f = new Fonction(name, t, token);
+void FunctionTable::addDefinedFunction(string name, string t, antlr4::Token* token, CFG* cfg_){
+  Fonction* f = new Fonction(name, t, token, cfg_);
   f->setDefined();
   progFonctions.insert({name, f});
 }
