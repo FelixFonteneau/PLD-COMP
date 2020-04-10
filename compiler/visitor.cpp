@@ -197,6 +197,7 @@ antlrcpp::Any Visitor::visitArgsDecVar(ifccParser::ArgsDecVarContext *ctx)
 {
     string variableName = ctx->VAR()->getText();
     currentCFG->addToSymbolTable(variableName, INT);
+    currentCFG->setDefined(variableName);
 
     vector<string> params {currentRegFunc->name, currentCFG->varToAsm(variableName)};
     currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
@@ -209,6 +210,7 @@ antlrcpp::Any Visitor::visitLastArgDec(ifccParser::LastArgDecContext *ctx)
 {
     string variableName = ctx->VAR()->getText();
     currentCFG->addToSymbolTable(variableName, INT);
+    currentCFG->setDefined(variableName);
 
     vector<string> params {currentRegFunc->name, currentCFG->varToAsm(variableName)};
     currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
