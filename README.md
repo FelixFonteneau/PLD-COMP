@@ -14,11 +14,13 @@ Diagramme d’état transition du compilateur
 ### 2.2 - Implémentation du compilateur
 Le répertoire compiler est le répertoire contenant les fichiers constituant le compilateur ifcc en lui-même. Dans ce dossier se trouvent déjà 3 éléments indispensables à l'exécution du compilateur : ifcc.g4, main.cpp et la classe Visitor.
 Liste des fichiers du dossier compiler :
-ifcc.g4 : Fichier contenant la grammaire de notre langage (ici C). Cette grammaire est écrite dans le format de Antlr4 qui est l’analyseur que nous utilisons pour notre compilation.
-main.cpp : Point d’entrée du programme. Se charge d’appeler les différents analyseurs et parsers et la génération du code assembleur.
-Visitor : Classe fille de ifccBaseVisitor composée de surcharges des méthodes faisant la visite des règles de la grammaire. Parcours l’arbre Antlr4 et appelle les bonnes méthodes de visite pour générer la représentation intermédiaire.
+*   ifcc.g4 : Fichier contenant la grammaire de notre langage (ici C). Cette grammaire est écrite dans le format de Antlr4 qui est l’analyseur que nous utilisons pour notre compilation.
+*   main.cpp : Point d’entrée du programme. Se charge d’appeler les différents analyseurs et parsers et la génération du code assembleur.
+*   Visitor : Classe fille de ifccBaseVisitor composée de surcharges des méthodes faisant la visite des règles de la grammaire. Parcours l’arbre Antlr4 et appelle les bonnes méthodes de visite pour générer la représentation intermédiaire.
+
 Dans le dossier compiler se trouvent aussi les dossiers suivants :
-.antlr & antlr-generated
+*   .antlr & antlr-generated
+
 Ces dossiers contiennent l’ensemble du code Antlr nécessaire et du code Antlr généré par notre grammaire. Ce code n’est pas à modifier. Seule une classe est utile à notre programme, antlr-generated/ifccBaseVisitor.h, qui correspond au template des méthodes de visite de l’arbre antlr à surcharger. La classe Visitor hérite de cette classe.
 error
 Ce dossier contient les classes de gestion d’erreur de notre compilateur. On a deux types d’erreurs à gérer, les erreurs syntaxiques qui sont liées à la grammaire du programme, puis les erreurs de sémantique, par exemple déclarer deux fois une même variable, qui sont des erreurs ne posant pas de problème de grammaire mais qui ne sont pas acceptables.
