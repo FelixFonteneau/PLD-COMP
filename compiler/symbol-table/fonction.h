@@ -12,6 +12,7 @@
 
 //--------------------------------------------------- Interfaces utilisées
 #include <string>
+#include <vector>
 #include "type.h"
 #include "antlr4-runtime.h"
 #include "../intermediate-representation/CFG.h"
@@ -72,6 +73,30 @@ public:
     return cfg_;
   }
 
+  void addParam(string param) {
+    params.push_back(param);
+  }
+
+  vector<string> getParams(){
+    return params;
+  }
+
+  int getNumParams(){
+    return params.size();
+  }
+
+  void addDecParam(string decParam) {
+    decParams.push_back(decParam);
+  }
+
+  vector<string> getDecParams(){
+    return decParams;
+  }
+
+  int getNumDecParams(){
+    return decParams.size();
+  }
+
 
 //------------------------------------------------- Surcharge d'opérateurs
 
@@ -103,6 +128,8 @@ protected:
   CFG* cfg_;
   bool defined;
   bool used;
+  vector<string> params;
+  vector<string> decParams;
 };
 
 //-------------------------------- Autres définitions dépendantes de <Variable>

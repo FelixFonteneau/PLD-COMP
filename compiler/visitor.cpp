@@ -116,7 +116,7 @@ antlrcpp::Any Visitor::visitFuncDecStrict(ifccParser::FuncDecStrictContext *ctx)
     }
 
     if(FunctionTable::checkIfFunctionExist(functionName)) {
-      string message = "different type declaration for " + functionName;
+      string message = functionName + "is already defined";
       errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
     } else {
       FunctionTable::addDeclaredFunction(functionName, retType, ctx->VAR()->getSymbol());
@@ -163,6 +163,19 @@ antlrcpp::Any Visitor::visitFuncDecDef(ifccParser::FuncDecDefContext *ctx)
 
     visitChildren(ctx);
 
+    for(int i=0; i < FunctionTable::getFunction(functionName)->getParams().size(); i++) {
+      std::cout << FunctionTable::getFunction(functionName)->getParams().at(i) << ' ';
+    }
+
+    for(int i=0; i < FunctionTable::getFunction(functionName)->getDecParams().size(); i++) {
+          std::cout << FunctionTable::getFunction(functionName)->getDecParams().at(i) << ' ';
+    }
+
+    if(!(FunctionTable::getFunction(functionName)->getParams() == FunctionTable::getFunction(functionName)->getDecParams())) {
+      string message = "different declaration for " + functionName;
+      errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
+    }
+
     currentRegFunc = registersFunc;
     if(FunctionTable::thereIsFunction()) {
       currentBasicBlock->addIRInstr(IRInstr::desactivationRecord, INT, params);
@@ -188,28 +201,54 @@ antlrcpp::Any Visitor::visitFuncCall(ifccParser::FuncCallContext *ctx)
     vector<string> params {functionName};
     currentBasicBlock->addIRInstr(IRInstr::call, INT, params);
 
-    //currentCFG = cfgCalling;
+    currentRegFunc = registersFunc;
 
     return 0;
 }
 
 antlrcpp::Any Visitor::visitArgsDecVar(ifccParser::ArgsDecVarContext *ctx)
 {
+    string variableType = ctx->type()->getText();
     string variableName = ctx->VAR()->getText();
-    currentCFG->addToSymbolTable(variableName, INT);
 
-    vector<string> params {currentRegFunc->name, currentCFG->varToAsm(variableName)};
-    currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
-    currentRegFunc++;
+    for (unordered_map<string, Fonction*>::iterator it = FunctionTable::getFonctions()->begin(); it != FunctionTable::getFonctions()->end(); ++it){
+      if(it->second->getCFG() == currentCFG) {
+        if(FunctionTable::getFunction(it->second->getName())->isDefined()) {
+          currentCFG->addToSymbolTable(variableName, INT);
+          for (unordered_map<string, Fonction*>::iterator it = FunctionTable::getFonctions()->begin(); it != FunctionTable::getFonctions()->end(); ++it){
+            if(it->second->getCFG() == currentCFG) {
+              it->second->addParam(variableType);
+            }
+          }
 
-    return visitChildren(ctx);
+        vector<string> params {currentRegFunc->name, currentCFG->varToAsm(variableName)};
+        currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+        currentRegFunc++;
+
+      } else {
+        for (unordered_map<string, Fonction*>::iterator it = FunctionTable::getFonctions()->begin(); it != FunctionTable::getFonctions()->end(); ++it){
+          if(it->second->getCFG() == currentCFG) {
+            it->second->addDecParam(variableType);
+          }
+        }
+      }
+    }
+  }
+  return visitChildren(ctx);
 }
 
 antlrcpp::Any Visitor::visitLastArgDec(ifccParser::LastArgDecContext *ctx)
 {
+    string variableType = ctx->type()->getText();
     string variableName = ctx->VAR()->getText();
     currentCFG->addToSymbolTable(variableName, INT);
-
+/*
+    for (unordered_map<string, Fonction*>::iterator it = FunctionTable::getFonctions()->begin(); it != FunctionTable::getFonctions()->end(); ++it){
+      if(it->second->getCFG() == currentCFG) {
+        it->second->addParam(variableType);
+      }
+    }
+*/
     vector<string> params {currentRegFunc->name, currentCFG->varToAsm(variableName)};
     currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
     currentRegFunc++;
@@ -227,7 +266,13 @@ antlrcpp::Any Visitor::visitArgsVar(ifccParser::ArgsVarContext *ctx)
       errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
       // if the variable does not exists, we throw an error.
     }
-
+/*
+    for (unordered_map<string, Fonction*>::iterator it = FunctionTable::getFonctions()->begin(); it != FunctionTable::getFonctions()->end(); ++it){
+      if(it->second->getCFG() == currentCFG) {
+        it->second->addCalledParam(variableType);
+      }
+    }
+*/
     vector<string> params {currentCFG->varToAsm(variableName), currentRegFunc->name};
     currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
     currentRegFunc++;
@@ -243,7 +288,13 @@ antlrcpp::Any Visitor::visitLastArgVar(ifccParser::LastArgVarContext *ctx)
       errorlistener->addSemanticError(ctx->VAR()->getSymbol(), message);
       // if the variable does not exists, we throw an error.
     }
-
+/*
+    for (unordered_map<string, Fonction*>::iterator it = FunctionTable::getFonctions()->begin(); it != FunctionTable::getFonctions()->end(); ++it){
+      if(it->second->getCFG() == currentCFG) {
+        it->second->addCalledParam(variableType);
+      }
+    }
+*/
     vector<string> params {currentCFG->varToAsm(variableName), currentRegFunc->name};
     currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
     currentRegFunc++;
@@ -255,41 +306,36 @@ antlrcpp::Any Visitor::visitLastArgVar(ifccParser::LastArgVarContext *ctx)
 
 antlrcpp::Any Visitor::visitArgsConst(ifccParser::ArgsConstContext *ctx)
 {
+    string variableType = "int";
     string value = "$" + ctx->CONST()->getText();
-
-    if(currentCFG->getName() == "main") {
-      vector<string> params {value, currentRegFunc->name};
-      currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
-      currentRegFunc++;
-    } else {
-      cout << "error" << endl;
-      /*
-      currentCFG->addToSymbolTable(variableName, INT);
-      vector<string> params {currentRegFunc->name, currentCFG->varToAsm(variableName)};
-      currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
-      currentRegFunc++;
-      */
+/*
+    for (unordered_map<string, Fonction*>::iterator it = FunctionTable::getFonctions()->begin(); it != FunctionTable::getFonctions()->end(); ++it){
+      if(it->second->getCFG() == currentCFG) {
+        it->second->addCalledParam(variableType);
+      }
     }
+*/
+    vector<string> params {value, currentRegFunc->name};
+    currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+    currentRegFunc++;
     return visitChildren(ctx);
 }
 
 antlrcpp::Any Visitor::visitLastArgConst(ifccParser::LastArgConstContext *ctx)
 {
+    string variableType = "int";
     string value = "$" + ctx->CONST()->getText();
-
-    if(currentCFG->getName() == "main") {
-      vector<string> params {value, currentRegFunc->name};
-      currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
-      currentRegFunc++;
-    } else {
-      cout << "error" << endl;
-      /*
-      currentCFG->addToSymbolTable(variableName, INT);
-      vector<string> params {currentRegFunc->name, currentCFG->varToAsm(variableName)};
-      currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
-      currentRegFunc++;
-      */
+/*
+    for (unordered_map<string, Fonction*>::iterator it = FunctionTable::getFonctions()->begin(); it != FunctionTable::getFonctions()->end(); ++it){
+      if(it->second->getCFG() == currentCFG) {
+        it->second->addCalledParam(variableType);
+      }
     }
+*/
+    vector<string> params {value, currentRegFunc->name};
+    currentBasicBlock->addIRInstr(IRInstr::wmem, INT, params);
+    currentRegFunc++;
+
     return 0;
 }
 
