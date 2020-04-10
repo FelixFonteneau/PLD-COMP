@@ -13,6 +13,7 @@
 #include "error/semanticErrorListener.h"
 #include "intermediate-representation/CFG.h"
 #include "symbol-table/symbolTable.h"
+#include "symbol-table/functionTable.h"
 
 using namespace antlr4;
 using namespace std;
@@ -27,6 +28,9 @@ int main(int argn, const char **argv) {
   ANTLRInputStream input(in.str());
   ifccLexer lexer(&input);
   CommonTokenStream tokens(&lexer);
+
+  FunctionTable::addDefinedFunction("putchar", "void" , nullptr);
+  FunctionTable::addDefinedFunction("getchar", "void" , nullptr);
 
   tokens.fill();
   //for (auto token : tokens.getTokens()) {
@@ -49,6 +53,7 @@ int main(int argn, const char **argv) {
   vector<CFG*> cfgs;
   SemanticErrorListener semanticErrorListener(in.str());
 
+
   Visitor visitor(&cfgs, &semanticErrorListener);
   visitor.visit(tree);
 
@@ -59,7 +64,7 @@ int main(int argn, const char **argv) {
   }
 
 
-  // pass CFG to x86 back-end 
+  // pass CFG to x86 back-end
 
   // global variables
   cout << " .text" << endl;
